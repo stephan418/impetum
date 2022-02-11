@@ -1,10 +1,13 @@
 import * as THREE from "three";
 import ElementNotFoundError from "../errors/ElementNotFoundError";
+import Updatable from "./Updatable";
 
-export default class World {
+export default class World implements Updatable {
   private renderer: THREE.WebGLRenderer;
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
+
+  private updatables: Updatable[];
 
   constructor(canvasId: string, fov = 75, near = 0.1, far = 5) {
     const canvas = document.getElementById(canvasId);
@@ -26,6 +29,10 @@ export default class World {
     this.scene = new THREE.Scene();
 
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+
+    // -- Other --
+
+    this.updatables = [];
   }
 
   public handleResize(): boolean {
@@ -42,5 +49,13 @@ export default class World {
     }
 
     return false;
+  }
+
+  public update() {
+    // Update all updatables and render
+
+    this.renderer.render(this.scene, this.camera);
+
+    requestAnimationFrame(this.update.bind(this));
   }
 }
