@@ -1,3 +1,7 @@
 import './style.css';
+import World from "./core/World";
 
-console.log('Hello, world!');
+
+let world = new World("view");
+world.tick();
+
