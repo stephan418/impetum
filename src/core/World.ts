@@ -18,11 +18,11 @@ export default class World {
 
   private inputManager: InputManager;
 
-  private floorGeometry: THREE.PlaneGeometry;
-  private floorMaterial: THREE.MeshLambertMaterial;
-  private floorMesh: THREE.Mesh;
-  private cFloorShape: CANNON.Plane;
-  private cFloorBody: CANNON.Body;
+  private floorGeometry!: THREE.PlaneGeometry;
+  private floorMaterial!: THREE.MeshLambertMaterial;
+  private floorMesh!: THREE.Mesh;
+  private cFloorShape!: CANNON.Plane;
+  private cFloorBody!: CANNON.Body;
 
   private ambientLight: THREE.AmbientLight;
   generateFloor() {
