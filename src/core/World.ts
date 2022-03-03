@@ -43,7 +43,7 @@ export default class World {
     this.cScene.addBody(this.cFloorBody);
   }
 
-  constructor(canvasId: string, fov = 80, near = 0.1, far = 5) {
+  constructor(canvasId: string, fov = 80, near = 0.1, far = 1000) {
     const canvas = document.getElementById(canvasId);
 
     if (!canvas) {
