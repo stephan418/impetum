@@ -2,7 +2,6 @@ export default class InputManager {
   private pressedKeys: Map<string, boolean>;
   private keysCallbacks: Map<string, Function>;
 
-
   constructor() {
     this.pressedKeys = new Map();
     this.keysCallbacks = new Map();
@@ -10,7 +9,6 @@ export default class InputManager {
     document.addEventListener("keydown", this.onKeyDown.bind(this));
     document.addEventListener("keyup", this.onKeyUp.bind(this));
   }
-
 
   private onKeyDown(ev: KeyboardEvent) {
     this.pressedKeys.set(ev.key, true);

@@ -25,9 +25,9 @@ export default class World {
   private cFloorBody: CANNON.Body;
 
   private ambientLight: THREE.AmbientLight;
-  generateFloor(){
-    this.floorGeometry = new THREE.PlaneGeometry( 1000, 1000, 50, 50 );
-    this.floorMaterial = new THREE.MeshLambertMaterial({color: 0xa0a0a0});
+  generateFloor() {
+    this.floorGeometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
+    this.floorMaterial = new THREE.MeshLambertMaterial({ color: 0xa0a0a0 });
     this.floorMesh = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
     this.floorMesh.receiveShadow = true;
     this.floorMesh.rotation.x = -Math.PI * 2;
@@ -38,7 +38,7 @@ export default class World {
     this.cFloorShape = new CANNON.Plane();
     this.cFloorBody = new CANNON.Body({ mass: 0 });
     this.cFloorBody.addShape(this.cFloorShape);
-    this.cFloorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+    this.cFloorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
     this.cScene.addBody(this.cFloorBody);
   }
 
@@ -63,10 +63,8 @@ export default class World {
 
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
-
     // -- Setup updateables array --
     this.updatables = [];
-
 
     // -- Setup physics world --
     this.cScene = new CANNON.World();
@@ -91,16 +89,14 @@ export default class World {
     this.deltaClock = new THREE.Clock();
     this.deltaTime = 0;
 
-
     this.inputManager = new InputManager();
     this.inputManager.addKeyCallback("f", (pressed) => {
-        if(!pressed) return;
-        this.renderer.domElement.requestFullscreen();
+      if (!pressed) return;
+      this.renderer.domElement.requestFullscreen();
     });
 
     // -- Adds event listener to resize the window --
     // this.renderer.domElement.addEventListener("resize", this.handleResize.bind(this));
-
   }
 
   public handleResize(): boolean {
@@ -119,7 +115,6 @@ export default class World {
     return false;
   }
 
-
   public tick() {
     //get delta time
     this.deltaTime = this.deltaClock.getDelta();
@@ -133,8 +128,8 @@ export default class World {
   public update() {
     // Update all updatables
     this.updatables.forEach((updateable) => {
-        updateable.update(this.deltaTime);
-    }); 
+      updateable.update(this.deltaTime);
+    });
   }
 
   public updatePhysics() {}
