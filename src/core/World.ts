@@ -25,6 +25,7 @@ export default class World {
   private cFloorBody!: CANNON.Body;
 
   private ambientLight: THREE.AmbientLight;
+
   generateFloor() {
     this.floorGeometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
     this.floorMaterial = new THREE.MeshLambertMaterial({ color: 0xa0a0a0 });
