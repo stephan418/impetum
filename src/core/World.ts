@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import * as CANNON from "cannon";
+import * as CANNON from "cannon-es";
 import ElementNotFoundError from "../errors/ElementNotFoundError";
 import Updatable from "../interfaces/Updatable";
 import InputManager from "../managers/InputManager";
@@ -15,6 +15,7 @@ export default class World {
   private deltaTime: number;
 
   cScene: CANNON.World;
+  private cSolver: CANNON.GSSolver;
 
   private inputManager: InputManager;
 
@@ -71,7 +72,12 @@ export default class World {
     this.cScene = new CANNON.World();
     this.cScene.gravity.set(0, -9.81, 0);
     this.cScene.broadphase = new CANNON.SAPBroadphase(this.cScene);
-    this.cScene.solver.iterations = 10;
+
+    this.cSolver = new CANNON.GSSolver();
+    this.cSolver.iterations = 10;
+    this.cSolver.tolerance = 0.1;
+    this.cScene.solver = new CANNON.SplitSolver(this.cSolver);
+
     this.cScene.allowSleep = true;
 
     // -- Floor --
