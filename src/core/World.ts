@@ -35,7 +35,8 @@ export default class World {
     this.floorMaterial = new THREE.MeshLambertMaterial({ color: 0xa0a0a0 });
     this.floorMesh = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
     this.floorMesh.receiveShadow = true;
-    this.floorMesh.rotation.x = -Math.PI * 2;
+    this.floorMesh.rotation.x = -Math.PI / 2;
+    this.floorMesh.position.y = -1;
     this.scene.add(this.floorMesh);
     this.camera.position.z = 5;
 
@@ -72,7 +73,6 @@ export default class World {
     const aspect = canvas.clientWidth / canvas.clientHeight;
 
     this.player = new Player(aspect, fov, near, far);
-    console.log(this.player);
     this.camera = this.player.camera;
 
     // -- Setup Scene --
