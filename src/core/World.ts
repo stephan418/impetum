@@ -175,13 +175,12 @@ export default class World {
 
   public updatePhysics() {
     this.deltaPhysicsTime = this.deltaPhysicsClock.getDelta();
-    this.cScene.step(1 / 60, this.deltaPhysicsTime);
+    this.cScene.step(this.deltaPhysicsTime);
 
     this.player.updatePhysics(this.deltaPhysicsTime);
     this.updatables.forEach((updateable) => {
       updateable.updatePhysics(this.deltaPhysicsTime);
     });
-
   }
 
   public render() {
