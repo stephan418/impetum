@@ -84,7 +84,7 @@ export default class World {
 
     const aspect = canvas.clientWidth / canvas.clientHeight;
 
-    this.player = new Player(aspect, fov, near, far);
+    this.player = new Player(aspect, fov, near, far, this.inputManager);
     this.camera = this.player.camera;
 
     // -- Setup Scene --
@@ -129,7 +129,7 @@ export default class World {
 
     // -- Add CubeEntity to test physics --
     for (let i = 0; i < 100; i++) {
-      let cubeEntity = new CubeEntity(new CANNON.Vec3(0, i * 10, 0));
+      let cubeEntity = new CubeEntity(new CANNON.Vec3(0, i * 2, 0));
       cubeEntity.addToWorld(this);
       this.updatables.push(cubeEntity);
     }
