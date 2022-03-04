@@ -3,6 +3,7 @@ import * as CANNON from "cannon-es";
 import ElementNotFoundError from "../errors/ElementNotFoundError";
 import Updatable from "../interfaces/Updatable";
 import InputManager from "../managers/InputManager";
+import Player from "../entities/Player";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -26,6 +27,8 @@ export default class World {
   private cFloorBody!: CANNON.Body;
 
   private ambientLight: THREE.AmbientLight;
+
+  private player: Player;
 
   generateFloor() {
     this.floorGeometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
@@ -57,15 +60,27 @@ export default class World {
 
     this.renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
 
-    // -- Initialize the camera --
+    // -- Initialize the Input Manager --
+    this.inputManager = new InputManager();
+    this.inputManager.addKeyCallback("f", (pressed) => {
+      if (!pressed) return;
+      this.renderer.domElement.requestFullscreen();
+    });
+
+    // -- Initialize the player, with camera --
 
     const aspect = canvas.clientWidth / canvas.clientHeight;
 
+    this.player = new Player(aspect, fov, near, far);
+    console.log(this.player);
+    this.camera = this.player.camera;
+
+    // -- Setup Scene --
+
     this.scene = new THREE.Scene();
 
-    this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-
     // -- Setup updateables array --
+    // TODO: implement spatial hashing map which gets used for distance, logic based operations
     this.updatables = [];
 
     // -- Setup physics world --
@@ -95,15 +110,6 @@ export default class World {
     // -- Initializes clock for delta time --
     this.deltaClock = new THREE.Clock();
     this.deltaTime = 0;
-
-    this.inputManager = new InputManager();
-    this.inputManager.addKeyCallback("f", (pressed) => {
-      if (!pressed) return;
-      this.renderer.domElement.requestFullscreen();
-    });
-
-    // -- Adds event listener to resize the window --
-    // this.renderer.domElement.addEventListener("resize", this.handleResize.bind(this));
   }
 
   public handleResize(): boolean {

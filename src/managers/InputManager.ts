@@ -1,6 +1,3 @@
-import * as THREE from "three";
-import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
-
 export default class InputManager {
   private pressedKeys: Map<string, boolean>;
   private keysCallbacks: Map<string, Function>;
@@ -12,7 +9,6 @@ export default class InputManager {
     document.addEventListener("keydown", this.onKeyDown.bind(this));
     document.addEventListener("keyup", this.onKeyUp.bind(this));
   }
-  addPointerLock(camera: THREE.PerspectiveCamera, domElement: HTMLElement) {}
 
   private onKeyDown(ev: KeyboardEvent) {
     this.pressedKeys.set(ev.key, true);
