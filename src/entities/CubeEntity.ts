@@ -1,7 +1,7 @@
 import World from "../core/World";
 import Entity from "../interfaces/Entity";
 import * as THREE from "three";
-import * as CANNON from "cannon";
+import * as CANNON from "cannon-es";
 
 export default class CubeEntity implements Entity {
   private geometry: THREE.BoxGeometry;
@@ -27,7 +27,7 @@ export default class CubeEntity implements Entity {
   }
   removeFromWorld(world: World): void {
     world.scene.remove(this.mesh);
-    world.cScene.remove(this.cBody);
+    world.cScene.removeBody(this.cBody);
   }
   update(deltaTime: number): void {}
   updatePhysics(deltaTime: number): void {}
