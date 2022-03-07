@@ -34,8 +34,6 @@ export default class World {
 
   private player: Player;
 
-  private cubeEntity: CubeEntity;
-
   generateFloor() {
     this.floorGeometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
     this.floorMaterial = new THREE.MeshLambertMaterial({ color: 0xa0a0a0 });
@@ -44,7 +42,6 @@ export default class World {
     /* this.floorMesh.rotation.x = -Math.PI / 2;
     this.floorMesh.position.y = -1; */
     this.scene.add(this.floorMesh);
-    this.camera.position.z = 5;
 
     // -- Setup Physics for Floor --
     this.cFloorShape = new CANNON.Plane();
@@ -80,16 +77,10 @@ export default class World {
       this.renderer.domElement.requestFullscreen();
     });
 
-    // -- Initialize the player, with camera --
-
-    const aspect = canvas.clientWidth / canvas.clientHeight;
-
-    this.player = new Player(aspect, fov, near, far, this.inputManager);
-    this.camera = this.player.camera;
-
     // -- Setup Scene --
 
     this.scene = new THREE.Scene();
+    const aspect = canvas.clientWidth / canvas.clientHeight;
 
     // -- Setup updateables array --
     // TODO: implement spatial hashing map which gets used for distance, logic based operations
@@ -110,6 +101,12 @@ export default class World {
     // -- Floor --
     // TODO: add real world
     this.generateFloor();
+
+    // -- Initialize the player, with camera --
+
+    this.player = new Player(aspect, fov, near, far, this.inputManager);
+    this.player.addToWorld(this);
+    this.camera = this.player.camera;
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
@@ -175,7 +172,9 @@ export default class World {
 
   public updatePhysics() {
     this.deltaPhysicsTime = this.deltaPhysicsClock.getDelta();
-    this.cScene.step(this.deltaPhysicsTime);
+    if (this.deltaPhysicsTime > 0) {
+      this.cScene.step(this.deltaPhysicsTime);
+    }
 
     this.player.updatePhysics(this.deltaPhysicsTime);
     this.updatables.forEach((updateable) => {
