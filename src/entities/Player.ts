@@ -9,6 +9,7 @@ export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
   pointerLockControls: PointerLockControls;
   inputManager: InputManager;
+  lookDirection: THREE.Vector3;
 
   private colliderRadius: number;
   private cShape: CANNON.Shape;
@@ -22,11 +23,13 @@ export default class Player implements Entity {
 
     this.colliderRadius = 1.3;
     this.cShape = new CANNON.Sphere(this.colliderRadius);
-
-    this.cBody = new CANNON.Body({ mass: 5 });
-    // this.cBody.linearDamping = 0.9;
-    this.cBody.position.set(0, 10, -5);
+    this.cBody = new CANNON.Body({ mass: 10 });
+    this.cBody.linearDamping = 0.9;
+    this.cBody.position.set(0, 10, 5);
+    this.cBody.fixedRotation = true;
     this.cBody.addShape(this.cShape);
+
+    this.lookDirection = new THREE.Vector3();
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.addEventListener("click", () => {
@@ -40,11 +43,22 @@ export default class Player implements Entity {
   removeFromWorld(world: World): void {
     world.cScene.removeBody(this.cBody);
   }
+  //@ts-ignore
   update(deltaTime: number): void {}
 
+  //@ts-ignore
   updatePhysics(deltaTime: number): void {
     if (this.inputManager.isPressed("w")) {
-      this.cBody.velocity.x += 10 * deltaTime;
+      // this.camera.getWorldDirection(this.lookDirection);
+      this.lookDirection = new THREE.Vector3(0, 0, -1);
+      let tempRotation = new THREE.Euler();
+      tempRotation.copy(this.camera.rotation);
+
+      this.lookDirection.applyEuler(tempRotation);
+      // this.lookDirection.applyQuaternion();
+      this.cBody.velocity.x += this.lookDirection.x * 4;
+      this.cBody.velocity.y += this.lookDirection.y * 4;
+      this.cBody.velocity.z += this.lookDirection.z * 4;
     }
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
   }

@@ -33,7 +33,10 @@ export default class CubeEntity implements Entity {
     world.scene.remove(this.mesh);
     world.cScene.removeBody(this.cBody);
   }
+  //@ts-ignore
   update(deltaTime: number): void {}
+
+  //@ts-ignore
   updatePhysics(deltaTime: number): void {
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
     this.mesh.quaternion.copy(this.cBody.quaternion as unknown as THREE.Quaternion);

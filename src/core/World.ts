@@ -31,6 +31,7 @@ export default class World {
   private cFloorBody!: CANNON.Body;
 
   private ambientLight: THREE.AmbientLight;
+  private directionalLight: THREE.DirectionalLight;
 
   private player: Player;
 
@@ -92,7 +93,7 @@ export default class World {
     this.cScene.broadphase = new CANNON.SAPBroadphase(this.cScene);
 
     this.cSolver = new CANNON.GSSolver();
-    this.cSolver.iterations = 10;
+    this.cSolver.iterations = 100;
     this.cSolver.tolerance = 0.1;
     this.cScene.solver = new CANNON.SplitSolver(this.cSolver);
 
@@ -110,7 +111,9 @@ export default class World {
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
+    this.directionalLight = new THREE.DirectionalLight(0xdfdfdf, 0.5);
     this.scene.add(this.ambientLight);
+    this.scene.add(this.directionalLight);
 
     // -- Setup shadowmap --
     this.renderer.shadowMap.enabled = true;
@@ -125,10 +128,12 @@ export default class World {
     this.deltaPhysicsTime = 0;
 
     // -- Add CubeEntity to test physics --
-    for (let i = 0; i < 100; i++) {
-      let cubeEntity = new CubeEntity(new CANNON.Vec3(0, i * 2, 0));
-      cubeEntity.addToWorld(this);
-      this.updatables.push(cubeEntity);
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        let cubeEntity = new CubeEntity(new CANNON.Vec3(i * 2, 0, j * 2));
+        cubeEntity.addToWorld(this);
+        this.updatables.push(cubeEntity);
+      }
     }
     /* this.cubeEntity = new CubeEntity();
     this.cubeEntity.addToWorld(this);
