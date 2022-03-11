@@ -24,5 +24,8 @@ jobs:
       - name: Install TypeScript
         run: npm i -g typescript
 
+      - name: Install dependencies
+        run: npm i
+
       - name: Check the types 
         run: tsc --noEmit
