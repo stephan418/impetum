@@ -4,6 +4,7 @@ import { PointerLockControls } from "three/examples/jsm/controls/PointerLockCont
 import World from "../core/World";
 import Entity from "../interfaces/Entity";
 import InputManager from "../managers/InputManager";
+import { config } from "../managers/OptionsManager";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -24,9 +25,9 @@ export default class Player implements Entity {
     this.colliderRadius = 1.3;
     this.cShape = new CANNON.Sphere(this.colliderRadius);
     this.cBody = new CANNON.Body({ mass: 10 });
-    this.cBody.linearDamping = 0.9;
+    this.cBody.linearDamping = 0.99;
     this.cBody.position.set(0, 10, 5);
-    this.cBody.fixedRotation = true;
+    this.cBody.fixedRotation = false;
     this.cBody.addShape(this.cShape);
 
     this.lookDirection = new THREE.Vector3();
@@ -43,23 +44,35 @@ export default class Player implements Entity {
   removeFromWorld(world: World): void {
     world.cScene.removeBody(this.cBody);
   }
+
+  movePlayer(x: number, y: number, z: number) {
+    this.lookDirection.x = x;
+    this.lookDirection.y = y;
+    this.lookDirection.z = z;
+    this.lookDirection.applyQuaternion(this.camera.quaternion);
+    this.cBody.velocity.x += this.lookDirection.x * 2;
+    this.cBody.velocity.z += this.lookDirection.z * 2;
+  }
+
   //@ts-ignore
   update(deltaTime: number): void {}
 
   //@ts-ignore
   updatePhysics(deltaTime: number): void {
-    if (this.inputManager.isPressed("w")) {
-      // this.camera.getWorldDirection(this.lookDirection);
-      this.lookDirection = new THREE.Vector3(0, 0, -1);
-      let tempRotation = new THREE.Euler();
-      tempRotation.copy(this.camera.rotation);
-
-      this.lookDirection.applyEuler(tempRotation);
-      // this.lookDirection.applyQuaternion();
-      this.cBody.velocity.x += this.lookDirection.x * 4;
-      this.cBody.velocity.y += this.lookDirection.y * 4;
-      this.cBody.velocity.z += this.lookDirection.z * 4;
+    //movement
+    //currently in updatePhysics but may be moved to the update method for better performance
+    if (this.inputManager.isPressed(config.keys.movementForward)) {
+      this.movePlayer(0, 0, -1);
+    } else if (this.inputManager.isPressed(config.keys.movementBackward)) {
+      this.movePlayer(0, 0, 1);
     }
+
+    if (this.inputManager.isPressed(config.keys.movementLeft)) {
+      this.movePlayer(-1, 0, 0);
+    } else if (this.inputManager.isPressed(config.keys.movementRight)) {
+      this.movePlayer(1, 0, 0);
+    }
+
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
   }
 }
