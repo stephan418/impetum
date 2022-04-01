@@ -5,6 +5,7 @@ import Updatable from "../interfaces/Updatable";
 import InputManager from "../managers/InputManager";
 import Player from "../entities/Player";
 import CubeEntity from "../entities/CubeEntity";
+import GridManager from "../managers/GridManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -23,6 +24,7 @@ export default class World {
   private cSolver: CANNON.GSSolver;
 
   private inputManager: InputManager;
+  private gridManager: GridManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -83,6 +85,33 @@ export default class World {
     this.scene = new THREE.Scene();
     const aspect = canvas.clientWidth / canvas.clientHeight;
 
+    // -- Initialize the Grid Manager --
+    this.gridManager = new GridManager();
+
+    for (let i = 0; i < 100; i++) {
+      let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+      let cubeGeometry = new THREE.BoxGeometry(8, 0.2, 8);
+      let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      cubeMesh.position.copy(this.gridManager.positionToGridPosition(new THREE.Vector3(i * 10, 0, 0), "y"));
+      this.scene.add(cubeMesh);
+    }
+
+    for (let i = 0; i < 100; i++) {
+      let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+      let cubeGeometry = new THREE.BoxGeometry(8, 8, 0.2);
+      let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      cubeMesh.position.copy(this.gridManager.positionToGridPosition(new THREE.Vector3(10 * i, 0, 0), "z"));
+      this.scene.add(cubeMesh);
+    }
+
+    for (let i = 0; i < 100; i++) {
+      let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+      let cubeGeometry = new THREE.BoxGeometry(0.2, 8, 8);
+      let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      cubeMesh.position.copy(this.gridManager.positionToGridPosition(new THREE.Vector3(10 * i, 0, 0), "x"));
+      this.scene.add(cubeMesh);
+    }
+
     // -- Setup updateables array --
     // TODO: implement spatial hashing map which gets used for distance, logic based operations
     this.updatables = [];
@@ -128,16 +157,15 @@ export default class World {
     this.deltaPhysicsTime = 0;
 
     // -- Add CubeEntity to test physics --
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        let cubeEntity = new CubeEntity(new CANNON.Vec3(i * 2, 0, j * 2));
-        cubeEntity.addToWorld(this);
-        this.updatables.push(cubeEntity);
+    for (let o = 1; o < 2; o++) {
+      for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 9; j++) {
+          let cubeEntity = new CubeEntity(new CANNON.Vec3(i * o * 5, o * o, j * o * 5), new CANNON.Vec3(o, o, o));
+          cubeEntity.addToWorld(this);
+          this.updatables.push(cubeEntity);
+        }
       }
     }
-    /* this.cubeEntity = new CubeEntity();
-    this.cubeEntity.addToWorld(this);
-    this.updatables.push(this.cubeEntity); */
   }
 
   public handleResize(): boolean {
