@@ -7,10 +7,11 @@ export default class LoadingManager {
     this.gltfLoader = new GLTFLoader();
   }
 
-  loadGLTFSync(path: string): THREE.Mesh {
-    let loadedMesh: THREE.Mesh = new THREE.Mesh();
+  loadGLTFSync(path: string): THREE.Group {
+    let loadedMesh: THREE.Group = new THREE.Group();
     this.gltfLoader.load(path, (gltf) => {
       console.log(gltf.scene);
+      loadedMesh = gltf.scene as THREE.Group;
     });
     return loadedMesh;
   }

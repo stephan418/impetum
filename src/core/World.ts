@@ -88,7 +88,13 @@ export default class World {
     const aspect = canvas.clientWidth / canvas.clientHeight;
 
     this.loadingManager = new LoadingManager();
-    this.loadingManager.loadGLTFSync("../../static/debugFloor.glb");
+    let loadedMesh = this.loadingManager.loadGLTFSync("../../static/debugFloor.glb");
+    // let loadedMaterial = new THREE.MeshLambertMaterial({ color: 0x00ffff });
+    // loadedMesh.material = loadedMaterial;
+    // loadedMesh.position.set(10, 10, 10);
+    // loadedMesh.scale.set(10000, 10000, 10000);
+    this.scene.add(loadedMesh);
+    console.log(loadedMesh);
 
     // -- Initialize the Grid Manager --
     this.gridManager = new GridManager();
