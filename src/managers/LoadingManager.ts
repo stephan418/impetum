@@ -6,4 +6,12 @@ export default class LoadingManager {
   constructor() {
     this.gltfLoader = new GLTFLoader();
   }
+
+  loadGLTFSync(path: string): THREE.Mesh {
+    let loadedMesh: THREE.Mesh = new THREE.Mesh();
+    this.gltfLoader.load(path, (gltf) => {
+      console.log(gltf.scene);
+    });
+    return loadedMesh;
+  }
 }
