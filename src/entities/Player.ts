@@ -25,7 +25,7 @@ export default class Player implements Entity {
     this.colliderRadius = 1.3;
     this.cShape = new CANNON.Sphere(this.colliderRadius);
     this.cBody = new CANNON.Body({ mass: 10 });
-    this.cBody.linearDamping = 0.99;
+    this.cBody.linearDamping = 0.999;
     this.cBody.position.set(0, 10, 5);
     this.cBody.fixedRotation = false;
     this.cBody.addShape(this.cShape);
@@ -62,15 +62,15 @@ export default class Player implements Entity {
     //movement
     //currently in updatePhysics but may be moved to the update method for better performance
     if (this.inputManager.isPressed(config.keys.movementForward)) {
-      this.movePlayer(0, 0, -1);
+      this.movePlayer(0, 0, -70 * deltaTime);
     } else if (this.inputManager.isPressed(config.keys.movementBackward)) {
-      this.movePlayer(0, 0, 1);
+      this.movePlayer(0, 0, 70 * deltaTime);
     }
 
     if (this.inputManager.isPressed(config.keys.movementLeft)) {
-      this.movePlayer(-1, 0, 0);
+      this.movePlayer(-70 * deltaTime, 0, 0);
     } else if (this.inputManager.isPressed(config.keys.movementRight)) {
-      this.movePlayer(1, 0, 0);
+      this.movePlayer(70 * deltaTime, 0, 0);
     }
 
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
