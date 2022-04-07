@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { Object3D } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 export default class LoadingManager {
@@ -7,12 +8,12 @@ export default class LoadingManager {
     this.gltfLoader = new GLTFLoader();
   }
 
-  loadGLTFSync(path: string): THREE.Group {
-    let loadedMesh: THREE.Group = new THREE.Group();
-    this.gltfLoader.load(path, (gltf) => {
-      console.log(gltf.scene);
-      loadedMesh = gltf.scene as THREE.Group;
-    });
-    return loadedMesh;
+  async loadGLTFGeometryAsync(path: string) {
+    try {
+      let loadedGLTF = await this.gltfLoader.loadAsync(path);
+      let load = loadedGLTF.scene.children[0];
+      return load;
+    } catch (err) {}
+    return new THREE.Object3D();
   }
 }
