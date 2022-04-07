@@ -6,6 +6,7 @@ import InputManager from "../managers/InputManager";
 import Player from "../entities/Player";
 import CubeEntity from "../entities/CubeEntity";
 import GridManager from "../managers/GridManager";
+import LoadingManager from "../managers/LoadingManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -25,6 +26,7 @@ export default class World {
 
   private inputManager: InputManager;
   private gridManager: GridManager;
+  private loadingManager: LoadingManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -84,6 +86,9 @@ export default class World {
 
     this.scene = new THREE.Scene();
     const aspect = canvas.clientWidth / canvas.clientHeight;
+
+    this.loadingManager = new LoadingManager();
+    this.loadingManager.loadGLTFSync("../../static/debugFloor.glb");
 
     // -- Initialize the Grid Manager --
     this.gridManager = new GridManager();
