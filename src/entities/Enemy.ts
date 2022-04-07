@@ -10,6 +10,8 @@ export default class Enemy implements Entity {
   private colliderRadius = 1.3;
 
   private targetPosition?: THREE.Vector3;
+  private targetNormal?: THREE.Vector3;
+  private velocityMultiplier = 10;
   private isMoving: boolean = false;
 
   constructor(position: THREE.Vector3) {
@@ -45,14 +47,33 @@ export default class Enemy implements Entity {
   updatePhysics(deltaTime: number): void {
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
     this.mesh.quaternion.copy(this.cBody.quaternion as unknown as THREE.Quaternion);
+
+    if (this.targetNormal && this.isMoving) {
+      this.cBody.velocity.copy(
+        this.targetNormal.clone().multiplyScalar(this.velocityMultiplier) as unknown as CANNON.Vec3
+      );
+
+      this.updateMoveStatus();
+    }
   }
 
   moveToPosition(position: THREE.Vector3) {
     this.targetPosition = position;
     this.isMoving = true;
 
-    const normal = this.targetPosition.sub(new THREE.Vector3(...this.cBody.position.toArray())).normalize();
+    this.targetNormal = this.targetPosition
+      .clone()
+      .sub(new THREE.Vector3(...this.cBody.position.toArray()))
+      .normalize();
+    this.targetNormal.y = 0;
+  }
 
-    this.cBody.velocity.x = 50;
+  private updateMoveStatus() {
+    if (this.isMoving && this.targetPosition) {
+      if (this.cBody.position.distanceTo(new CANNON.Vec3(...this.targetPosition.toArray())) < 0.4) {
+        // TODO: Reset
+        this.isMoving = false;
+      }
+    }
   }
 }
