@@ -132,7 +132,8 @@ export default class World {
 
     // -- Setup physics world --
     this.cScene = new CANNON.World();
-    this.cScene.gravity.set(0, -9.81, 0);
+    // this.cScene.gravity.set(0, -9.81, 0);
+    this.cScene.gravity.set(0, -20, 0);
     this.cScene.broadphase = new CANNON.SAPBroadphase(this.cScene);
 
     this.cSolver = new CANNON.GSSolver();
