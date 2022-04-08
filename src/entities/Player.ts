@@ -42,7 +42,6 @@ export default class Player implements Entity {
     });
 
     this.inputManager.addKeyCallback(config.keys.jump, () => {
-      console.log(1);
       if (this.canJump == true) {
         this.cBody.velocity.y += 50;
         this.canJump = false;
