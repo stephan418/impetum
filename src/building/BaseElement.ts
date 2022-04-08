@@ -5,8 +5,6 @@ export default abstract class BaseElement {
   pos: THREE.Vector3;
   health: number;
 
-  abstract update(deltaTime: number): void;
-  abstract updatePhysics(deltaTime: number): void;
   abstract addToWorld(world: World): unknown;
   abstract removeFromWorld(world: World): unknown;
 

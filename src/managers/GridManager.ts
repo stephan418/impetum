@@ -7,28 +7,11 @@ export default class GridManager {
     this.blockSize = 8;
   }
   positionToGridPosition(pos: THREE.Vector3, axis: string) {
-    let calculatedPosition = new THREE.Vector3(0, 0, 0);
-    if (axis == "x") {
-      calculatedPosition = new THREE.Vector3(
-        Math.floor(pos.x / this.blockSize) * this.blockSize,
-        Math.floor(pos.y / this.blockSize) * this.blockSize + this.blockSize / 2,
-        Math.floor(pos.z / this.blockSize) * this.blockSize + this.blockSize / 2
-      );
-    }
-    if (axis == "y") {
-      calculatedPosition = new THREE.Vector3(
-        Math.floor(pos.x / this.blockSize) * this.blockSize + this.blockSize / 2,
-        Math.floor(pos.y / this.blockSize) * this.blockSize,
-        Math.floor(pos.z / this.blockSize) * this.blockSize + this.blockSize / 2
-      );
-    }
-    if (axis == "z") {
-      calculatedPosition = new THREE.Vector3(
-        Math.floor(pos.x / this.blockSize) * this.blockSize + this.blockSize / 2,
-        Math.floor(pos.y / this.blockSize) * this.blockSize + this.blockSize / 2,
-        Math.floor(pos.z / this.blockSize) * this.blockSize
-      );
-    }
+    let calculatedPosition = new THREE.Vector3(
+      Math.floor(pos.x / this.blockSize) * this.blockSize + (axis != "x" ? this.blockSize / 2 : 0),
+      Math.floor(pos.y / this.blockSize) * this.blockSize + (axis != "y" ? this.blockSize / 2 : 0),
+      Math.floor(pos.z / this.blockSize) * this.blockSize + (axis != "z" ? this.blockSize / 2 : 0)
+    );
     return calculatedPosition;
   }
 }
