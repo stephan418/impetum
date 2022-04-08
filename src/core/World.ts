@@ -7,6 +7,7 @@ import Player from "../entities/Player";
 import CubeEntity from "../entities/CubeEntity";
 import GridManager from "../managers/GridManager";
 import LoadingManager from "../managers/LoadingManager";
+import ResourceManager from "../managers/ResourceManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -27,6 +28,7 @@ export default class World {
   private inputManager: InputManager;
   private gridManager: GridManager;
   private loadingManager: LoadingManager;
+  private resourceManager: ResourceManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -102,6 +104,13 @@ export default class World {
     // -- Initialize the Grid Manager --
     this.gridManager = new GridManager();
 
+    // -- Initialize the Resource Manager --
+    this.resourceManager = new ResourceManager(this.loadingManager);
+    //TODO: Add proper loading from an object, which has all filenames of the models
+    this.resourceManager.loadModelGeometry("static/debugFloor.glb", "debugFloor");
+    this.resourceManager.loadModelGeometry("static/debugMonke.glb", "debugMonke");
+    this.resourceManager.loadModelGeometry("static/defaultWorld.glb", "defaultWorld");
+
     for (let i = 0; i < 100; i++) {
       let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
       let cubeGeometry = new THREE.BoxGeometry(8, 0.2, 8);
@@ -110,7 +119,7 @@ export default class World {
       this.scene.add(cubeMesh);
     }
 
-    for (let i = 0; i < 100; i++) {
+    /* for (let i = 0; i < 100; i++) {
       let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
       let cubeGeometry = new THREE.BoxGeometry(8, 8, 0.2);
       let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
@@ -124,7 +133,7 @@ export default class World {
       let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
       cubeMesh.position.copy(this.gridManager.positionToGridPosition(new THREE.Vector3(10 * i, 0, 0), "x"));
       this.scene.add(cubeMesh);
-    }
+    } */
 
     // -- Setup updateables array --
     // TODO: implement spatial hashing map which gets used for distance, logic based operations
