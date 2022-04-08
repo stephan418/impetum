@@ -14,10 +14,12 @@ export default class Enemy implements Entity {
   private velocityMultiplier = 10;
   private isMoving: boolean = false;
 
+  private onStopMoving?: () => unknown;
+
   constructor(position: THREE.Vector3) {
     const geometry = new THREE.SphereGeometry(this.radius);
     const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
-    const cShape = new CANNON.Sphere(this.colliderRadius / 2);
+    const cShape = new CANNON.Sphere(this.colliderRadius);
 
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.castShadow = true;
@@ -47,33 +49,5 @@ export default class Enemy implements Entity {
   updatePhysics(deltaTime: number): void {
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
     this.mesh.quaternion.copy(this.cBody.quaternion as unknown as THREE.Quaternion);
-
-    if (this.targetNormal && this.isMoving) {
-      this.cBody.velocity.copy(
-        this.targetNormal.clone().multiplyScalar(this.velocityMultiplier) as unknown as CANNON.Vec3
-      );
-
-      this.updateMoveStatus();
-    }
-  }
-
-  moveToPosition(position: THREE.Vector3) {
-    this.targetPosition = position;
-    this.isMoving = true;
-
-    this.targetNormal = this.targetPosition
-      .clone()
-      .sub(new THREE.Vector3(...this.cBody.position.toArray()))
-      .normalize();
-    this.targetNormal.y = 0;
-  }
-
-  private updateMoveStatus() {
-    if (this.isMoving && this.targetPosition) {
-      if (this.cBody.position.distanceTo(new CANNON.Vec3(...this.targetPosition.toArray())) < 0.4) {
-        // TODO: Reset
-        this.isMoving = false;
-      }
-    }
   }
 }
