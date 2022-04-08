@@ -6,5 +6,6 @@ export const config = {
     movementBackward: "s",
     movementLeft: "a",
     movementRight: "d",
+    jump: " "
   },
 };

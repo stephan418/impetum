@@ -15,8 +15,11 @@ export default class Player implements Entity {
   private colliderRadius: number;
   private cShape: CANNON.Shape;
   private cBody: CANNON.Body;
+  private canJump: boolean;
 
   constructor(aspect = 1, fov = 80, near = 0.1, far = 1000, inputManager: InputManager) {
+    this.canJump = false;
+
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     this.pointerLockControls = new PointerLockControls(this.camera, document.body);
     this.addPointerLockOnClick(document.body);
@@ -24,11 +27,27 @@ export default class Player implements Entity {
 
     this.colliderRadius = 1.3;
     this.cShape = new CANNON.Sphere(this.colliderRadius);
-    this.cBody = new CANNON.Body({ mass: 10 });
-    this.cBody.linearDamping = 0.999;
+    //TODO: actually fix player jumping speed, not just add mass
+    this.cBody = new CANNON.Body({ mass: 10000 });
+    this.cBody.linearDamping = 0.9;
+    this.cBody.linearFactor = new CANNON.Vec3(1, 2, 1);
     this.cBody.position.set(0, 10, 5);
-    this.cBody.fixedRotation = false;
     this.cBody.addShape(this.cShape);
+
+    //Add Event Listener for detecting Collision
+    this.cBody.addEventListener("collide", (event) => {
+      if (event.contact.ni.dot(new CANNON.Vec3(0, 1, 0)) < -0.4) {
+        this.canJump = true;
+      }
+    });
+
+    this.inputManager.addKeyCallback(config.keys.jump, () => {
+      console.log(1);
+      if (this.canJump == true) {
+        this.cBody.velocity.y += 50;
+        this.canJump = false;
+      }
+    });
 
     this.lookDirection = new THREE.Vector3();
   }
@@ -54,13 +73,8 @@ export default class Player implements Entity {
     this.cBody.velocity.z += this.lookDirection.z * 2;
   }
 
-  //@ts-ignore
-  update(deltaTime: number): void {}
-
-  //@ts-ignore
-  updatePhysics(deltaTime: number): void {
+  update(deltaTime: number): void {
     //movement
-    //currently in updatePhysics but may be moved to the update method for better performance
     if (this.inputManager.isPressed(config.keys.movementForward)) {
       this.movePlayer(0, 0, -70 * deltaTime);
     } else if (this.inputManager.isPressed(config.keys.movementBackward)) {
@@ -75,4 +89,7 @@ export default class Player implements Entity {
 
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
   }
+
+  //@ts-ignore
+  updatePhysics(deltaTime: number): void {}
 }
