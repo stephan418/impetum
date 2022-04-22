@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("i-crosshair")
-class Crosshair extends LitElement {
+export default class Crosshair extends LitElement {
   static styles = css`
     :host {
       display: block;
