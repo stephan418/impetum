@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "useDefineForClassFields": true,
+    "useDefineForClassFields": false,
     "module": "es6",
     "lib": ["es6", "DOM"],
     "moduleResolution": "Node",
