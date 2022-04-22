@@ -9,6 +9,7 @@ import GridManager from "../managers/GridManager";
 import LoadingManager from "../managers/LoadingManager";
 import ResourceManager from "../managers/ResourceManager";
 import HUDManager from "../managers/HUDManager";
+import GameStateManager from "../managers/GameStateManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -31,6 +32,7 @@ export default class World {
   private loadingManager: LoadingManager;
   private resourceManager: ResourceManager;
   private hudManager: HUDManager;
+  private gameStateManager: GameStateManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -85,11 +87,6 @@ export default class World {
       if (!pressed) return;
       this.renderer.domElement.requestFullscreen();
     });
-
-    // -- Initialize the HUD --
-    this.hudManager = new HUDManager("hud-root", this.inputManager);
-
-    this.hudManager.attach();
 
     // -- Setup Scene --
 
@@ -168,6 +165,14 @@ export default class World {
     this.player = new Player(aspect, fov, near, far, this.inputManager);
     this.player.addToWorld(this);
     this.camera = this.player.camera;
+
+    // -- Initialize the GameStateManager --
+    this.gameStateManager = new GameStateManager(this.inputManager, this.player.pointerLockControls);
+
+    // -- Initialize the HUD --
+    this.hudManager = new HUDManager("hud-root", this.gameStateManager);
+
+    this.hudManager.attach();
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
