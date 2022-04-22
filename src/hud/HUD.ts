@@ -1,1 +1,2 @@
 import "./Crosshair";
+import "./ItemBar";
