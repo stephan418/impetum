@@ -10,6 +10,7 @@ import LoadingManager from "../managers/LoadingManager";
 import ResourceManager from "../managers/ResourceManager";
 import WoodenFloor from "../building/Floors/WoodenFloor";
 import WoodenWall from "../building/Walls/WoodenWall";
+import HUDManager from "../managers/HUDManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -31,6 +32,7 @@ export default class World {
   private gridManager: GridManager;
   private loadingManager: LoadingManager;
   private resourceManager: ResourceManager;
+  private hudManager: HUDManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -85,6 +87,11 @@ export default class World {
       if (!pressed) return;
       this.renderer.domElement.requestFullscreen();
     });
+
+    // -- Initialize the HUD --
+    this.hudManager = new HUDManager("hud-root", this.inputManager);
+
+    this.hudManager.attach();
 
     // -- Setup Scene --
 
