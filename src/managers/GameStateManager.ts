@@ -1,9 +1,11 @@
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
+import World from "../core/World";
 import InputManager from "./InputManager";
 
 type EventType = "pause" | "unpause";
 
 export default class GameStateManager {
+  private world: World;
   private inputManager: InputManager;
   private pointerLockControls: PointerLockControls;
 
@@ -12,11 +14,12 @@ export default class GameStateManager {
 
   private eventListerners: { [k in EventType]?: (() => unknown)[] };
 
-  constructor(inputManager: InputManager, pointerLockControls: PointerLockControls) {
+  constructor(world: World, inputManager: InputManager, pointerLockControls: PointerLockControls) {
     this.eventListerners = {};
 
     this.inputManager = inputManager;
     this.pointerLockControls = pointerLockControls;
+    this.world = world;
 
     this.inputManager.addKeyCallback("Escape", (pressed) => {
       if (!pressed) return;
@@ -39,11 +42,15 @@ export default class GameStateManager {
   pause() {
     this.paused = true;
     this.dispatchEvent("pause");
+
+    (this.world as any)._pause();
   }
 
   unpause() {
     this.paused = false;
     this.dispatchEvent("unpause");
+
+    (this.world as any)._unpause();
   }
 
   // -- Events --
