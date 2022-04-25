@@ -3,7 +3,6 @@ import Crosshair from "../hud/Crosshair";
 import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
 import GameStateManager from "./GameStateManager";
-import InputManager from "./InputManager";
 
 export default class HUDManager {
   private root: HTMLElement;
@@ -25,7 +24,7 @@ export default class HUDManager {
 
     this.crossHair = new Crosshair();
     this.itemBar = new ItemBar();
-    this.pauseMenu = new PauseMenu();
+    this.pauseMenu = new PauseMenu(() => gameStateManager.unpause());
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
     this.gameStateManager.addEventListener("unpause", () => this.hidePauseMenu());
