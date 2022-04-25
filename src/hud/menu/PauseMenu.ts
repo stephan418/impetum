@@ -49,8 +49,12 @@ export default class PauseMenu extends LitElement {
     }
   `;
 
-  constructor() {
+  private unpause: Function;
+
+  constructor(unpause: Function) {
     super();
+
+    this.unpause = unpause;
   }
 
   render() {
@@ -58,7 +62,7 @@ export default class PauseMenu extends LitElement {
       <div @click=${this.onInnerClick} class="content">
         <h1>Game paused</h1>
         <div id="options">
-          <button id="resume">Resume</button>
+          <button @click=${() => this.unpause()} id="resume">Resume</button>
           <button>Options</button>
           <button>Save and Exit</button>
         </div>
@@ -67,10 +71,6 @@ export default class PauseMenu extends LitElement {
   }
 
   onInnerClick(e: MouseEvent) {
-    console.log(e.target);
-
-    if (!(e.target instanceof HTMLButtonElement && e.target.id === "resume")) {
-      e.stopPropagation();
-    }
+    e.stopPropagation();
   }
 }
