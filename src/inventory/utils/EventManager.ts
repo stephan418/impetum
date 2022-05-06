@@ -1,3 +1,15 @@
+export function mutation(target: Object, key: string | symbol, descriptor: TypedPropertyDescriptor<any>) {
+  const oFunction = descriptor.value;
+
+  descriptor.value = function (...args: any[]) {
+    (this as any).eventManager.dispatchEvent("change");
+
+    return oFunction.apply(this, args);
+  };
+
+  return descriptor;
+}
+
 type EventHandlers<E extends string> = {
   [K in E]: Function[];
 };
@@ -32,5 +44,3 @@ export default class EventManager<E extends string> {
     this.eventHandlers[event].forEach((h) => h());
   }
 }
-
-const a = new EventManager(["Test", "test"]);
