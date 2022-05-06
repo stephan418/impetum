@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
+import PlayerInventory from "../../inventory/PlayerInventory";
 
 @customElement("i-inventory-overlay")
 export default class InventoryOverlay extends LitElement {
@@ -43,6 +44,19 @@ export default class InventoryOverlay extends LitElement {
       width: 90%;
     }
   `;
+
+  private _inventory?: PlayerInventory;
+
+  private onInventoryChange() {}
+
+  @property({
+    type: PlayerInventory,
+  })
+  set inventory(v: PlayerInventory) {
+    v.addEventListener("change", this.onInventoryChange.bind(this));
+
+    this._inventory = v;
+  }
 
   render() {
     return html`
