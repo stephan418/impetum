@@ -15,7 +15,7 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.cBody = new CANNON.Body();
     this.setGeometry(geometry);
     this.setMaterial(material);
-    this.setCShape(cShape);
+    this.addCShape(cShape);
     // this.materialName = "";
     // this.geometryName = "";
   }
@@ -37,11 +37,11 @@ export default abstract class GridElement extends BaseElement implements Buildin
     // this.geometryName = geometryName;
     this.mesh.material = material;
   }
-  protected setCShape(cShape: CANNON.Shape) {
+  protected addCShape(cShape: CANNON.Shape) {
     // this.shapeName = shapeName;
-    for (const item of this.cBody.shapes) {
+    /* for (const item of this.cBody.shapes) {
       this.cBody.removeShape(item);
-    }
+    } */
     this.cBody.addShape(cShape);
   }
 

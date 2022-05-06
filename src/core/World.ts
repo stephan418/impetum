@@ -107,9 +107,15 @@ export default class World {
     // -- Initialize the Resource Manager --
     this.resourceManager = new ResourceManager(this.loadingManager);
     //TODO: Add proper loading from an object, which has all filenames of the models
-    this.resourceManager.loadModelGeometry("static/debugFloor.glb", "debugFloor");
-    this.resourceManager.loadModelGeometry("static/debugMonke.glb", "debugMonke");
-    this.resourceManager.loadModelGeometry("static/defaultWorld.glb", "defaultWorld");
+    this.resourceManager.loadModelGeometry("debugFloor", "static/debugFloor.glb");
+    this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
+    this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
+
+    this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
+    this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
+    this.resourceManager.addModelMaterial("defaultWorld", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
+
+    this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(0.5, 0.1, 0.5)));
 
     for (let i = 0; i < 100; i++) {
       let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
