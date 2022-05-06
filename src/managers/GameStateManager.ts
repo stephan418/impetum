@@ -1,5 +1,6 @@
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
 import World from "../core/World";
+import EventManager from "../inventory/utils/EventManager";
 import InputManager from "./InputManager";
 
 type EventType = "pause" | "unpause";
@@ -12,10 +13,18 @@ export default class GameStateManager {
   // State
   private paused = false;
 
-  private eventListerners: { [k in EventType]?: (() => unknown)[] };
+  private eventManager;
+
+  public addEventListener;
+  public removeEventListener;
+  public dispatchEvent;
 
   constructor(world: World, inputManager: InputManager, pointerLockControls: PointerLockControls) {
-    this.eventListerners = {};
+    this.eventManager = new EventManager(["pause", "unpause"]);
+
+    this.addEventListener = this.eventManager.addEventListener;
+    this.removeEventListener = this.eventManager.removeEventListener;
+    this.dispatchEvent = this.eventManager.dispatchEvent;
 
     this.inputManager = inputManager;
     this.pointerLockControls = pointerLockControls;
@@ -51,31 +60,6 @@ export default class GameStateManager {
     this.dispatchEvent("unpause");
 
     (this.world as any)._unpause();
-  }
-
-  // -- Events --
-
-  addEventListener(eventType: EventType, callback: () => unknown) {
-    if (!(eventType in this.eventListerners)) {
-      this.eventListerners[eventType] = [];
-    }
-
-    this.eventListerners[eventType]?.push(callback);
-  }
-
-  removeEventListener(eventType: EventType, callback: () => unknown) {
-    const listeners = this.eventListerners[eventType];
-
-    if (listeners) {
-      listeners.splice(
-        listeners.findIndex((c) => c === callback),
-        0
-      );
-    }
-  }
-
-  private dispatchEvent(eventType: EventType) {
-    this.eventListerners[eventType]?.forEach((c) => c());
   }
 
   // -- Public interface --
