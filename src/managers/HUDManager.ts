@@ -3,6 +3,7 @@ import Crosshair from "../hud/Crosshair";
 import InventoryOverlay from "../hud/inventory/Overlay";
 import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
+import PlayerInventory from "../inventory/PlayerInventory";
 import GameStateManager from "./GameStateManager";
 
 export default class HUDManager {
@@ -14,7 +15,7 @@ export default class HUDManager {
   private pauseMenu: PauseMenu;
   private inventoryOverlay: InventoryOverlay;
 
-  constructor(rootId: string, gameStateManager: GameStateManager) {
+  constructor(rootId: string, gameStateManager: GameStateManager, playerInventory: PlayerInventory) {
     const root = document.getElementById(rootId);
 
     if (!root) {
@@ -28,6 +29,8 @@ export default class HUDManager {
     this.itemBar = new ItemBar();
     this.pauseMenu = new PauseMenu(() => gameStateManager.unpause());
     this.inventoryOverlay = new InventoryOverlay();
+
+    this.inventoryOverlay.inventory = playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
     this.gameStateManager.addEventListener("unpause", () => this.hidePauseMenu());

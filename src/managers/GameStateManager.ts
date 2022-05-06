@@ -22,9 +22,9 @@ export default class GameStateManager {
   constructor(world: World, inputManager: InputManager, pointerLockControls: PointerLockControls) {
     this.eventManager = new EventManager(["pause", "unpause"]);
 
-    this.addEventListener = this.eventManager.addEventListener;
-    this.removeEventListener = this.eventManager.removeEventListener;
-    this.dispatchEvent = this.eventManager.dispatchEvent;
+    this.addEventListener = this.eventManager.addEventListener.bind(this.eventManager);
+    this.removeEventListener = this.eventManager.removeEventListener.bind(this.eventManager);
+    this.dispatchEvent = this.eventManager.dispatchEvent.bind(this.eventManager);
 
     this.inputManager = inputManager;
     this.pointerLockControls = pointerLockControls;
