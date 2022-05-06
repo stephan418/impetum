@@ -1,5 +1,6 @@
 import IStorage, { Group } from "../interfaces/Storage";
 import Item from "../interfaces/Item";
+import InventoryError from "../errors/InventoryError";
 
 export default class Storage<C extends Item> implements IStorage<C> {
   private slots: (Group<C> | undefined)[];
@@ -61,6 +62,28 @@ export default class Storage<C extends Item> implements IStorage<C> {
 
       slot.amount += amount;
     }
+  }
+
+  storeAtSlot(c: C, amount: number, index: number) {
+    const slotItem = this.slots[index];
+
+    if (slotItem) {
+      if (slotItem.item.id === c.id) {
+        // TODO: Max size
+        slotItem.amount += amount;
+      }
+    } else {
+      const slotItem = { item: c, amount };
+
+      this.slots[index] = slotItem;
+    }
+  }
+
+  moveSlot(from: number, to: number) {
+    if (!(this.slots[from] && !this.slots[to])) throw new InventoryError(`Cannot move slot ${from} to slot ${to}`);
+
+    this.slots[to] = this.slots[from];
+    this.slots[from] = undefined;
   }
 
   private find(id: C["id"]) {
