@@ -173,7 +173,7 @@ export default class World {
     this.gameStateManager = new GameStateManager(this, this.inputManager, this.player.pointerLockControls);
 
     // -- Initialize the HUD --
-    this.hudManager = new HUDManager("hud-root", this.gameStateManager);
+    this.hudManager = new HUDManager("hud-root", this.gameStateManager, this.player.inventory);
 
     this.hudManager.attach();
 

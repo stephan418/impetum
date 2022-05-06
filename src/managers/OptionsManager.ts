@@ -11,4 +11,8 @@ export const config = {
   hud: {
     hudScale: 1,
   },
+  inventory: {
+    hotbarSlots: 9,
+    backSlots: 36,
+  },
 };
