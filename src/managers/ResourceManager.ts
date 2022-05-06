@@ -16,7 +16,7 @@ export default class ResourceManager {
     this.modelTextures = new Map<string, THREE.Texture>();
     this.modelShapes = new Map<string, CANNON.Shape[]>();
   }
-  loadModelGeometry(path: string, name: string) {
+  loadModelGeometry(name: string, path: string) {
     //TODO: add error handling if model with path isn't found
     if (this.modelGeometries.get(name) != undefined) {
       return;
@@ -56,17 +56,18 @@ export default class ResourceManager {
   }
 
   //TODO implement this correctly
-  /* addModelShapes(name: string, shape: CANNON.Shape) {
+  addModelShape(name: string, shape: CANNON.Shape) {
     let currentArray = this.modelShapes.get(name);
-    if(currentArray == undefined){
-        currentArray = 
+    if (currentArray == undefined) {
+      currentArray = [];
     }
-    this.modelShapes.set(name, texture);
+    currentArray.push(shape);
+    this.modelShapes.set(name, currentArray);
   }
-  getModelTexture(name: string) {
-    return this.modelTextures.get(name);
+  getModelShapes(name: string) {
+    return this.modelShapes.get(name);
   }
-  removeModelTexture(name: string) {
-    this.modelTextures.delete(name);
-  } */
+  removeModelShapes(name: string) {
+    this.modelShapes.delete(name);
+  }
 }
