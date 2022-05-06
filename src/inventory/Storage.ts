@@ -93,4 +93,12 @@ export default class Storage<C extends Item> implements IStorage<C> {
   private findFirstEmptySlot() {
     return this.slots.findIndex((s) => s === undefined);
   }
+
+  get isFull() {
+    return this.findFirstEmptySlot() === -1;
+  }
+
+  get size() {
+    return this.slots.length;
+  }
 }
