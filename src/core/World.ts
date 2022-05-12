@@ -8,6 +8,7 @@ import CubeEntity from "../entities/CubeEntity";
 import GridManager from "../managers/GridManager";
 import LoadingManager from "../managers/LoadingManager";
 import ResourceManager from "../managers/ResourceManager";
+import WoodenFloor from "../building/Floors/WoodenFloor";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -106,6 +107,17 @@ export default class World {
 
     // -- Initialize the Resource Manager --
     this.resourceManager = new ResourceManager(this.loadingManager);
+    this.resourceManager.setFinishedModelLoadingCallback(
+      (() => {
+        // let woodenFloor = new WoodenFloor(this.resourceManager);
+        // woodenFloor.setPositionOnGrid(new THREE.Vector3(0, 0, 0));
+        // woodenFloor.addToWorld(this);
+        let woodenFloor1 = new WoodenFloor(this.resourceManager);
+        woodenFloor1.setPositionOnGrid(new THREE.Vector3(40, 0, 0));
+        woodenFloor1.addToWorld(this);
+      }).bind(this)
+    );
+
     //TODO: Add proper loading from an object, which has all filenames of the models
     this.resourceManager.loadModelGeometry("debugFloor", "static/debugFloor.glb");
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
@@ -115,7 +127,7 @@ export default class World {
     this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("defaultWorld", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
 
-    this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(0.5, 0.1, 0.5)));
+    this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
 
     for (let i = 0; i < 100; i++) {
       let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
@@ -133,7 +145,7 @@ export default class World {
       this.scene.add(cubeMesh);
     }
 
-    for (let i = 0; i < 100; i++) {
+    for(let i = 0; i < 100; i++) {
       let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
       let cubeGeometry = new THREE.BoxGeometry(0.2, 8, 8);
       let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
