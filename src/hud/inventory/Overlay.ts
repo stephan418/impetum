@@ -58,11 +58,18 @@ export default class InventoryOverlay extends LitElement {
     this._inventory = v;
   }
 
+  handleSlotClick(idx: number, e: CustomEvent) {
+    this.dispatchEvent(new CustomEvent("slot-click", { detail: { idx, mouse: e.detail.mouse } }));
+  }
+
   render() {
     return html`
       <div id="inventory">
         <h1>Inventory</h1>
-        <i-inventory .inventory=${this._inventory}></i-inventory>
+        <i-inventory
+          @slot-click=${(e: CustomEvent) =>
+            this.handleSlotClick(e.detail.idx + this._inventory?.hotbarContent.length, e)}
+          .inventory=${this._inventory}></i-inventory>
       </div>
       <div id="store">
         <h1>Store</h1>
