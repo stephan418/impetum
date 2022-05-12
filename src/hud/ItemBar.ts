@@ -1,4 +1,4 @@
-import { LitElement, html, css, TemplateResult } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { config } from "../managers/OptionsManager";
 
@@ -42,5 +42,11 @@ export default class ItemBar extends LitElement {
         .fill(0)
         .map((_, i) => slot(i))}
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "i-item-bar": ItemBar;
   }
 }

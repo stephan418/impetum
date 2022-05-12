@@ -71,3 +71,9 @@ export default class InventoryOverlay extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "i-inventory-overlay": InventoryOverlay;
+  }
+}

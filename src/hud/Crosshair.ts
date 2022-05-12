@@ -36,3 +36,9 @@ export default class Crosshair extends LitElement {
     return html`<span id="horizontal"></span> <span id="vertical"></span>`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "i-crosshair": Crosshair;
+  }
+}
