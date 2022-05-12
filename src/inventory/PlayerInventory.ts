@@ -25,7 +25,7 @@ export default class PlayerInventory {
   @mutation
   collect(c: Item, amount: number) {
     if (!this.hotbar.isFull) {
-      return this.hotbar.store(c, amount);
+      this.hotbar.store(c, amount);
     }
 
     this.back.store(c, amount);

@@ -50,7 +50,7 @@ export default class Storage<C extends Item> implements IStorage<C> {
 
     const slotIndex = this.find(c.id);
 
-    if (!slotIndex) {
+    if (slotIndex < 0) {
       // TODO: Max size
       this.slots[this.findFirstEmptySlot()] = { item: c, amount };
     } else {
