@@ -49,4 +49,8 @@ export default class PlayerInventory {
   get backContent() {
     return this.back.open();
   }
+
+  get content() {
+    return [...this.hotbarContent, ...this.backContent];
+  }
 }
