@@ -14,9 +14,29 @@ class InventorySlot extends LitElement {
       height: 100%;
       width: 100%;
     }
+
+    img {
+      height: 80%;
+      width: 80%;
+
+      position: absolute;
+      top: 50%;
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+    }
+
+    span {
+      font-family: sans-serif;
+      position: absolute;
+      bottom: 5%;
+      right: 5%;
+
+      font-size: 0.8rem;
+    }
   `;
 
-  @property({ attribute: "group" })
+  @property()
   group?: Group<Item>;
 
   render() {
