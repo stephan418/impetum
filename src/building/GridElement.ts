@@ -51,6 +51,8 @@ export default abstract class GridElement extends BaseElement implements Buildin
     newPosition.y = Math.floor(position.y / 16) * 16;
     newPosition.z = Math.floor(position.z / 16) * 16;
     this.setPosition(newPosition);
+    this.mesh.position.copy(this.pos);
+    this.cBody.position.copy(new CANNON.Vec3(this.pos.x, this.pos.y, this.pos.z));
   }
   updatedPosition(): void {
     console.log("new position: " + this.pos);

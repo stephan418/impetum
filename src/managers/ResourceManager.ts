@@ -9,21 +9,36 @@ export default class ResourceManager {
   private modelShapes: Map<string, CANNON.Shape[]>;
   private loadingManager: LoadingManager;
 
+  private finishedModelLoadingCallback: () => void;
+  private loadingModelQueue: number;
+
   constructor(loadingManager: LoadingManager) {
     this.loadingManager = loadingManager;
     this.modelGeometries = new Map<string, THREE.BufferGeometry>();
     this.modelMaterials = new Map<string, THREE.Material>();
     this.modelTextures = new Map<string, THREE.Texture>();
     this.modelShapes = new Map<string, CANNON.Shape[]>();
+
+    this.loadingModelQueue = 0;
+    this.finishedModelLoadingCallback = () => {};
   }
   loadModelGeometry(name: string, path: string) {
     //TODO: add error handling if model with path isn't found
     if (this.modelGeometries.get(name) != undefined) {
       return;
     }
+    this.loadingModelQueue++;
     this.loadingManager.loadGLTFGeometryAsync(path).then((data) => {
       this.addModelGeometry(name, data);
+      this.loadingModelQueue--;
+      if (this.loadingModelQueue == 0) {
+        this.finishedModelLoadingCallback();
+      }
     });
+  }
+
+  setFinishedModelLoadingCallback(callback: () => void) {
+    this.finishedModelLoadingCallback = callback;
   }
   addModelGeometry(name: string, geometry: THREE.BufferGeometry) {
     this.modelGeometries.set(name, geometry);
