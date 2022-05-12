@@ -23,6 +23,12 @@ export class Inventory extends LitElement {
     }
   `;
 
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.inventory?.addEventListener("change", async () => await this.requestUpdate());
+  }
+
   @property()
   inventory?: PlayerInventory;
 
