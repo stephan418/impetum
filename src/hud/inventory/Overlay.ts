@@ -62,7 +62,7 @@ export default class InventoryOverlay extends LitElement {
     return html`
       <div id="inventory">
         <h1>Inventory</h1>
-        <div>{{inventory content}}</div>
+        <i-inventory .inventory=${this._inventory}></i-inventory>
       </div>
       <div id="store">
         <h1>Store</h1>
