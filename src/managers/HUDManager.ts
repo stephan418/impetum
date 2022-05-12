@@ -27,9 +27,10 @@ export default class HUDManager {
 
     this.crossHair = new Crosshair();
     this.itemBar = new ItemBar();
-    this.pauseMenu = new PauseMenu(() => gameStateManager.unpause());
+    this.pauseMenu = new PauseMenu();
     this.inventoryOverlay = new InventoryOverlay();
 
+    this.pauseMenu.addEventListener("unpause", () => this.gameStateManager.unpause());
     this.inventoryOverlay.inventory = playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());

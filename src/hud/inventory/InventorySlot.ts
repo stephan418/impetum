@@ -7,3 +7,9 @@ class InventorySlot extends LitElement {
     html``;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "i-inventory-slot": InventorySlot;
+  }
+}
