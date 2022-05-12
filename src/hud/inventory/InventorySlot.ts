@@ -4,15 +4,15 @@ import { Group } from "../../interfaces/Storage";
 import Item from "../../inventory/Item";
 
 @customElement("i-inventory-slot")
-class InventorySlot extends LitElement {
+export class InventorySlot extends LitElement {
   static styles = css`
     :host {
       display: flex;
       position: relative;
       border: 2.5px solid #777777;
 
-      height: 100%;
-      width: 100%;
+      height: 50px;
+      width: 50px;
     }
 
     img {

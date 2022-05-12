@@ -29,10 +29,22 @@ export class Inventory extends LitElement {
     this.inventory?.addEventListener("change", async () => await this.requestUpdate());
   }
 
+  handleSlotClick(idx: number, e: MouseEvent) {
+    e.stopPropagation();
+
+    const event = new CustomEvent("slot-click", { detail: { idx, mouse: { pageY: e.pageY, pageX: e.pageX } } });
+    this.dispatchEvent(event);
+  }
+
   @property()
   inventory?: PlayerInventory;
 
   render() {
-    return this.inventory?.backContent.map((group) => html`<i-inventory-slot .group=${group}></i-inventory-slot>`);
+    return this.inventory?.backContent.map(
+      (group, idx) =>
+        html`<i-inventory-slot
+          @click=${(e: MouseEvent) => this.handleSlotClick(idx, e)}
+          .group=${group}></i-inventory-slot>`
+    );
   }
 }
