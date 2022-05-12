@@ -6,6 +6,13 @@ export const config = {
     movementBackward: "s",
     movementLeft: "a",
     movementRight: "d",
-    jump: " "
+    jump: " ",
+  },
+  hud: {
+    hudScale: 1,
+  },
+  inventory: {
+    hotbarSlots: 9,
+    backSlots: 36,
   },
 };

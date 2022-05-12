@@ -9,6 +9,9 @@ import GridManager from "../managers/GridManager";
 import LoadingManager from "../managers/LoadingManager";
 import ResourceManager from "../managers/ResourceManager";
 import WoodenFloor from "../building/Floors/WoodenFloor";
+import HUDManager from "../managers/HUDManager";
+import GameStateManager from "../managers/GameStateManager";
+import GameStateError from "../errors/GameStateError";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -20,6 +23,8 @@ export default class World {
   private deltaClock: THREE.Clock;
   private deltaTime: number;
 
+  private requestId?: number;
+
   private deltaPhysicsClock: THREE.Clock;
   private deltaPhysicsTime: number;
 
@@ -30,6 +35,8 @@ export default class World {
   private gridManager: GridManager;
   private loadingManager: LoadingManager;
   private resourceManager: ResourceManager;
+  private hudManager: HUDManager;
+  private gameStateManager: GameStateManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -180,6 +187,14 @@ export default class World {
     this.player.addToWorld(this);
     this.camera = this.player.camera;
 
+    // -- Initialize the GameStateManager --
+    this.gameStateManager = new GameStateManager(this, this.inputManager, this.player.pointerLockControls);
+
+    // -- Initialize the HUD --
+    this.hudManager = new HUDManager("hud-root", this.gameStateManager, this.player.inventory);
+
+    this.hudManager.attach();
+
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
     this.directionalLight = new THREE.DirectionalLight(0xdfdfdf, 0.5);
@@ -233,7 +248,7 @@ export default class World {
     this.update();
     this.updatePhysics();
     this.render();
-    requestAnimationFrame(this.tick.bind(this));
+    this.requestId = requestAnimationFrame(this.tick.bind(this));
   }
 
   public update() {
@@ -260,5 +275,38 @@ export default class World {
   public render() {
     this.handleResize();
     this.renderer.render(this.scene, this.camera);
+  }
+
+  private _pause() {
+    if (!this.requestId) {
+      throw new GameStateError("The game is already paused");
+    }
+
+    // Stop game loop
+    cancelAnimationFrame(this.requestId);
+
+    // Pause clocks
+    this.deltaClock.stop();
+    this.deltaPhysicsClock.stop();
+
+    // Reset requestId
+    this.requestId = undefined;
+  }
+
+  private _unpause() {
+    if (this.requestId) {
+      throw new GameStateError("The game is not paused");
+    }
+
+    // Unpause clocks
+    this.deltaClock.start();
+    this.deltaPhysicsClock.start();
+
+    // Restart game loop
+    this.requestId = requestAnimationFrame(this.tick.bind(this));
+  }
+
+  public start() {
+    this.gameStateManager.unpause();
   }
 }

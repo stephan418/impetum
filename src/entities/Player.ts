@@ -5,6 +5,7 @@ import World from "../core/World";
 import Entity from "../interfaces/Entity";
 import InputManager from "../managers/InputManager";
 import { config } from "../managers/OptionsManager";
+import PlayerInventory from "../inventory/PlayerInventory";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -16,6 +17,8 @@ export default class Player implements Entity {
   private cShape: CANNON.Shape;
   private cBody: CANNON.Body;
   private canJump: boolean;
+
+  readonly inventory: PlayerInventory;
 
   constructor(aspect = 1, fov = 80, near = 0.1, far = 1000, inputManager: InputManager) {
     this.canJump = false;
@@ -49,6 +52,8 @@ export default class Player implements Entity {
     });
 
     this.lookDirection = new THREE.Vector3();
+
+    this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots);
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.addEventListener("click", () => {

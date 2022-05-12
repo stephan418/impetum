@@ -11,26 +11,26 @@ body {
   width: 100%;
 }
 
-#crosshair-vertical {
-  height: 10px;
-  width: 2px;
-  background-color: #ddd;
-  position: absolute;
-  left: 50%;
-  top: calc(50% - 4px);
-  overflow: hidden;
-}
-
-#crosshair-horizontal {
-  height: 2px;
-  width: 10px;
-  background-color: #ddd;
-  position: absolute;
-  left: calc(50% - 4px);
-  top: 50%;
-  overflow: hidden;
-}
-
 * {
   overflow: hidden;
+}
+
+i-crosshair {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+i-item-bar {
+  bottom: 10px;
+  left: 50%;
+
+  transform: translateX(-50%);
+}
+
+i-pause-menu {
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
 }
