@@ -45,6 +45,26 @@ export default class Storage<C extends Item> implements IStorage<C> {
     return null;
   }
 
+  private setIndex(index: number, group?: Group<C>) {
+    this.slots[index] = group;
+  }
+
+  getIndex(index: number) {
+    return this.slots[index];
+  }
+
+  retrieveIndex(index: number, amount?: number) {
+    const group = this.getIndex(index);
+
+    if (group) {
+      group.amount -= amount || 0;
+
+      if (group.amount <= 0) {
+        this.setIndex(index, undefined);
+      }
+    }
+  }
+
   store(c: C, amount: number): void {
     // TODO: Stack size
 
@@ -71,6 +91,8 @@ export default class Storage<C extends Item> implements IStorage<C> {
       if (slotItem.item.id === c.id) {
         // TODO: Max size
         slotItem.amount += amount;
+      } else {
+        throw new InventoryError(`Cannot add item(s) to slot ${index}, incompatible content`);
       }
     } else {
       const slotItem = { item: c, amount };
@@ -80,10 +102,16 @@ export default class Storage<C extends Item> implements IStorage<C> {
   }
 
   moveSlot(from: number, to: number) {
-    if (!(this.slots[from] && !this.slots[to])) throw new InventoryError(`Cannot move slot ${from} to slot ${to}`);
-
-    this.slots[to] = this.slots[from];
-    this.slots[from] = undefined;
+    // When both slots are filled and the target slots holds the same item as the origin slot
+    if (this.slots[from] !== undefined && this.slots[to]?.item.id === this.slots[from]?.item.id) {
+      (this.slots[to] || ({} as any)).amount += this.slots[from]?.amount || 0;
+    }
+    // Otherweise abort if the origin slot is undefined or the target slot is not undefined
+    else if (!(this.slots[from] && !this.slots[to])) throw new InventoryError(`Cannot move slot ${from} to slot ${to}`);
+    else {
+      this.slots[to] = this.slots[from];
+      this.slots[from] = undefined;
+    }
   }
 
   private find(id: C["id"]) {
