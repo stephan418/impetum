@@ -7,6 +7,8 @@ import World from "../core/World";
 export default abstract class GridElement extends BaseElement implements BuildingElement {
   private mesh: THREE.Mesh;
   private cBody: CANNON.Body;
+  protected gridDistanceXZ: number;
+  protected gridDistanceY: number;
   // private materialName: string;
   // private geometryName: string;
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material, cShape: CANNON.Shape) {
@@ -18,6 +20,13 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.addCShape(cShape);
     // this.materialName = "";
     // this.geometryName = "";
+    this.gridDistanceXZ = 5;
+    this.gridDistanceY = 5;
+
+    this.updatedPosition = () => {
+      this.mesh.position.copy(this.pos);
+      this.cBody.position.copy(new CANNON.Vec3(this.pos.x, this.pos.y, this.pos.z));
+    };
   }
   addToWorld(world: World): void {
     world.scene.add(this.mesh);
@@ -45,14 +54,19 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.cBody.addShape(cShape);
   }
 
+  getMesh() {
+    return this.mesh;
+  }
+  getCBody() {
+    return this.cBody;
+  }
+
   setPositionOnGrid(position: THREE.Vector3) {
     let newPosition: THREE.Vector3 = new THREE.Vector3();
-    newPosition.x = Math.floor(position.x / 16) * 16;
-    newPosition.y = Math.floor(position.y / 16) * 16;
-    newPosition.z = Math.floor(position.z / 16) * 16;
+    newPosition.x = Math.floor(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
+    newPosition.y = Math.floor(position.y / this.gridDistanceY) * this.gridDistanceY;
+    newPosition.z = Math.floor(position.z / this.gridDistanceXZ) * this.gridDistanceXZ;
     this.setPosition(newPosition);
-    this.mesh.position.copy(this.pos);
-    this.cBody.position.copy(new CANNON.Vec3(this.pos.x, this.pos.y, this.pos.z));
   }
   updatedPosition(): void {
     console.log("new position: " + this.pos);

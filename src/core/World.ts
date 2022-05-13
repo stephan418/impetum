@@ -9,6 +9,7 @@ import GridManager from "../managers/GridManager";
 import LoadingManager from "../managers/LoadingManager";
 import ResourceManager from "../managers/ResourceManager";
 import WoodenFloor from "../building/Floors/WoodenFloor";
+import WoodenWall from "../building/Walls/WoodenWall";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -109,25 +110,37 @@ export default class World {
     this.resourceManager = new ResourceManager(this.loadingManager);
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
-        // let woodenFloor = new WoodenFloor(this.resourceManager);
-        // woodenFloor.setPositionOnGrid(new THREE.Vector3(0, 0, 0));
-        // woodenFloor.addToWorld(this);
-        let woodenFloor1 = new WoodenFloor(this.resourceManager);
-        woodenFloor1.setPositionOnGrid(new THREE.Vector3(40, 0, 0));
-        woodenFloor1.addToWorld(this);
+        /* for (let i = 0; i < 100; i++) {
+          let woodenFloor = new WoodenFloor(this.resourceManager);
+          woodenFloor.setPositionOnGrid(new THREE.Vector3(0, i * 10, i * 10));
+          woodenFloor.addToWorld(this);
+        } */
+        let woodenFloor = new WoodenFloor(this.resourceManager);
+        woodenFloor.setPositionOnGrid(new THREE.Vector3(0, 0, 0));
+        woodenFloor.addToWorld(this);
+
+        let woodenWall = new WoodenWall(this.resourceManager);
+        woodenWall.addToWorld(this);
+        // woodenWall.setPositionOnGrid(new THREE.Vector3(0, 10, 0));
+        woodenFloor.setZFrontWall(woodenWall);
+
+        // let floorElement = e
       }).bind(this)
     );
 
     //TODO: Add proper loading from an object, which has all filenames of the models
     this.resourceManager.loadModelGeometry("debugFloor", "static/debugFloor.glb");
+    this.resourceManager.loadModelGeometry("debugWall", "static/debugWall.glb");
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
-    this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
-    this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
-    this.resourceManager.addModelMaterial("defaultWorld", new THREE.MeshBasicMaterial({ color: 0xff00ff }));
+    this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
+    this.resourceManager.addModelMaterial("debugWall", new THREE.MeshLambertMaterial({ color: 0x00ffff }));
+    this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
+    this.resourceManager.addModelMaterial("defaultWorld", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
 
     this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
+    this.resourceManager.addModelShape("debugWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)));
 
     for (let i = 0; i < 100; i++) {
       let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
@@ -160,7 +173,7 @@ export default class World {
     // -- Setup physics world --
     this.cScene = new CANNON.World();
     // this.cScene.gravity.set(0, -9.81, 0);
-    this.cScene.gravity.set(0, -20, 0);
+    this.cScene.gravity.set(0, -40, 0);
     this.cScene.broadphase = new CANNON.SAPBroadphase(this.cScene);
 
     this.cSolver = new CANNON.GSSolver();
@@ -200,8 +213,8 @@ export default class World {
 
     // -- Add CubeEntity to test physics --
     for (let o = 1; o < 2; o++) {
-      for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 9; j++) {
+      for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
           let cubeEntity = new CubeEntity(new CANNON.Vec3(i * o * 5, o * o, j * o * 5), new CANNON.Vec3(o, o, o));
           cubeEntity.addToWorld(this);
           this.updatables.push(cubeEntity);
