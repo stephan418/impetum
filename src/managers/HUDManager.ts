@@ -18,6 +18,9 @@ export default class HUDManager {
   private pauseMenu: PauseMenu;
   private inventoryOverlay: InventoryOverlay;
 
+  private movingSlot?: number;
+  private slot?: InventorySlot;
+
   constructor(rootId: string, gameStateManager: GameStateManager, playerInventory: PlayerInventory) {
     const root = document.getElementById(rootId);
 
@@ -36,7 +39,7 @@ export default class HUDManager {
     this.inventoryOverlay = new InventoryOverlay();
 
     this.pauseMenu.addEventListener("unpause", () => this.gameStateManager.unpause());
-    this.inventoryOverlay.addEventListener("slot-click", (e: any) => this.showMoveSlot(e.detail.idx, e.detail.mouse));
+    this.inventoryOverlay.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.inventoryOverlay.inventory = playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
@@ -57,22 +60,40 @@ export default class HUDManager {
     this.root.removeChild(this.pauseMenu);
   }
 
+  private onSlotClick(e: any) {
+    if (this.movingSlot === undefined) {
+      if (this.playerInventory.getIndex(e.detail.idx)) {
+        this.showMoveSlot(e.detail.idx, e.detail.mouse);
+        this.movingSlot = e.detail.idx;
+      }
+    } else if (this.slot) {
+      this.playerInventory.moveSlot(this.movingSlot, e.detail.idx);
+      this.movingSlot = undefined;
+
+      this.root.removeChild(this.slot);
+      this.slot = undefined;
+    }
+  }
+
   private showMoveSlot(idx: number, mouse: { pageY: number; pageX: number }) {
-    const slot = new InventorySlot();
-    slot.group = this.playerInventory.content[idx];
+    this.slot = new InventorySlot();
+    this.slot.group = this.playerInventory.content[idx];
 
-    slot.style.position = "absolute";
+    this.slot.style.position = "absolute";
 
-    slot.style.left = mouse.pageX + "px";
-    slot.style.top = mouse.pageY + "px";
+    this.slot.style.left = mouse.pageX + "px";
+    this.slot.style.top = mouse.pageY + "px";
 
-    slot.style.transform = "translate(-50%, -50%) scale(0.6)";
+    this.slot.style.transform = "translate(-50%, -50%) scale(0.6)";
+    this.slot.style.pointerEvents = "none";
 
     document.addEventListener("mousemove", (e) => {
-      slot.style.left = e.pageX + "px";
-      slot.style.top = e.pageY + "px";
+      if (this.slot) {
+        this.slot.style.left = e.pageX + "px";
+        this.slot.style.top = e.pageY + "px";
+      }
     });
 
-    this.root.appendChild(slot);
+    this.root.appendChild(this.slot);
   }
 }
