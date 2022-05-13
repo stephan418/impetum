@@ -21,11 +21,18 @@ export default abstract class GridElement extends BaseElement implements Buildin
     // this.materialName = "";
     // this.geometryName = "";
     this.gridDistanceXZ = 5;
-    this.gridDistanceY = 5;
+    this.gridDistanceY = 10;
 
     this.updatedPosition = () => {
       this.mesh.position.copy(this.pos);
       this.cBody.position.copy(new CANNON.Vec3(this.pos.x, this.pos.y, this.pos.z));
+    };
+
+    this.updatedQuaternion = () => {
+      this.mesh.quaternion.copy(this.quaternion);
+      this.cBody.quaternion.copy(
+        new CANNON.Quaternion(this.quaternion.x, this.quaternion.y, this.quaternion.z, this.quaternion.w)
+      );
     };
   }
   addToWorld(world: World): void {
@@ -68,7 +75,5 @@ export default abstract class GridElement extends BaseElement implements Buildin
     newPosition.z = Math.floor(position.z / this.gridDistanceXZ) * this.gridDistanceXZ;
     this.setPosition(newPosition);
   }
-  updatedPosition(): void {
-    console.log("new position: " + this.pos);
-  }
+  updatedPosition(): void {}
 }
