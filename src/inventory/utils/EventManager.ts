@@ -2,9 +2,11 @@ export function mutation(target: Object, key: string | symbol, descriptor: Typed
   const oFunction = descriptor.value;
 
   descriptor.value = function (...args: any[]) {
+    const result = oFunction.apply(this, args);
+
     (this as any).eventManager.dispatchEvent("change");
 
-    return oFunction.apply(this, args);
+    return result;
   };
 
   return descriptor;
