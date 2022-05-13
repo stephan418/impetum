@@ -1,14 +1,13 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { Group } from "../interfaces/Storage";
+import Item from "../inventory/Item";
+import PlayerInventory from "../inventory/PlayerInventory";
 import { config } from "../managers/OptionsManager";
 
 const {
   hud: { hudScale },
 } = config;
-
-function slot(i: number) {
-  return html` <div class="slot" id="${i}"></div> `;
-}
 
 @customElement("i-item-bar")
 export default class ItemBar extends LitElement {
@@ -24,23 +23,35 @@ export default class ItemBar extends LitElement {
       gap: calc(5px * ${hudScale});
       padding: 5px;
     }
-
-    .slot {
-      border: calc(2.5px * ${hudScale}) solid #777777;
-
-      height: calc(50px * ${hudScale});
-      width: calc(50px * ${hudScale});
-    }
   `;
 
   @property({ attribute: "size", type: Number })
   size?: number = 9;
 
+  @property()
+  inventory?: PlayerInventory;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.inventory?.addEventListener("change", async () => await this.requestUpdate());
+  }
+
+  handleSlotClick(idx: number, e: MouseEvent) {
+    e.stopPropagation();
+
+    const event = new CustomEvent("slot-click", { detail: { idx, mouse: { pageY: e.pageY, pageX: e.pageX } } });
+    this.dispatchEvent(event);
+  }
+
   render() {
     return html`
-      ${Array(this.size)
-        .fill(0)
-        .map((_, i) => slot(i))}
+      ${this.inventory?.hotbarContent.map(
+        (group, i) =>
+          html`<i-inventory-slot
+            @click=${(e: MouseEvent) => this.handleSlotClick(i, e)}
+            .group=${group}></i-inventory-slot>`
+      )}
     `;
   }
 }

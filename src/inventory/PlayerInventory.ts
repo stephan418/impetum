@@ -27,9 +27,9 @@ export default class PlayerInventory {
   collect(c: Item, amount: number) {
     if (!this.hotbar.isFull) {
       this.hotbar.store(c, amount);
+    } else {
+      this.back.store(c, amount);
     }
-
-    this.back.store(c, amount);
   }
 
   @mutation
@@ -59,8 +59,9 @@ export default class PlayerInventory {
       if (to < this.hotbar.size) this.hotbar.storeAtSlot(item.item, item.amount, to);
       else this.back.storeAtSlot(item.item, item.amount, to - this.hotbar.size);
 
-      if (from < this.hotbar.size) this.hotbar.retrieveIndex(from);
-      else this.back.retrieveIndex(from - this.hotbar.size);
+      if (from < this.hotbar.size) {
+        this.hotbar.retrieveIndex(from);
+      } else this.back.retrieveIndex(from - this.hotbar.size);
     }
   }
 
