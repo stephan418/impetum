@@ -44,7 +44,7 @@ export class Inventory extends LitElement {
       (group, idx) =>
         html`<i-inventory-slot
           @click=${(e: MouseEvent) => this.handleSlotClick(idx, e)}
-          .group=${group}></i-inventory-slot>`
+          .group=${group ? { item: group.item, amount: group.amount } : undefined}></i-inventory-slot>`
     );
   }
 }
