@@ -100,7 +100,6 @@ export default class World {
       loadedMesh.scale.set(4, 4, 4);
       loadedMesh.position.set(10, 10, 10);
       this.scene.add(loadedMesh);
-      console.log(data);
     });
 
     // -- Initialize the Grid Manager --
@@ -121,8 +120,15 @@ export default class World {
 
         let woodenWall = new WoodenWall(this.resourceManager);
         woodenWall.addToWorld(this);
-        // woodenWall.setPositionOnGrid(new THREE.Vector3(0, 10, 0));
-        woodenFloor.setZFrontWall(woodenWall);
+        woodenFloor.setZBackWall(woodenWall);
+
+        let woodenWall1 = new WoodenWall(this.resourceManager);
+        woodenWall1.addToWorld(this);
+        woodenFloor.setXLeftWall(woodenWall1);
+
+        let woodenFloor1 = new WoodenFloor(this.resourceManager);
+        woodenFloor1.setPositionOnGrid(new THREE.Vector3(0, 10, 0));
+        woodenFloor1.addToWorld(this);
 
         // let floorElement = e
       }).bind(this)
