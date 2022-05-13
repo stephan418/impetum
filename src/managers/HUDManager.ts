@@ -40,7 +40,9 @@ export default class HUDManager {
 
     this.pauseMenu.addEventListener("unpause", () => this.gameStateManager.unpause());
     this.inventoryOverlay.addEventListener("slot-click", this.onSlotClick.bind(this));
+    this.itemBar.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.inventoryOverlay.inventory = playerInventory;
+    this.itemBar.inventory = playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
     this.gameStateManager.addEventListener("unpause", () => this.hidePauseMenu());

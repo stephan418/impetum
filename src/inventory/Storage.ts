@@ -57,7 +57,7 @@ export default class Storage<C extends Item> implements IStorage<C> {
     const group = this.getIndex(index);
 
     if (group) {
-      group.amount -= amount || 0;
+      group.amount -= amount || group.amount;
 
       if (group.amount <= 0) {
         this.setIndex(index, undefined);
