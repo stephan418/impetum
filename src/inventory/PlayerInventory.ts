@@ -1,3 +1,4 @@
+import InventoryError from "../errors/InventoryError";
 import BackInventory from "./BackInventory";
 import HotbarInventory from "./HotbarInvetory";
 import Item from "./Item";
@@ -40,6 +41,33 @@ export default class PlayerInventory {
     }
 
     this.back.storeAtSlot(c, amount, index - this.hotbar.size);
+  }
+
+  @mutation
+  moveSlot(from: number, to: number) {
+    if (from < this.hotbar.size && to < this.hotbar.size) {
+      return this.hotbar.moveSlot(from, to);
+    } else if (from >= this.hotbar.size && to >= this.hotbar.size) {
+      return this.back.moveSlot(from - this.hotbar.size, to - this.hotbar.size);
+    } else {
+      let item;
+      if (from < this.hotbar.size) item = this.hotbar.getIndex(from);
+      else item = this.back.getIndex(from - this.hotbar.size);
+
+      if (!item) throw new InventoryError(`Cannot move empty slot at ${from}`);
+
+      if (to < this.hotbar.size) this.hotbar.storeAtSlot(item.item, item.amount, to);
+      else this.back.storeAtSlot(item.item, item.amount, to - this.hotbar.size);
+
+      if (from < this.hotbar.size) this.hotbar.retrieveIndex(from);
+      else this.back.retrieveIndex(from - this.hotbar.size);
+    }
+  }
+
+  getIndex(index: number) {
+    if (index < this.hotbar.size) return this.hotbar.getIndex(index);
+
+    return this.back.getIndex(index - this.hotbar.size);
   }
 
   get hotbarContent() {
