@@ -5,6 +5,7 @@ import World from "../core/World";
 import Entity from "../interfaces/Entity";
 import InputManager from "../managers/InputManager";
 import { config } from "../managers/OptionsManager";
+import BuildingManager from "../managers/BuildingManager";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -17,7 +18,13 @@ export default class Player implements Entity {
   private cBody: CANNON.Body;
   private canJump: boolean;
 
-  constructor(aspect = 1, fov = 80, near = 0.1, far = 1000, inputManager: InputManager) {
+  private buildingManager: BuildingManager;
+  private scene: THREE.Scene;
+
+  constructor(aspect = 1, fov = 80, near = 0.1, far = 1000, inputManager: InputManager, scene: THREE.Scene) {
+    this.scene = scene;
+    this.buildingManager = new BuildingManager(this.scene);
+
     this.canJump = false;
 
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -45,6 +52,12 @@ export default class Player implements Entity {
       if (this.canJump == true) {
         this.cBody.velocity.y += 50;
         this.canJump = false;
+      }
+    });
+
+    this.inputManager.addMouseButtonCallback(3, (down) => {
+      if (down == true) {
+        console.log(this.buildingManager.setRayCaster(this.camera.position, this.camera.position, 0, 1000));
       }
     });
 

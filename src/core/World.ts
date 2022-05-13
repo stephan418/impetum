@@ -195,7 +195,7 @@ export default class World {
 
     // -- Initialize the player, with camera --
 
-    this.player = new Player(aspect, fov, near, far, this.inputManager);
+    this.player = new Player(aspect, fov, near, far, this.inputManager, this.scene);
     this.player.addToWorld(this);
     this.camera = this.player.camera;
 
