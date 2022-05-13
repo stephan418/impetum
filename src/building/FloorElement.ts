@@ -9,6 +9,22 @@ export default abstract class FloorElement extends GridElement {
   private zFrontWall: WallElement | undefined;
   private zBackWall: WallElement | undefined;
 
+  setXLeftWall(newWall: WallElement) {
+    this.xLeftWall = newWall;
+  }
+  setXRightWall(newWall: WallElement) {
+    this.xRightWall = newWall;
+  }
+  setZFrontWall(newWall: WallElement) {
+    this.zFrontWall = newWall;
+    this.zFrontWall.setPosition(
+      new THREE.Vector3(this.pos.x, this.pos.y + this.gridDistanceY, this.pos.z + this.gridDistanceXZ)
+    );
+  }
+  setZBackWall(newWall: WallElement) {
+    this.zBackWall = newWall;
+  }
+
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material, cShape: CANNON.Shape) {
     super(geometry, material, cShape);
   }
