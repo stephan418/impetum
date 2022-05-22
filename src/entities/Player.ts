@@ -66,7 +66,7 @@ export default class Player implements Entity {
 
     this.lookDirection = new THREE.Vector3();
 
-    this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots);
+    this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots, inputManager);
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.addEventListener("click", () => {
