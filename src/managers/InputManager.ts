@@ -49,9 +49,9 @@ export default class InputManager {
       e.deltaMode === 0 ? { deltaY: e.deltaY, deltaX: e.deltaX, deltaZ: e.deltaZ } : {};
 
     if (e.deltaY >= 0) {
-      emitted.direction = "up";
-    } else {
       emitted.direction = "down";
+    } else {
+      emitted.direction = "up";
     }
 
     for (const callback of this.scrollCallbacks) {
