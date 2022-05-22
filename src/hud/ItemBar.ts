@@ -37,6 +37,10 @@ export default class ItemBar extends LitElement {
     this.inventory?.addEventListener("change", async () => {
       await this.requestUpdate();
     });
+
+    this.inventory?.addEventListener("select", async () => {
+      await this.requestUpdate();
+    });
   }
 
   handleSlotClick(idx: number, e: MouseEvent) {
@@ -51,7 +55,8 @@ export default class ItemBar extends LitElement {
       ${this.inventory?.hotbarContent.map((group, i) => {
         return html`<i-inventory-slot
           @click=${(e: MouseEvent) => this.handleSlotClick(i, e)}
-          .group=${group ? { item: group?.item, amount: group.amount } : undefined}></i-inventory-slot>`;
+          .group=${group ? { item: group?.item, amount: group.amount } : undefined}
+          ?selected=${this.inventory?.selectedIdx === i}></i-inventory-slot>`;
       })}
     `;
   }

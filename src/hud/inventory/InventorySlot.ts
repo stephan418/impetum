@@ -13,6 +13,12 @@ export class InventorySlot extends LitElement {
 
       height: 50px;
       width: 50px;
+
+      box-sizing: border-box;
+    }
+
+    :host([selected]) {
+      border: 4px solid #444444;
     }
 
     img {
@@ -39,7 +45,14 @@ export class InventorySlot extends LitElement {
   @property()
   group?: Group<Item>;
 
+  @property()
+  selected?: boolean;
+
   render() {
+    if (this.selected !== undefined) {
+      this.classList.add("selected");
+    }
+
     if (!this.group) {
       return html``;
     }

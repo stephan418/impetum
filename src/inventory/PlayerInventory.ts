@@ -1,4 +1,5 @@
 import InventoryError from "../errors/InventoryError";
+import InputManager, { ScrollInput } from "../managers/InputManager";
 import BackInventory from "./BackInventory";
 import HotbarInventory from "./HotbarInvetory";
 import Item from "./Item";
@@ -7,20 +8,37 @@ import EventManager, { mutation } from "./utils/EventManager";
 export default class PlayerInventory {
   private hotbar: HotbarInventory;
   private back: BackInventory;
+  private inputManager?: InputManager;
 
   private eventManager;
+
+  private selectedIndex = 0;
 
   public addEventListener;
   public removeEventListener;
 
-  constructor(hotbarSlots: number, backSlots: number) {
+  constructor(hotbarSlots: number, backSlots: number, inputManager?: InputManager) {
     this.hotbar = new HotbarInventory(hotbarSlots);
     this.back = new BackInventory(backSlots);
 
-    this.eventManager = new EventManager(["change"]);
+    this.inputManager = inputManager;
+
+    this.inputManager?.addScrollCallback(this.onScroll.bind(this));
+
+    this.eventManager = new EventManager(["change", "select"]);
 
     this.addEventListener = this.eventManager.addEventListener.bind(this.eventManager);
     this.removeEventListener = this.eventManager.removeEventListener.bind(this.eventManager);
+  }
+
+  private onScroll(e: ScrollInput) {
+    if (e.direction === "up" && this.selectedIndex < this.hotbar.size - 1) {
+      this.selectedIndex++;
+    } else if (e.direction === "down" && this.selectedIndex > 0) {
+      this.selectedIndex--;
+    }
+
+    this.eventManager.dispatchEvent("select");
   }
 
   @mutation
@@ -81,5 +99,13 @@ export default class PlayerInventory {
 
   get content() {
     return [...this.hotbarContent, ...this.backContent];
+  }
+
+  get selected() {
+    return this.getIndex(this.selectedIndex);
+  }
+
+  get selectedIdx() {
+    return this.selectedIndex;
   }
 }
