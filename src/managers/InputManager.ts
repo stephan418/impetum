@@ -23,6 +23,8 @@ export default class InputManager {
     this.pressedMouseButtons = new Map();
     this.mouseCallbacks = new Map();
 
+    document.body.oncontextmenu = () => false;
+
     document.addEventListener("keydown", this.onKeyDown.bind(this));
     document.addEventListener("keyup", this.onKeyUp.bind(this));
 

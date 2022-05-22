@@ -6,6 +6,7 @@ import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
 import PlayerInventory from "../inventory/PlayerInventory";
 import GameStateManager from "./GameStateManager";
+import structuredClone from "@ungap/structured-clone";
 
 export default class HUDManager {
   private root: HTMLElement;
@@ -69,7 +70,7 @@ export default class HUDManager {
         this.movingSlot = e.detail.idx;
       }
     } else if (this.slot) {
-      this.playerInventory.moveSlot(this.movingSlot, e.detail.idx);
+      this.playerInventory.moveSlot(this.movingSlot, e.detail.idx, this.slot.group?.amount);
       this.movingSlot = undefined;
 
       this.root.removeChild(this.slot);
@@ -77,9 +78,13 @@ export default class HUDManager {
     }
   }
 
-  private showMoveSlot(idx: number, mouse: { pageY: number; pageX: number }) {
+  private showMoveSlot(idx: number, mouse: { pageY: number; pageX: number; button: "left" | "right" }) {
     this.slot = new InventorySlot();
-    this.slot.group = this.playerInventory.content[idx];
+    this.slot.group = structuredClone(this.playerInventory.content[idx]);
+
+    if (mouse.button === "right" && this.slot.group) {
+      this.slot.group.amount = Math.round(this.slot.group.amount / 2);
+    }
 
     this.slot.style.position = "absolute";
 
