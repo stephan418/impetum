@@ -1,6 +1,16 @@
+export interface ScrollInput {
+  direction: "up" | "down";
+  deltaY?: number;
+  deltaX?: number;
+  deltaZ?: number;
+}
+
+export type ScrollCallback = (e: ScrollInput) => unknown;
+
 export default class InputManager {
   private pressedKeys: Map<string, boolean>;
   private keysCallbacks: Map<string, Function>;
+  private scrollCallbacks: ScrollCallback[];
 
   private pressedMouseButtons: Map<number, boolean>;
   private mouseCallbacks: Map<number, Function>;
@@ -8,6 +18,7 @@ export default class InputManager {
   constructor() {
     this.pressedKeys = new Map();
     this.keysCallbacks = new Map();
+    this.scrollCallbacks = [];
 
     this.pressedMouseButtons = new Map();
     this.mouseCallbacks = new Map();
@@ -17,6 +28,8 @@ export default class InputManager {
 
     document.addEventListener("mousedown", this.onMouseDown.bind(this));
     document.addEventListener("mouseup", this.onMouseUp.bind(this));
+
+    document.addEventListener("wheel", this.onScroll.bind(this));
   }
 
   private onKeyDown(ev: KeyboardEvent) {
@@ -29,6 +42,21 @@ export default class InputManager {
     this.pressedKeys.set(ev.key, false);
     if (this.keysCallbacks.get(ev.key) == undefined || ev.repeat) return;
     this.keysCallbacks.get(ev.key)?.(false);
+  }
+
+  private onScroll(e: WheelEvent) {
+    const emitted: Partial<ScrollInput> =
+      e.deltaMode === 0 ? { deltaY: e.deltaY, deltaX: e.deltaX, deltaZ: e.deltaZ } : {};
+
+    if (e.deltaY >= 0) {
+      emitted.direction = "up";
+    } else {
+      emitted.direction = "down";
+    }
+
+    for (const callback of this.scrollCallbacks) {
+      callback(emitted as ScrollInput);
+    }
   }
 
   isPressed(key: string) {
@@ -68,5 +96,21 @@ export default class InputManager {
 
   addMouseButtonCallback(which: number, callback: (pressed: boolean) => void) {
     this.mouseCallbacks.set(which, callback);
+  }
+
+  addScrollCallback(callback: ScrollCallback) {
+    this.scrollCallbacks.push(callback);
+  }
+
+  removeScrollCallback(callback: ScrollCallback) {
+    const index = this.scrollCallbacks.findIndex((c) => c === callback);
+
+    if (index < 0) {
+      return false;
+    }
+
+    this.scrollCallbacks.splice(index, 1);
+
+    return true;
   }
 }

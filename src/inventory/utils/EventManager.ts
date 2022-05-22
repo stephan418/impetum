@@ -34,7 +34,7 @@ export default class EventManager<E extends string> {
       return Boolean(
         handlers.splice(
           handlers.findIndex((c) => c === handler),
-          0
+          1
         )
       );
     }
