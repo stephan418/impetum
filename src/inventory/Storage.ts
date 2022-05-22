@@ -101,21 +101,30 @@ export default class Storage<C extends Item> implements IStorage<C> {
     }
   }
 
-  moveSlot(from: number, to: number) {
+  moveSlot(from: number, to: number, amount?: number) {
     if (from === to) {
       return;
     }
 
-    // When both slots are filled and the target slots holds the same item as the origin slot
+    if (amount && this.slots[from]?.amount && amount >= this.slots[from]?.amount!) {
+      amount = undefined;
+    }
+
     if (this.slots[from] !== undefined && this.slots[to]?.item.id === this.slots[from]?.item.id) {
-      (this.slots[to] || ({} as any)).amount += this.slots[from]?.amount || 0;
-      this.retrieveIndex(from);
+      // When both slots are filled and the target slots holds the same item as the origin slot
+      (this.slots[to] || ({} as any)).amount += amount ?? this.slots[from]?.amount ?? 0;
+      this.retrieveIndex(from, amount);
     }
     // Otherweise abort if the origin slot is undefined or the target slot is not undefined
     else if (!(this.slots[from] && !this.slots[to])) throw new InventoryError(`Cannot move slot ${from} to slot ${to}`);
     else {
-      this.slots[to] = this.slots[from];
-      this.slots[from] = undefined;
+      if (amount) {
+        this.slots[to] = { item: this.slots[from]?.item!, amount: amount };
+        this.slots[from]!.amount -= amount;
+      } else {
+        this.slots[to] = this.slots[from];
+        this.slots[from] = undefined;
+      }
     }
   }
 

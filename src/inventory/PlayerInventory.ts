@@ -1,3 +1,4 @@
+import structuredClone from "@ungap/structured-clone";
 import InventoryError from "../errors/InventoryError";
 import InputManager, { ScrollInput } from "../managers/InputManager";
 import BackInventory from "./BackInventory";
@@ -62,11 +63,11 @@ export default class PlayerInventory {
   }
 
   @mutation
-  moveSlot(from: number, to: number) {
+  moveSlot(from: number, to: number, amount?: number) {
     if (from < this.hotbar.size && to < this.hotbar.size) {
-      return this.hotbar.moveSlot(from, to);
+      return this.hotbar.moveSlot(from, to, amount);
     } else if (from >= this.hotbar.size && to >= this.hotbar.size) {
-      return this.back.moveSlot(from - this.hotbar.size, to - this.hotbar.size);
+      return this.back.moveSlot(from - this.hotbar.size, to - this.hotbar.size, amount);
     } else {
       let item;
       if (from < this.hotbar.size) item = this.hotbar.getIndex(from);
@@ -74,12 +75,18 @@ export default class PlayerInventory {
 
       if (!item) throw new InventoryError(`Cannot move empty slot at ${from}`);
 
+      if (amount) {
+        item = structuredClone(item);
+
+        item.amount = item.amount > amount ? amount : item.amount;
+      }
+
       if (to < this.hotbar.size) this.hotbar.storeAtSlot(item.item, item.amount, to);
       else this.back.storeAtSlot(item.item, item.amount, to - this.hotbar.size);
 
       if (from < this.hotbar.size) {
-        this.hotbar.retrieveIndex(from);
-      } else this.back.retrieveIndex(from - this.hotbar.size);
+        this.hotbar.retrieveIndex(from, item.amount);
+      } else this.back.retrieveIndex(from - this.hotbar.size, item.amount);
     }
   }
 
