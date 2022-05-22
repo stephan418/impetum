@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import PlayerInventory from "../../inventory/PlayerInventory";
+import { slotClickEvent } from "./common";
 
 @customElement("i-inventory")
 export class Inventory extends LitElement {
@@ -30,10 +31,16 @@ export class Inventory extends LitElement {
   }
 
   handleSlotClick(idx: number, e: MouseEvent) {
+    const event = slotClickEvent(e, idx);
+
+    if (!event) return;
+
+    e.preventDefault();
     e.stopPropagation();
 
-    const event = new CustomEvent("slot-click", { detail: { idx, mouse: { pageY: e.pageY, pageX: e.pageX } } });
     this.dispatchEvent(event);
+
+    return false;
   }
 
   @property()
@@ -44,6 +51,7 @@ export class Inventory extends LitElement {
       (group, idx) =>
         html`<i-inventory-slot
           @click=${(e: MouseEvent) => this.handleSlotClick(idx, e)}
+          @contextmenu=${(e: MouseEvent) => this.handleSlotClick(idx, e)}
           .group=${group ? { item: group.item, amount: group.amount } : undefined}></i-inventory-slot>`
     );
   }

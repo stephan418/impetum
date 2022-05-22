@@ -4,6 +4,7 @@ import { Group } from "../interfaces/Storage";
 import Item from "../inventory/Item";
 import PlayerInventory from "../inventory/PlayerInventory";
 import { config } from "../managers/OptionsManager";
+import { slotClickEvent } from "./inventory/common";
 
 const {
   hud: { hudScale },
@@ -45,9 +46,15 @@ export default class ItemBar extends LitElement {
 
   handleSlotClick(idx: number, e: MouseEvent) {
     e.stopPropagation();
+    e.preventDefault();
 
-    const event = new CustomEvent("slot-click", { detail: { idx, mouse: { pageY: e.pageY, pageX: e.pageX } } });
+    const event = slotClickEvent(e, idx);
+
+    if (!event) return;
+
     this.dispatchEvent(event);
+
+    return false;
   }
 
   render() {
@@ -55,6 +62,7 @@ export default class ItemBar extends LitElement {
       ${this.inventory?.hotbarContent.map((group, i) => {
         return html`<i-inventory-slot
           @click=${(e: MouseEvent) => this.handleSlotClick(i, e)}
+          @contextmenu=${(e: MouseEvent) => this.handleSlotClick(i, e)}
           .group=${group ? { item: group?.item, amount: group.amount } : undefined}
           ?selected=${this.inventory?.selectedIdx === i}></i-inventory-slot>`;
       })}
