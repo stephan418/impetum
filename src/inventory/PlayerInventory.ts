@@ -4,11 +4,13 @@ import InputManager, { ScrollInput } from "../managers/InputManager";
 import BackInventory from "./BackInventory";
 import HotbarInventory from "./HotbarInvetory";
 import Item from "./Item";
+import Purse from "./Purse";
 import EventManager, { mutation } from "./utils/EventManager";
 
 export default class PlayerInventory {
   private hotbar: HotbarInventory;
   private back: BackInventory;
+  private purse: Purse;
   private inputManager?: InputManager;
 
   private eventManager;
@@ -21,6 +23,7 @@ export default class PlayerInventory {
   constructor(hotbarSlots: number, backSlots: number, inputManager?: InputManager) {
     this.hotbar = new HotbarInventory(hotbarSlots);
     this.back = new BackInventory(backSlots);
+    this.purse = new Purse();
 
     this.inputManager = inputManager;
 
