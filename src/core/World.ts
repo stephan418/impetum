@@ -202,17 +202,24 @@ export default class World {
 
     // -- Initialize the player, with camera --
 
-    this.player = new Player(aspect, fov, near, far, this.inputManager, this.scene);
+    this.player = new Player(aspect, fov, near, far, this.inputManager, this.scene, this.renderer.domElement);
     this.player.addToWorld(this);
     this.camera = this.player.camera;
 
     // -- Initialize the GameStateManager --
-    this.gameStateManager = new GameStateManager(this, this.inputManager, this.player.pointerLockControls);
+    this.gameStateManager = new GameStateManager(
+      this,
+      this.inputManager,
+      this.player.pointerLockControls,
+      this.renderer.domElement
+    );
 
     // -- Initialize the HUD --
-    this.hudManager = new HUDManager("hud-root", this.gameStateManager, this.player.inventory);
+    this.hudManager = new HUDManager("hud-root", this.gameStateManager, this.inputManager, this.player.inventory);
 
     this.hudManager.attach();
+
+    this.player.inventory.collect({ id: "test" }, 10);
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
@@ -310,6 +317,7 @@ export default class World {
 
     // Reset requestId
     this.requestId = undefined;
+    this.player.pointerLockControls.unlock();
   }
 
   private _unpause() {
@@ -323,6 +331,9 @@ export default class World {
 
     // Restart game loop
     this.requestId = requestAnimationFrame(this.tick.bind(this));
+    document.body.focus();
+
+    this.player.pointerLockControls.lock();
   }
 
   public start() {

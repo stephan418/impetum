@@ -24,14 +24,24 @@ export default class Player implements Entity {
 
   readonly inventory: PlayerInventory;
 
-  constructor(aspect = 1, fov = 80, near = 0.1, far = 1000, inputManager: InputManager, scene: THREE.Scene) {
+  lastPointerAction = new Date().getTime();
+
+  constructor(
+    aspect = 1,
+    fov = 80,
+    near = 0.1,
+    far = 1000,
+    inputManager: InputManager,
+    scene: THREE.Scene,
+    domElement?: HTMLElement
+  ) {
     this.scene = scene;
     this.buildingManager = new BuildingManager(this.scene);
 
     this.canJump = false;
 
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    this.pointerLockControls = new PointerLockControls(this.camera, document.body);
+    this.pointerLockControls = new PointerLockControls(this.camera, domElement ?? document.body);
     this.addPointerLockOnClick(document.body);
     this.inputManager = inputManager;
 
@@ -69,9 +79,9 @@ export default class Player implements Entity {
     this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots, inputManager);
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
-    domElement.addEventListener("click", () => {
+    domElement.onclick = () => {
       this.pointerLockControls.lock();
-    });
+    };
   }
 
   addToWorld(world: World): void {
