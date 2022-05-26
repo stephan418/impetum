@@ -7,10 +7,12 @@ import PauseMenu from "../hud/menu/PauseMenu";
 import PlayerInventory from "../inventory/PlayerInventory";
 import GameStateManager from "./GameStateManager";
 import structuredClone from "@ungap/structured-clone";
+import InputManager from "./InputManager";
 
 export default class HUDManager {
   private root: HTMLElement;
   private gameStateManager: GameStateManager;
+  private inputManager;
 
   private playerInventory: PlayerInventory;
 
@@ -22,7 +24,14 @@ export default class HUDManager {
   private movingSlot?: number;
   private slot?: InventorySlot;
 
-  constructor(rootId: string, gameStateManager: GameStateManager, playerInventory: PlayerInventory) {
+  private stateMap = { inventoryOverlay: false, pauseMenu: false };
+
+  constructor(
+    rootId: string,
+    gameStateManager: GameStateManager,
+    inputManager: InputManager,
+    playerInventory: PlayerInventory
+  ) {
     const root = document.getElementById(rootId);
 
     if (!root) {
@@ -31,6 +40,7 @@ export default class HUDManager {
 
     this.root = root;
     this.gameStateManager = gameStateManager;
+    this.inputManager = inputManager;
 
     this.playerInventory = playerInventory;
 
@@ -39,28 +49,91 @@ export default class HUDManager {
     this.pauseMenu = new PauseMenu();
     this.inventoryOverlay = new InventoryOverlay();
 
-    this.pauseMenu.addEventListener("unpause", () => this.gameStateManager.unpause());
+    this.root.onclick = (e) => e.stopImmediatePropagation();
+
+    this.pauseMenu.addEventListener("unpause", () => this.hidePauseMenu());
     this.inventoryOverlay.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.itemBar.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.inventoryOverlay.inventory = playerInventory;
     this.itemBar.inventory = playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
-    this.gameStateManager.addEventListener("unpause", () => this.hidePauseMenu());
+
+    this.inputManager.addKeyCallback("i", (e) => e && this.toggleInventory());
+    this.inputManager.addKeyCallback("Escape", (e) => e && this.exitImmediateMenu());
+    this.inputManager.addKeyCallback("p", (e) => e && this.togglePauseMenu());
   }
 
   public attach() {
     this.root.appendChild(this.crossHair);
     this.root.appendChild(this.itemBar);
-    this.root.appendChild(this.inventoryOverlay);
+  }
+
+  private handlePause() {
+    if (this.stateMap.inventoryOverlay) {
+    } else {
+      this.showPauseMenu();
+    }
+  }
+
+  private handleUnpause() {
+    if (this.stateMap.inventoryOverlay) {
+    } else if (this.stateMap.pauseMenu) {
+      this.hidePauseMenu();
+    }
+  }
+
+  private exitImmediateMenu() {
+    if (this.stateMap.inventoryOverlay) {
+      this.hideInventory();
+    } else {
+      this.hidePauseMenu();
+      this.gameStateManager.unpause();
+    }
+  }
+
+  private togglePauseMenu() {
+    if (!this.stateMap.pauseMenu) {
+      this.showPauseMenu();
+    } else {
+      this.hidePauseMenu();
+    }
   }
 
   private showPauseMenu() {
+    this.stateMap.pauseMenu = true;
+    // TODO: Unlock pointer
+
     this.root.appendChild(this.pauseMenu);
+    this.gameStateManager.pause();
   }
 
   private hidePauseMenu() {
+    this.stateMap.pauseMenu = false;
+    this.gameStateManager.unpause();
+
     this.root.removeChild(this.pauseMenu);
+  }
+
+  private toggleInventory() {
+    if (this.stateMap.inventoryOverlay) {
+      this.hideInventory();
+    } else {
+      this.showInventory();
+    }
+  }
+
+  private showInventory() {
+    this.stateMap.inventoryOverlay = true;
+    this.gameStateManager.pause();
+
+    this.root.appendChild(this.inventoryOverlay);
+  }
+
+  private hideInventory() {
+    this.gameStateManager.unpause();
+    this.root.removeChild(this.inventoryOverlay);
+    this.stateMap.inventoryOverlay = false;
   }
 
   private onSlotClick(e: any) {

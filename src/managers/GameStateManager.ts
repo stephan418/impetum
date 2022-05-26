@@ -9,6 +9,7 @@ export default class GameStateManager {
   private world: World;
   private inputManager: InputManager;
   private pointerLockControls: PointerLockControls;
+  private domElement;
 
   // State
   private paused = false;
@@ -19,7 +20,12 @@ export default class GameStateManager {
   public removeEventListener;
   public dispatchEvent;
 
-  constructor(world: World, inputManager: InputManager, pointerLockControls: PointerLockControls) {
+  constructor(
+    world: World,
+    inputManager: InputManager,
+    pointerLockControls: PointerLockControls,
+    domElement: HTMLElement
+  ) {
     this.eventManager = new EventManager(["pause", "unpause"]);
 
     this.addEventListener = this.eventManager.addEventListener.bind(this.eventManager);
@@ -29,15 +35,9 @@ export default class GameStateManager {
     this.inputManager = inputManager;
     this.pointerLockControls = pointerLockControls;
     this.world = world;
-
-    this.inputManager.addKeyCallback("Escape", (pressed) => {
-      if (!pressed) return;
-
-      this.togglePause();
-    });
+    this.domElement = domElement;
 
     this.pointerLockControls.addEventListener("unlock", () => this.pause());
-    this.pointerLockControls.addEventListener("lock", () => this.unpause());
   }
 
   private togglePause() {
@@ -53,6 +53,8 @@ export default class GameStateManager {
     this.dispatchEvent("pause");
 
     (this.world as any)._pause();
+
+    this.domElement.onclick = (e) => e.stopPropagation();
   }
 
   unpause() {
@@ -60,6 +62,8 @@ export default class GameStateManager {
     this.dispatchEvent("unpause");
 
     (this.world as any)._unpause();
+
+    this.domElement.onclick = null;
   }
 
   // -- Public interface --
