@@ -1,6 +1,6 @@
 # Impetum, a first-person base-building game for the Web
 
-\[Image Placeholder\]
+![Image Placeholder](concept.jpg)
 
 ## Concept
 
