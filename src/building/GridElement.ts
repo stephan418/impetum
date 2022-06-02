@@ -20,7 +20,7 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.addCShape(cShape);
     // this.materialName = "";
     // this.geometryName = "";
-    this.gridDistanceXZ = 5;
+    this.gridDistanceXZ = 10;
     this.gridDistanceY = 10;
 
     this.updatedPosition = () => {
@@ -70,9 +70,9 @@ export default abstract class GridElement extends BaseElement implements Buildin
 
   setPositionOnGrid(position: THREE.Vector3) {
     let newPosition: THREE.Vector3 = new THREE.Vector3();
-    newPosition.x = Math.floor(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
-    newPosition.y = Math.floor(position.y / this.gridDistanceY) * this.gridDistanceY;
-    newPosition.z = Math.floor(position.z / this.gridDistanceXZ) * this.gridDistanceXZ;
+    newPosition.x = Math.round(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
+    newPosition.y = Math.round(position.y / this.gridDistanceY) * this.gridDistanceY;
+    newPosition.z = Math.round(position.z / this.gridDistanceXZ) * this.gridDistanceXZ;
     this.setPosition(newPosition);
   }
   updatedPosition(): void {}

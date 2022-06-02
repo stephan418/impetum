@@ -12,7 +12,7 @@ export default abstract class FloorElement extends GridElement {
   setXLeftWall(newWall: WallElement) {
     this.xLeftWall = newWall;
     this.xLeftWall.setPosition(
-      new THREE.Vector3(this.pos.x - this.gridDistanceXZ, this.pos.y + this.gridDistanceY / 2, this.pos.z)
+      new THREE.Vector3(this.pos.x - this.gridDistanceXZ / 2, this.pos.y + this.gridDistanceY / 2, this.pos.z)
     );
 
     let tempQuat: THREE.Quaternion = new THREE.Quaternion();
@@ -22,7 +22,7 @@ export default abstract class FloorElement extends GridElement {
   setXRightWall(newWall: WallElement) {
     this.xRightWall = newWall;
     this.xRightWall.setPosition(
-      new THREE.Vector3(this.pos.x + this.gridDistanceXZ, this.pos.y + this.gridDistanceY / 2, this.pos.z)
+      new THREE.Vector3(this.pos.x + this.gridDistanceXZ / 2, this.pos.y + this.gridDistanceY / 2, this.pos.z)
     );
 
     let tempQuat: THREE.Quaternion = new THREE.Quaternion();
@@ -32,7 +32,7 @@ export default abstract class FloorElement extends GridElement {
   setZFrontWall(newWall: WallElement) {
     this.zFrontWall = newWall;
     this.zFrontWall.setPosition(
-      new THREE.Vector3(this.pos.x, this.pos.y + this.gridDistanceY / 2, this.pos.z + this.gridDistanceXZ)
+      new THREE.Vector3(this.pos.x, this.pos.y + this.gridDistanceY / 2, this.pos.z + this.gridDistanceXZ/ 2)
     );
 
     let tempQuat: THREE.Quaternion = new THREE.Quaternion();
@@ -42,7 +42,7 @@ export default abstract class FloorElement extends GridElement {
   setZBackWall(newWall: WallElement) {
     this.zBackWall = newWall;
     this.zBackWall.setPosition(
-      new THREE.Vector3(this.pos.x, this.pos.y + this.gridDistanceY / 2, this.pos.z - this.gridDistanceXZ)
+      new THREE.Vector3(this.pos.x, this.pos.y + this.gridDistanceY / 2, this.pos.z - this.gridDistanceXZ/ 2)
     );
 
     let tempQuat: THREE.Quaternion = new THREE.Quaternion();
