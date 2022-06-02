@@ -16,6 +16,8 @@ import { groundMaterial, slipperyMaterial } from "./CannonMaterials";
 import GeneralTurret from "../building/Turrets/GeneralTurret";
 import { Sky } from "three/examples/jsm/objects/Sky";
 import { config } from "../managers/OptionsManager";
+import Wave from "./wave/Wave";
+import WaveManager from "../managers/WaveManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -43,6 +45,7 @@ export default class World {
   private hudManager: HUDManager;
   private gameStateManager: GameStateManager;
   private buildingManager: BuildingManager;
+  private waveManager: WaveManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -257,6 +260,8 @@ export default class World {
 
     this.hudManager.attach();
 
+    this.waveManager = new WaveManager({}, this, new THREE.Vector3(0, 1, 0));
+
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
     this.directionalLight = new THREE.DirectionalLight(0xdfdfdf, 0.9);
@@ -328,6 +333,10 @@ export default class World {
         }
       }
     }
+  }
+
+  public addUpdatable(updatable: Updatable) {
+    this.updatables.push(updatable);
   }
 
   public handleResize(): boolean {
