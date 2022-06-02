@@ -6,6 +6,7 @@ export default class Wave {
   private center: THREE.Vector3;
   private enemies: Enemy[] = [];
   private updateIntervalId: number;
+  private onFinish?: () => unknown;
 
   constructor(center: THREE.Vector3 = new THREE.Vector3(0, 0, 0), initialRadius = 10, numberOfEnemies?: number) {
     this.center = center;
@@ -38,7 +39,9 @@ export default class Wave {
     }
   }
 
-  startMoving() {
+  startMoving(onFinished?: () => unknown) {
+    this.onFinish = onFinished;
+
     for (const enemy of this.enemies) {
       enemy.moveTowards(this.center);
     }
