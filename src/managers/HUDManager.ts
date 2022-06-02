@@ -87,30 +87,37 @@ export default class HUDManager {
     if (this.stateMap.inventoryOverlay) {
       this.hideInventory();
     } else {
-      this.hidePauseMenu();
-      this.gameStateManager.unpause();
+      this.togglePauseMenu();
     }
   }
 
   private togglePauseMenu() {
     if (!this.stateMap.pauseMenu) {
       this.showPauseMenu();
+
+      if (!this.gameStateManager.isPaused) {
+        this.gameStateManager.pause();
+      }
     } else {
       this.hidePauseMenu();
     }
   }
 
   private showPauseMenu() {
-    this.stateMap.pauseMenu = true;
     // TODO: Unlock pointer
 
-    this.root.appendChild(this.pauseMenu);
-    this.gameStateManager.pause();
+    if (!this.stateMap.inventoryOverlay && this.gameStateManager.isPaused) {
+      this.stateMap.pauseMenu = true;
+      this.root.appendChild(this.pauseMenu);
+    }
   }
 
   private hidePauseMenu() {
     this.stateMap.pauseMenu = false;
-    this.gameStateManager.unpause();
+
+    if (this.gameStateManager.isPaused) {
+      this.gameStateManager.unpause();
+    }
 
     this.root.removeChild(this.pauseMenu);
   }

@@ -71,4 +71,8 @@ export default class GameStateManager {
   get isPaused() {
     return this.paused;
   }
+
+  get pointerLocked() {
+    return this.pointerLockControls.isLocked;
+  }
 }
