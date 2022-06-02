@@ -333,7 +333,7 @@ export default class World {
     this.requestId = requestAnimationFrame(this.tick.bind(this));
     document.body.focus();
 
-    this.player.pointerLockControls.lock();
+    // TODO: Pointer lock
   }
 
   public start() {
