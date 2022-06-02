@@ -219,8 +219,6 @@ export default class World {
 
     this.hudManager.attach();
 
-    this.player.inventory.collect({ id: "test" }, 10);
-
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
     this.directionalLight = new THREE.DirectionalLight(0xdfdfdf, 0.5);
