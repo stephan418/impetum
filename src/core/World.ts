@@ -155,6 +155,11 @@ export default class World {
     this.resourceManager.addModelMaterial("woodenFloor", new THREE.MeshLambertMaterial({map: this.resourceManager.getModelTexture("woodenFloor")}));
     this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
 
+    this.resourceManager.loadModelGeometry("woodenWall", "static/woodenWall.glb");
+    this.resourceManager.loadModelTexture("woodenWall", "static/woodenWallTexture.png");
+    this.resourceManager.addModelMaterial("woodenWall", new THREE.MeshLambertMaterial({map: this.resourceManager.getModelTexture("woodenWall")}));
+    this.resourceManager.addModelShape("woodenWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)));
+
     this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("debugWall", new THREE.MeshLambertMaterial({ color: 0x00ffff }));
     this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshLambertMaterial({ color: 0xff00ff }));

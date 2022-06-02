@@ -7,9 +7,9 @@ import WallElement from "../WallElement";
 
 export default class WoodenWall extends WallElement {
   constructor(resourceManager: ResourceManager) {
-    const a = resourceManager.getModelGeometry("debugWall");
-    const b = resourceManager.getModelMaterial("debugWall");
-    const c = resourceManager.getModelShapes("debugWall")?.[0];
+    const a = resourceManager.getModelGeometry("woodenWall");
+    const b = resourceManager.getModelMaterial("woodenWall");
+    const c = resourceManager.getModelShapes("woodenWall")?.[0];
     if (!a) {
       throw new Error("Geometry couldn't be found");
     }
