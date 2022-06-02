@@ -76,4 +76,6 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.setPosition(newPosition);
   }
   updatedPosition(): void {}
+  updatedGhostStatus(): void {}
+  updatedQuaternion(): void {}
 }
