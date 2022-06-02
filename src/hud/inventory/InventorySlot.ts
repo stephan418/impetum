@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { Group } from "../../interfaces/Storage";
+import IItem from "../../interfaces/Item";
 import Item from "../../inventory/Item";
 
 @customElement("i-inventory-slot")
@@ -21,7 +22,8 @@ export class InventorySlot extends LitElement {
       border: 4px solid #444444;
     }
 
-    img {
+    img,
+    div {
       height: 80%;
       width: 80%;
 
@@ -43,7 +45,7 @@ export class InventorySlot extends LitElement {
   `;
 
   @property()
-  group?: Group<Item>;
+  group?: Group<IItem>;
 
   @property()
   selected?: boolean;
@@ -57,7 +59,12 @@ export class InventorySlot extends LitElement {
       return html``;
     }
 
-    return html`<img src=${"icon"} /><span>${this.group.amount}</span>`;
+    if (this.group.item instanceof Item) {
+      return html`<img src=${this.group.item.icon} /><span>${this.group.amount}</span>`;
+    }
+
+    return html`<div>${this.group.item.id}</div>
+      <span>${this.group.amount}</span>`;
   }
 }
 
