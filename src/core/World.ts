@@ -104,8 +104,7 @@ export default class World {
 
     this.loadingManager = new LoadingManager();
     this.loadingManager.loadGLTFGeometryAsync("../../static/debugMonke.glb").then((data) => {
-      let loadedMaterial = new THREE.MeshLambertMaterial({ color: 0x00ffff });
-      let loadedMesh: THREE.Mesh = new THREE.Mesh(data, loadedMaterial);
+      let loadedMesh: THREE.Mesh = data;
       // data.position.set(10, 10, 10);
       // data.scale.set(5, 5, 5);
       loadedMesh.scale.set(4, 4, 4);
@@ -151,10 +150,10 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
-    // this.resourceManager.addModelGeometry("woodenFloor", "static/woodenFloor.glb");
-    // this.resourceManager.addModelTexture("woodenFloor", "static/woodenFloor.png");
-    // this.resourceManager.addModelMaterial("woodenFloor", new THREE.MeshLambertMaterial);
-    // this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
+    this.resourceManager.loadModelGeometry("woodenFloor", "static/woodenFloor.glb");
+    this.resourceManager.loadModelTexture("woodenFloor", "static/woodenFloorTexture.png");
+    this.resourceManager.addModelMaterial("woodenFloor", new THREE.MeshLambertMaterial({map: this.resourceManager.getModelTexture("woodenFloor")}));
+    this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
 
     this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("debugWall", new THREE.MeshLambertMaterial({ color: 0x00ffff }));
@@ -164,29 +163,6 @@ export default class World {
     this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
     this.resourceManager.addModelShape("debugWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)));
 
-    for (let i = 0; i < 100; i++) {
-      let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
-      let cubeGeometry = new THREE.BoxGeometry(8, 0.2, 8);
-      let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      cubeMesh.position.copy(this.gridManager.positionToGridPosition(new THREE.Vector3(i * 10, 0, 0), "y"));
-      this.scene.add(cubeMesh);
-    }
-
-    /* for (let i = 0; i < 100; i++) {
-      let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
-      let cubeGeometry = new THREE.BoxGeometry(8, 8, 0.2);
-      let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      cubeMesh.position.copy(this.gridManager.positionToGridPosition(new THREE.Vector3(10 * i, 0, 0), "z"));
-      this.scene.add(cubeMesh);
-    }
-
-    for(let i = 0; i < 100; i++) {
-      let cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
-      let cubeGeometry = new THREE.BoxGeometry(0.2, 8, 8);
-      let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      cubeMesh.position.copy(this.gridManager.positionToGridPosition(new THREE.Vector3(10 * i, 0, 0), "x"));
-      this.scene.add(cubeMesh);
-    } */
 
     // -- Setup updateables array --
     // TODO: implement spatial hashing map which gets used for distance, logic based operations

@@ -45,12 +45,10 @@ export default abstract class GridElement extends BaseElement implements Buildin
   }
 
   protected setGeometry(geometry: THREE.BufferGeometry) {
-    // this.geometryName = geometryName;
     this.mesh.geometry = geometry;
   }
 
   protected setMaterial(material: THREE.Material) {
-    // this.geometryName = geometryName;
     this.mesh.material = material;
   }
   protected addCShape(cShape: CANNON.Shape) {

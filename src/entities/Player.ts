@@ -9,6 +9,7 @@ import BuildingManager from "../managers/BuildingManager";
 import PlayerInventory from "../inventory/PlayerInventory";
 import WoodenFloor from "../building/Floors/WoodenFloor";
 import ResourceManager from "../managers/ResourceManager";
+import WoodenWall from "../building/Walls/WoodenWall";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -89,13 +90,6 @@ export default class Player implements Entity {
           let position = rayIntersects[0].point;
           let woodenFloor = new WoodenFloor(this.resourceManager);
           this.buildingManager.addGridElement(woodenFloor);
-          position.y = position.y;
-          console.log(`${position.x} ${position.y} ${position.z}`);
-          console.log(
-            `${Math.floor(position.x / 10) * 10} ${Math.floor(position.y / 10) * 10} ${
-              Math.floor(position.z / 10) * 10
-            }`
-          );
           woodenFloor.setPositionOnGrid(position);
         }
       }
