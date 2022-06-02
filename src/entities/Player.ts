@@ -24,8 +24,6 @@ export default class Player implements Entity {
 
   readonly inventory: PlayerInventory;
 
-  lastPointerAction = new Date().getTime();
-
   constructor(
     aspect = 1,
     fov = 80,
@@ -55,7 +53,7 @@ export default class Player implements Entity {
     this.cBody.addShape(this.cShape);
 
     //Add Event Listener for detecting Collision
-    this.cBody.addEventListener("collide", (event) => {
+    this.cBody.addEventListener("collide", (event: any) => {
       if (event.contact.ni.dot(new CANNON.Vec3(0, 1, 0)) < -0.4) {
         this.canJump = true;
       }
