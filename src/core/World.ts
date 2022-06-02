@@ -13,6 +13,7 @@ import WoodenWall from "../building/Walls/WoodenWall";
 import HUDManager from "../managers/HUDManager";
 import GameStateManager from "../managers/GameStateManager";
 import GameStateError from "../errors/GameStateError";
+import BuildingManager from "../managers/BuildingManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -38,6 +39,7 @@ export default class World {
   private resourceManager: ResourceManager;
   private hudManager: HUDManager;
   private gameStateManager: GameStateManager;
+  private buildingManager: BuildingManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -64,7 +66,7 @@ export default class World {
     this.cFloorBody = new CANNON.Body({ mass: 0 });
     this.cFloorBody.addShape(this.cFloorShape);
     this.cFloorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    this.cFloorBody.position.y = -1;
+    this.cFloorBody.position.y = 0;
 
     // copy valuse from physical body to mesh
     this.floorMesh.position.copy(this.cFloorBody.position as unknown as THREE.Vector3);
@@ -85,6 +87,8 @@ export default class World {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 
     this.renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+
+    this.buildingManager = new BuildingManager(this);
 
     // -- Initialize the Input Manager --
     this.inputManager = new InputManager();
@@ -147,6 +151,11 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
+    // this.resourceManager.addModelGeometry("woodenFloor", "static/woodenFloor.glb");
+    // this.resourceManager.addModelTexture("woodenFloor", "static/woodenFloor.png");
+    // this.resourceManager.addModelMaterial("woodenFloor", new THREE.MeshLambertMaterial);
+    // this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
+
     this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("debugWall", new THREE.MeshLambertMaterial({ color: 0x00ffff }));
     this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
@@ -202,7 +211,17 @@ export default class World {
 
     // -- Initialize the player, with camera --
 
-    this.player = new Player(aspect, fov, near, far, this.inputManager, this.scene, this.renderer.domElement);
+    this.player = new Player(
+      aspect,
+      fov,
+      near,
+      far,
+      this.inputManager,
+      this.buildingManager,
+      this.resourceManager,
+      this.scene,
+      this.renderer.domElement
+    );
     this.player.addToWorld(this);
     this.camera = this.player.camera;
 

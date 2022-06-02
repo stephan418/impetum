@@ -7,6 +7,8 @@ import InputManager from "../managers/InputManager";
 import { config } from "../managers/OptionsManager";
 import BuildingManager from "../managers/BuildingManager";
 import PlayerInventory from "../inventory/PlayerInventory";
+import WoodenFloor from "../building/Floors/WoodenFloor";
+import ResourceManager from "../managers/ResourceManager";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -20,9 +22,12 @@ export default class Player implements Entity {
   private canJump: boolean;
 
   private buildingManager: BuildingManager;
+  private resourceManager: ResourceManager;
   private scene: THREE.Scene;
 
   readonly inventory: PlayerInventory;
+
+  private lookDirectionEmptyVector: THREE.Vector3;
 
   constructor(
     aspect = 1,
@@ -30,13 +35,16 @@ export default class Player implements Entity {
     near = 0.1,
     far = 1000,
     inputManager: InputManager,
+    buildingManager: BuildingManager,
+    resourceManager: ResourceManager,
     scene: THREE.Scene,
     domElement?: HTMLElement
   ) {
     this.scene = scene;
-    this.buildingManager = new BuildingManager(this.scene);
 
     this.canJump = false;
+    this.buildingManager = buildingManager;
+    this.resourceManager = resourceManager;
 
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     this.pointerLockControls = new PointerLockControls(this.camera, domElement ?? document.body);
@@ -51,6 +59,8 @@ export default class Player implements Entity {
     this.cBody.linearFactor = new CANNON.Vec3(1, 2, 1);
     this.cBody.position.set(0, 10, 5);
     this.cBody.addShape(this.cShape);
+
+    this.lookDirectionEmptyVector = new THREE.Vector3();
 
     //Add Event Listener for detecting Collision
     this.cBody.addEventListener("collide", (event: any) => {
@@ -68,7 +78,26 @@ export default class Player implements Entity {
 
     this.inputManager.addMouseButtonCallback(3, (down) => {
       if (down == true) {
-        console.log(this.buildingManager.setRayCaster(this.camera.position, this.camera.position, 0, 1000));
+        // console.log(this.buildingManager.shootRayCast(this.camera.position, this.camera.getWorldDirection(this.lookDirectionEmptyVector), 0, 20));
+        let rayIntersects = this.buildingManager.shootRayCast(
+          this.camera.position,
+          this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+          0,
+          50
+        );
+        if (rayIntersects.length > 0) {
+          let position = rayIntersects[0].point;
+          let woodenFloor = new WoodenFloor(this.resourceManager);
+          this.buildingManager.addGridElement(woodenFloor);
+          position.y = position.y;
+          console.log(`${position.x} ${position.y} ${position.z}`);
+          console.log(
+            `${Math.floor(position.x / 10) * 10} ${Math.floor(position.y / 10) * 10} ${
+              Math.floor(position.z / 10) * 10
+            }`
+          );
+          woodenFloor.setPositionOnGrid(position);
+        }
       }
     });
 

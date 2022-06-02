@@ -35,15 +35,19 @@ export default class InputManager {
   }
 
   private onKeyDown(ev: KeyboardEvent) {
-    this.pressedKeys.set(ev.key, true);
-    if (this.keysCallbacks.get(ev.key) == undefined || ev.repeat) return;
-    this.keysCallbacks.get(ev.key)?.(true);
+    let lowered = ev.key;
+    lowered = lowered.toLowerCase();
+    this.pressedKeys.set(lowered, true);
+    if (this.keysCallbacks.get(lowered) == undefined || ev.repeat) return;
+    this.keysCallbacks.get(lowered)?.(true);
   }
 
   private onKeyUp(ev: KeyboardEvent) {
-    this.pressedKeys.set(ev.key, false);
-    if (this.keysCallbacks.get(ev.key) == undefined || ev.repeat) return;
-    this.keysCallbacks.get(ev.key)?.(false);
+    let lowered = ev.key;
+    lowered = lowered.toLowerCase();
+    this.pressedKeys.set(lowered, false);
+    if (this.keysCallbacks.get(lowered) == undefined || ev.repeat) return;
+    this.keysCallbacks.get(lowered)?.(false);
   }
 
   private onScroll(e: WheelEvent) {
