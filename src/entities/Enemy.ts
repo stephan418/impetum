@@ -13,6 +13,7 @@ export default class Enemy implements Entity {
   private targetNormal?: THREE.Vector3;
   private velocityMultiplier = 10;
   private isMoving: boolean = false;
+  private targetRadius = 2;
 
   private onStopMoving?: () => unknown;
 
@@ -36,11 +37,34 @@ export default class Enemy implements Entity {
   addToWorld(world: World) {
     world.scene.add(this.mesh);
     world.cScene.addBody(this.cBody);
+    world.addUpdatable(this);
   }
 
   removeFromWorld(world: World) {
     world.scene.remove(this.mesh);
     world.cScene.removeBody(this.cBody);
+  }
+
+  moveTowards(targetPosition: THREE.Vector3, targetRadius = 10) {
+    this.targetPosition = targetPosition;
+    this.isMoving = true;
+    this.targetRadius = targetRadius;
+
+    this.updateTargetNormal();
+  }
+
+  updateTargetNormal() {
+    if (!this.targetPosition) {
+      return;
+    }
+
+    const directedVector = this.targetPosition?.clone().sub(this.mesh.position);
+
+    this.targetNormal = directedVector.normalize().multiplyScalar(4);
+  }
+
+  isAtTarget() {
+    return this.cBody.position.distanceTo(this.targetPosition as unknown as CANNON.Vec3) < this.targetRadius;
   }
 
   //@ts-ignore
@@ -49,5 +73,14 @@ export default class Enemy implements Entity {
   updatePhysics(deltaTime: number): void {
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
     this.mesh.quaternion.copy(this.cBody.quaternion as unknown as THREE.Quaternion);
+
+    if (this.isMoving) {
+      this.cBody.velocity.x = this.targetNormal?.x || this.cBody.velocity.x;
+      this.cBody.velocity.z = this.targetNormal?.z || this.cBody.velocity.z;
+    }
+
+    if (this.isAtTarget()) {
+      this.isMoving = false;
+    }
   }
 }
