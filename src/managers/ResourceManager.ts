@@ -9,8 +9,16 @@ export default class ResourceManager {
   private modelShapes: Map<string, CANNON.Shape[]>;
   private loadingManager: LoadingManager;
 
+  // private finishedLoading: () => void;
+
   private finishedModelLoadingCallback: () => void;
   private loadingModelQueue: number;
+
+  private textureLoader: THREE.TextureLoader;
+
+  //maybe implement with async textures later
+  /* private finishedTextureLoadingCallback: () => void;
+  private loadingTextureQueue: number; */
 
   constructor(loadingManager: LoadingManager) {
     this.loadingManager = loadingManager;
@@ -21,6 +29,11 @@ export default class ResourceManager {
 
     this.loadingModelQueue = 0;
     this.finishedModelLoadingCallback = () => {};
+
+    this.textureLoader = new THREE.TextureLoader();
+
+    /* this.loadingTextureQueue = 0;
+    this.finishedTextureLoadingCallback = () => {}; */
   }
   loadModelGeometry(name: string, path: string) {
     //TODO: add error handling if model with path isn't found
@@ -29,7 +42,28 @@ export default class ResourceManager {
     }
     this.loadingModelQueue++;
     this.loadingManager.loadGLTFGeometryAsync(path).then((data) => {
-      this.addModelGeometry(name, data);
+      this.addModelGeometry(name, data.geometry);
+      // this.addModelMaterial(name, data.material);
+      this.loadingModelQueue--;
+      if (this.loadingModelQueue == 0) {
+        this.finishedModelLoadingCallback();
+      }
+    });
+  }
+
+  loadModelGeometryTexture(name: string, path: string) {
+    //TODO: add error handling if model with path isn't found
+    if (this.modelGeometries.get(name) != undefined) {
+      return;
+    }
+    this.loadingModelQueue++;
+    this.loadingManager.loadGLTFGeometryAsync(path).then((data) => {
+      this.addModelGeometry(name, data.geometry);
+      if(Array.isArray( data.material )){
+          this.addModelMaterial(name, data.material[0]);
+      }else{
+          this.addModelMaterial(name, data.material);
+      }
       this.loadingModelQueue--;
       if (this.loadingModelQueue == 0) {
         this.finishedModelLoadingCallback();
@@ -50,7 +84,7 @@ export default class ResourceManager {
     this.modelGeometries.delete(name);
   }
 
-  addModelMaterial(name: string, material: THREE.Material) {
+  addModelMaterial(name: string, material: THREE.Material ) {
     this.modelMaterials.set(name, material);
   }
   getModelMaterial(name: string) {
@@ -58,6 +92,10 @@ export default class ResourceManager {
   }
   removeModelMaterial(name: string) {
     this.modelMaterials.delete(name);
+  }
+
+  loadModelTexture(name: string, path:string) {
+    this.addModelTexture(name, this.textureLoader.load(path));
   }
 
   addModelTexture(name: string, texture: THREE.Texture) {

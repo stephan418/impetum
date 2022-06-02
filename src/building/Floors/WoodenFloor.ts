@@ -6,9 +6,9 @@ import { BufferGeometry } from "three";
 
 export default class WoodenFloor extends FloorElement {
   constructor(resourceManager: ResourceManager) {
-    const a = resourceManager.getModelGeometry("debugFloor");
-    const b = resourceManager.getModelMaterial("debugFloor");
-    const c = resourceManager.getModelShapes("debugFloor")?.[0];
+    const a = resourceManager.getModelGeometry("woodenFloor");
+    const b = resourceManager.getModelMaterial("woodenFloor");
+    const c = resourceManager.getModelShapes("woodenFloor")?.[0];
     if (!a) {
       throw new Error("Geometry couldn't be found");
     }
