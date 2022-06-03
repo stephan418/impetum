@@ -10,6 +10,7 @@ import PlayerInventory from "../inventory/PlayerInventory";
 import WoodenFloor from "../building/Floors/WoodenFloor";
 import ResourceManager from "../managers/ResourceManager";
 import WoodenWall from "../building/Walls/WoodenWall";
+import WallElement from "../building/WallElement";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -80,21 +81,53 @@ export default class Player implements Entity {
     this.inputManager.addMouseButtonCallback(3, (down) => {
       if (down == true) {
         // console.log(this.buildingManager.shootRayCast(this.camera.position, this.camera.getWorldDirection(this.lookDirectionEmptyVector), 0, 20));
-        let rayIntersects = this.buildingManager.shootRayCast(
-          this.camera.position,
-          this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-          0,
-          50
+        /* let woodenFloor = new WoodenFloor(this.resourceManager);
+        this.buildingManager.addGridElement(woodenFloor);
+        woodenFloor.setPosition(
+          this.buildingManager.shotRayCastGetBuildingElementPosition(
+            woodenFloor,
+            this.camera.position,
+            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+            0,
+            50
+          ) || new THREE.Vector3(0, 0, 0)
+        ); */
+        let woodenWall = new WoodenFloor(this.resourceManager);
+        this.buildingManager.addGridElement(woodenWall);
+        woodenWall.setPositionOnGrid(
+          this.buildingManager.shotRayCastGetBuildingElementPosition(
+            woodenWall,
+            this.camera.position,
+            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+            0,
+            50
+          ).position || new THREE.Vector3(0, 0, 0)
         );
-        if (rayIntersects.length > 0) {
-          let position = rayIntersects[0].point;
-          let woodenFloor = new WoodenFloor(this.resourceManager);
-          this.buildingManager.addGridElement(woodenFloor);
-          woodenFloor.setPositionOnGrid(position);
-        }
       }
     });
-
+this.inputManager.addMouseButtonCallback(2, (down) => {
+      if (down == true) {
+        let woodenWall = new WoodenWall(this.resourceManager);
+        this.buildingManager.addGridElement(woodenWall);
+        woodenWall.setPosition(
+          this.buildingManager.shotRayCastGetBuildingElementPosition(
+            woodenWall,
+            this.camera.position,
+            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+            0,
+            50
+          ).position || new THREE.Vector3(0, 0, 0)
+        );
+        console.log(          this.buildingManager.shotRayCastGetBuildingElementPosition(
+            woodenWall,
+            this.camera.position,
+            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+            0,
+            50
+          ).position || new THREE.Vector3(0, 0, 0)
+);
+      }
+    });
     this.lookDirection = new THREE.Vector3();
 
     this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots, inputManager);

@@ -66,6 +66,15 @@ export default abstract class GridElement extends BaseElement implements Buildin
     return this.cBody;
   }
 
+  getPositonOnGrid(position: THREE.Vector3):THREE.Vector3{
+
+    let newPosition: THREE.Vector3 = new THREE.Vector3();
+    newPosition.x = Math.round(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
+    newPosition.y = Math.round(position.y / this.gridDistanceY) * this.gridDistanceY;
+    newPosition.z = Math.round(position.z / this.gridDistanceXZ) * this.gridDistanceXZ;
+    return newPosition;
+  }
+
   setPositionOnGrid(position: THREE.Vector3) {
     let newPosition: THREE.Vector3 = new THREE.Vector3();
     newPosition.x = Math.round(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
