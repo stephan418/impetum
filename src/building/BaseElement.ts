@@ -25,6 +25,9 @@ export default abstract class BaseElement {
     this.pos = position;
     this.updatedPosition();
   }
+  getPosition(){
+    return this.pos;
+  }
 
   setQuaternion(rotation: THREE.Quaternion) {
     this.quaternion = rotation;
