@@ -120,7 +120,7 @@ export default class World {
     this.resourceManager = new ResourceManager(this.loadingManager);
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
-        // let floorElement = e
+        this.player.startGhostClock();
       }).bind(this)
     );
 
