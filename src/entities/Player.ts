@@ -16,6 +16,7 @@ import GridElement from "../building/GridElement";
 import BuildingElement from "../interfaces/BuildingElement";
 import WoodenWallItem from "../inventory/items/WoodenWall";
 import FloorElement from "../building/FloorElement";
+import { slipperyMaterial } from "../core/CannonMaterials";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -31,6 +32,11 @@ export default class Player implements Entity {
   private buildingManager: BuildingManager;
   private resourceManager: ResourceManager;
   private scene: THREE.Scene;
+
+  private moveVelocity: number;
+  private jumpVelocity: number;
+  private howMuchRight: number;
+  private howMuchBack: number;
 
   readonly inventory: PlayerInventory;
 
@@ -48,7 +54,12 @@ export default class Player implements Entity {
     domElement?: HTMLElement
   ) {
     this.scene = scene;
+    this.howMuchRight = 0;
+    this.howMuchBack = 0;
 
+
+    this.moveVelocity = 1900;
+    this.jumpVelocity = 40;
     this.canJump = false;
     this.buildingManager = buildingManager;
     this.resourceManager = resourceManager;
@@ -61,11 +72,14 @@ export default class Player implements Entity {
     this.colliderRadius = 1.3;
     this.cShape = new CANNON.Sphere(this.colliderRadius);
     //TODO: actually fix player jumping speed, not just add mass
-    this.cBody = new CANNON.Body({ mass: 10000 });
-    this.cBody.linearDamping = 0.9;
-    this.cBody.linearFactor = new CANNON.Vec3(1, 2, 1);
-    this.cBody.position.set(0, 10, 5);
+    this.cBody = new CANNON.Body({ mass: 100, material: slipperyMaterial });
+    // this.cBody.linearDamping = 0.99;
+    // this.cBody.linearFactor = new CANNON.Vec3(1, 2, 1);
+    this.cBody.position.set(0, 10, 50);
     this.cBody.addShape(this.cShape);
+    // this.cBody.addShape(this.cShape, new CANNON.Vec3(0, this.colliderRadius, 0));
+    this.cBody.fixedRotation = true;
+    this.cBody.updateMassProperties();
 
     this.lookDirectionEmptyVector = new THREE.Vector3();
 
@@ -78,7 +92,7 @@ export default class Player implements Entity {
 
     this.inputManager.addKeyCallback(config.keys.jump, () => {
       if (this.canJump == true) {
-        this.cBody.velocity.y += 50;
+        this.cBody.velocity.y += this.jumpVelocity;
         this.canJump = false;
       }
     });
@@ -135,24 +149,36 @@ export default class Player implements Entity {
     this.lookDirection.y = y;
     this.lookDirection.z = z;
     this.lookDirection.applyQuaternion(this.camera.quaternion);
-    this.cBody.velocity.x += this.lookDirection.x * 2;
-    this.cBody.velocity.z += this.lookDirection.z * 2;
+    this.cBody.velocity.x = this.lookDirection.x * 2;
+    this.cBody.velocity.z = this.lookDirection.z * 2;
   }
 
   update(deltaTime: number): void {
     //movement
+    this.howMuchBack = 0;
+    this.howMuchRight = 0;
+
     if (this.inputManager.isPressed(config.keys.movementForward)) {
-      this.movePlayer(0, 0, -70 * deltaTime);
+      this.howMuchBack  = -this.moveVelocity * deltaTime;
     } else if (this.inputManager.isPressed(config.keys.movementBackward)) {
-      this.movePlayer(0, 0, 70 * deltaTime);
+      this.howMuchBack  = this.moveVelocity * deltaTime;
     }
 
     if (this.inputManager.isPressed(config.keys.movementLeft)) {
-      this.movePlayer(-70 * deltaTime, 0, 0);
+      this.howMuchRight = -this.moveVelocity * deltaTime;
     } else if (this.inputManager.isPressed(config.keys.movementRight)) {
-      this.movePlayer(70 * deltaTime, 0, 0);
+      this.howMuchRight = this.moveVelocity * deltaTime;
     }
 
+    this.movePlayer(this.howMuchRight, 0, this.howMuchBack);
+    this.cBody.velocity.x = parseFloat( (  this.cBody.velocity.x ).toFixed(2) );
+    this.cBody.velocity.y = parseFloat( (  this.cBody.velocity.y ).toFixed(2) );
+    this.cBody.velocity.z = parseFloat( (  this.cBody.velocity.z ).toFixed(2) );
+    if(this.cBody.velocity.y == 0){
+      this.cBody.velocity.y = 0.1;
+    } else if(this.cBody.velocity.y > 40){
+      this.cBody.velocity.y = 40;
+    }
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
   }
 

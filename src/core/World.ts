@@ -14,6 +14,7 @@ import HUDManager from "../managers/HUDManager";
 import GameStateManager from "../managers/GameStateManager";
 import GameStateError from "../errors/GameStateError";
 import BuildingManager from "../managers/BuildingManager";
+import { groundMaterial, slipperyMaterial } from "./CannonMaterials";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -63,7 +64,7 @@ export default class World {
 
     // -- Setup Physics for Floor --
     this.cFloorShape = new CANNON.Plane();
-    this.cFloorBody = new CANNON.Body({ mass: 0 });
+    this.cFloorBody = new CANNON.Body({ mass: 0, material: groundMaterial });
     this.cFloorBody.addShape(this.cFloorShape);
     this.cFloorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
     this.cFloorBody.position.y = 0;
@@ -160,8 +161,38 @@ export default class World {
     // -- Setup physics world --
     this.cScene = new CANNON.World();
     // this.cScene.gravity.set(0, -9.81, 0);
-    this.cScene.gravity.set(0, -40, 0);
+    this.cScene.gravity.set(0, -50, 0);
     this.cScene.broadphase = new CANNON.SAPBroadphase(this.cScene);
+
+    //Setup Contact Material for Ground and Ground
+    const cGroundGround = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
+      friction: 0.4,
+      restitution: 0.3,
+      contactEquationStiffness: 1e8,
+      contactEquationRelaxation: 3,
+      frictionEquationStiffness: 1e8,
+    });
+    this.cScene.addContactMaterial(cGroundGround);
+
+    //Setup Contact Material for Slippery and Ground
+    const cSlipperyGround = new CANNON.ContactMaterial(groundMaterial, slipperyMaterial, {
+      friction: 0.02,
+      restitution: 0.01,
+      contactEquationStiffness: 1e8,
+      // contactEquationStiffness: 1e1,
+      contactEquationRelaxation: 5,
+    });
+    this.cScene.addContactMaterial(cSlipperyGround);
+
+    //Setup Contact Material for Slippery and Ground
+    const cSlipperySlippery = new CANNON.ContactMaterial(slipperyMaterial, slipperyMaterial, {
+      friction: 0.01,
+      restitution: 0.01,
+      contactEquationStiffness: 1e8,
+      // contactEquationStiffness: 1e1,
+      contactEquationRelaxation: 5,
+    });
+    this.cScene.addContactMaterial(cSlipperySlippery);
 
     this.cSolver = new CANNON.GSSolver();
     this.cSolver.iterations = 100;

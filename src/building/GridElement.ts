@@ -3,6 +3,7 @@ import BuildingElement from "../interfaces/BuildingElement";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import World from "../core/World";
+import { groundMaterial } from "../core/CannonMaterials";
 
 export default abstract class GridElement extends BaseElement implements BuildingElement {
   private mesh: THREE.Mesh;
@@ -14,7 +15,7 @@ export default abstract class GridElement extends BaseElement implements Buildin
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material, cShape: CANNON.Shape) {
     super();
     this.mesh = new THREE.Mesh();
-    this.cBody = new CANNON.Body();
+    this.cBody = new CANNON.Body({material: groundMaterial});
     this.setGeometry(geometry);
     this.setMaterial(material);
     this.addCShape(cShape);
