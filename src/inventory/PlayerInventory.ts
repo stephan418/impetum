@@ -65,6 +65,15 @@ export default class PlayerInventory {
   }
 
   @mutation
+  retrieveFromIndex(amount: number, index: number) {
+    if (index < this.hotbar.size) {
+      return this.hotbar.retrieveIndex(index, amount);
+    }
+
+    this.back.retrieveIndex(index - this.hotbar.size, amount);
+  }
+
+  @mutation
   moveSlot(from: number, to: number, amount?: number) {
     if (from < this.hotbar.size && to < this.hotbar.size) {
       return this.hotbar.moveSlot(from, to, amount);
