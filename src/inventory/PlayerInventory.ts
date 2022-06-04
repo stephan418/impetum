@@ -1,4 +1,3 @@
-import structuredClone from "@ungap/structured-clone";
 import InventoryError from "../errors/InventoryError";
 import InputManager, { ScrollInput } from "../managers/InputManager";
 import BackInventory from "./BackInventory";
@@ -79,7 +78,7 @@ export default class PlayerInventory {
       if (!item) throw new InventoryError(`Cannot move empty slot at ${from}`);
 
       if (amount) {
-        item = structuredClone(item);
+        item = Object.assign(Object.create(Object.getPrototypeOf(item)), item);
 
         item.amount = item.amount > amount ? amount : item.amount;
       }
