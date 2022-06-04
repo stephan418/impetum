@@ -68,8 +68,52 @@ export default class BuildingManager {
       let returnThisLater: PositionRotationResult = { position: undefined, rotation: undefined };
       let val = this.objectIdToGridElement(a[0].object.id);
       if (val != undefined && val instanceof FloorElement) {
-        let tempFloorResult = val.getZFrontWall(el);
-        returnThisLater = tempFloorResult;
+        let k = val.getPosition();
+        let objPositions = {
+          zFrontPosition: new THREE.Vector3(k.x, k.y, k.z + val.gridDistanceXZ / 2),
+          zBackPosition: new THREE.Vector3(k.x, k.y, k.z - val.gridDistanceXZ / 2),
+          xRightPosition: new THREE.Vector3(k.x + val.gridDistanceXZ / 2, k.y, k.z),
+          xLeftPosition: new THREE.Vector3(k.x - val.gridDistanceXZ / 2, k.y, k.z),
+        };
+        let objDistances = {
+          zFrontPositionDistance: a[0].point.distanceToSquared(objPositions.zFrontPosition),
+          zBackPositionDistance: a[0].point.distanceToSquared(objPositions.zBackPosition),
+          xRightPositionDistance: a[0].point.distanceToSquared(objPositions.xRightPosition),
+          xLeftPositionDistance: a[0].point.distanceToSquared(objPositions.xLeftPosition),
+        };
+        console.log("zFront", objDistances.zFrontPositionDistance);
+        console.log("zBack", objDistances.zBackPositionDistance);
+        console.log("xRight", objDistances.xRightPositionDistance);
+        console.log("xLeft", objDistances.xLeftPositionDistance);
+        let smallest = "";
+        for (let key in objDistances) {
+          if (smallest != "" && (objDistances as any)[key] < (objDistances as any)[smallest]) {
+            smallest = key;
+          } else if (smallest == "") {
+            smallest = key;
+          }
+        }
+        switch (smallest) {
+          case "zFrontPositionDistance":
+            console.log("front");
+            returnThisLater = val.getZFrontWall(el);
+            break;
+          case "zBackPositionDistance":
+            console.log("back");
+            returnThisLater = val.getZBackWall(el);
+            break;
+          case "xRightPositionDistance":
+            console.log("right");
+            returnThisLater = val.getXRightWall(el);
+            break;
+          case "xLeftPositionDistance":
+            console.log("left");
+            returnThisLater = val.getXLeftWall(el);
+            break;
+          default:
+            console.error("No Smallest Position found");
+            break;
+        }
       }
       return returnThisLater;
     }
