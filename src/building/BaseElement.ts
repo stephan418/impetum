@@ -12,7 +12,7 @@ export default abstract class BaseElement {
 
   abstract updatedPosition(): void;
   abstract updatedQuaternion(): void;
-  abstract updatedGhostStatus(): void;
+  abstract updatedGhostStatus(isGhost: boolean): void;
 
   constructor() {
     this.pos = new THREE.Vector3(0, 0, 0);
@@ -36,5 +36,6 @@ export default abstract class BaseElement {
 
   setGhost(ghostMode: boolean) {
     this.isGhost = ghostMode;
+    this.updatedGhostStatus(this.isGhost);
   }
 }

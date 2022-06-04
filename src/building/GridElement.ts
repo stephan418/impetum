@@ -4,6 +4,7 @@ import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import World from "../core/World";
 import { groundMaterial } from "../core/CannonMaterials";
+import { LineBasicMaterial, MeshLambertMaterial, MeshStandardMaterial } from "three";
 
 export default abstract class GridElement extends BaseElement implements BuildingElement {
   private mesh: THREE.Mesh;
@@ -83,6 +84,17 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.setPosition(newPosition);
   }
   updatedPosition(): void {}
-  updatedGhostStatus(): void {}
+  updatedGhostStatus(isGhost: boolean): void {
+    if(isGhost){
+      this.cBody.world?.removeBody(this.cBody);
+      this.cBody = new CANNON.Body;
+      let newMaterial =(  this.mesh.material as THREE.Material ).clone();
+      newMaterial.transparent = true;
+      newMaterial.opacity = 0.5;
+      this.setMaterial(newMaterial);
+    }else{
+
+    }
+  }
   updatedQuaternion(): void {}
 }
