@@ -17,6 +17,7 @@ import BuildingElement from "../interfaces/BuildingElement";
 import WoodenWallItem from "../inventory/items/WoodenWall";
 import FloorElement from "../building/FloorElement";
 import { slipperyMaterial } from "../core/CannonMaterials";
+import Item from "../inventory/Item";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -38,6 +39,11 @@ export default class Player implements Entity {
   private howMuchRight: number;
   private howMuchBack: number;
 
+  private buildingGhostClock: THREE.Clock;
+  private ghostSelectedItem: Item | undefined;
+  private ghostSelectedItemPrevious: Item | undefined;
+  private ghostBuildingElement: any;
+
   readonly inventory: PlayerInventory;
 
   private lookDirectionEmptyVector: THREE.Vector3;
@@ -57,6 +63,11 @@ export default class Player implements Entity {
     this.howMuchRight = 0;
     this.howMuchBack = 0;
 
+    this.buildingGhostClock = new THREE.Clock();
+    this.buildingGhostClock.start();
+    this.ghostSelectedItem = undefined;
+    this.ghostSelectedItemPrevious = undefined;
+    this.ghostBuildingElement = undefined;
 
     this.moveVelocity = 1900;
     this.jumpVelocity = 40;
@@ -160,9 +171,9 @@ export default class Player implements Entity {
     this.howMuchRight = 0;
 
     if (this.inputManager.isPressed(config.keys.movementForward)) {
-      this.howMuchBack  = -this.moveVelocity * deltaTime;
+      this.howMuchBack = -this.moveVelocity * deltaTime;
     } else if (this.inputManager.isPressed(config.keys.movementBackward)) {
-      this.howMuchBack  = this.moveVelocity * deltaTime;
+      this.howMuchBack = this.moveVelocity * deltaTime;
     }
 
     if (this.inputManager.isPressed(config.keys.movementLeft)) {
@@ -172,16 +183,41 @@ export default class Player implements Entity {
     }
 
     this.movePlayer(this.howMuchRight, 0, this.howMuchBack);
-    this.cBody.velocity.x = parseFloat( (  this.cBody.velocity.x ).toFixed(2) );
-    this.cBody.velocity.y = parseFloat( (  this.cBody.velocity.y ).toFixed(2) );
-    this.cBody.velocity.z = parseFloat( (  this.cBody.velocity.z ).toFixed(2) );
-    if(this.cBody.velocity.y == 0){
+    this.cBody.velocity.x = parseFloat(this.cBody.velocity.x.toFixed(2));
+    this.cBody.velocity.y = parseFloat(this.cBody.velocity.y.toFixed(2));
+    this.cBody.velocity.z = parseFloat(this.cBody.velocity.z.toFixed(2));
+    if (this.cBody.velocity.y == 0) {
       this.cBody.velocity.y = 0.1;
-    } else if(this.cBody.velocity.y > 40){
+    } else if (this.cBody.velocity.y > 40) {
       this.cBody.velocity.y = 40;
     }
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
     this.camera.position.y += 3;
+
+    if (this.buildingGhostClock.getElapsedTime() > 0.1) {
+      if (this.inventory.selected != undefined) {
+        this.ghostSelectedItem = this.inventory.selected.item || undefined;
+        //Change has happened, generate new mesh and delete the old one
+        if (this.ghostSelectedItem != this.ghostSelectedItemPrevious) {
+          if (this.ghostBuildingElement != undefined) {
+            this.buildingManager.removeGhostElement(this.ghostBuildingElement);
+          }
+          this.ghostBuildingElement = new (this.inventory.selected.item as any).buildingElement(this.resourceManager);
+          this.buildingManager.addGhostElement(this.ghostBuildingElement);
+        }
+
+        let rayResult = this.buildingManager.shotRayCastGetBuildingElementPosition(
+          this.ghostBuildingElement,
+          this.camera.position,
+          this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+          0,
+          50
+        );
+        this.ghostBuildingElement.setPosition(rayResult.position || new THREE.Vector3(-100, -100, -100));
+        this.ghostBuildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion());
+      }
+      this.buildingGhostClock.start();
+    }
   }
 
   //@ts-ignore

@@ -6,6 +6,8 @@ import WoodenFloor from "../building/Floors/WoodenFloor";
 import FloorElement from "../building/FloorElement";
 import WallElement from "../building/WallElement";
 import PositionRotationResult from "../interfaces/PositionRotationResult";
+import BuildingElement from "../interfaces/BuildingElement";
+import BaseElement from "../building/BaseElement";
 
 export default class BuildingManager {
   raycaster: THREE.Raycaster;
@@ -81,10 +83,6 @@ export default class BuildingManager {
           xRightPositionDistance: a[0].point.distanceToSquared(objPositions.xRightPosition),
           xLeftPositionDistance: a[0].point.distanceToSquared(objPositions.xLeftPosition),
         };
-        console.log("zFront", objDistances.zFrontPositionDistance);
-        console.log("zBack", objDistances.zBackPositionDistance);
-        console.log("xRight", objDistances.xRightPositionDistance);
-        console.log("xLeft", objDistances.xLeftPositionDistance);
         let smallest = "";
         for (let key in objDistances) {
           if (smallest != "" && (objDistances as any)[key] < (objDistances as any)[smallest]) {
@@ -95,19 +93,15 @@ export default class BuildingManager {
         }
         switch (smallest) {
           case "zFrontPositionDistance":
-            console.log("front");
             returnThisLater = val.getZFrontWall(el);
             break;
           case "zBackPositionDistance":
-            console.log("back");
             returnThisLater = val.getZBackWall(el);
             break;
           case "xRightPositionDistance":
-            console.log("right");
             returnThisLater = val.getXRightWall(el);
             break;
           case "xLeftPositionDistance":
-            console.log("left");
             returnThisLater = val.getXLeftWall(el);
             break;
           default:
@@ -122,5 +116,14 @@ export default class BuildingManager {
   addGridElement(element: GridElement) {
     element.addToWorld(this.world);
     this.gridElements.push(element);
+  }
+
+  addGhostElement(element: BaseElement){
+    element.setGhost(true);
+    element.addToWorld(this.world);
+  }
+  removeGhostElement(element: BaseElement){
+    element.setGhost(false);
+    element.removeFromWorld(this.world);
   }
 }
