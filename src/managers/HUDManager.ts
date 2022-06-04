@@ -6,7 +6,6 @@ import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
 import PlayerInventory from "../inventory/PlayerInventory";
 import GameStateManager from "./GameStateManager";
-import structuredClone from "@ungap/structured-clone";
 import InputManager from "./InputManager";
 
 export default class HUDManager {
@@ -160,7 +159,10 @@ export default class HUDManager {
 
   private showMoveSlot(idx: number, mouse: { pageY: number; pageX: number; button: "left" | "right" }) {
     this.slot = new InventorySlot();
-    this.slot.group = structuredClone(this.playerInventory.content[idx]);
+
+    const originalGroup = this.playerInventory.content[idx];
+
+    this.slot.group = Object.assign(Object.create(Object.getPrototypeOf(originalGroup)), originalGroup);
 
     if (mouse.button === "right" && this.slot.group) {
       this.slot.group.amount = Math.round(this.slot.group.amount / 2);
