@@ -63,8 +63,6 @@ export default class Player implements Entity {
     this.howMuchRight = 0;
     this.howMuchBack = 0;
 
-    this.buildingGhostClock = new THREE.Clock();
-    this.buildingGhostClock.start();
     this.ghostSelectedItem = undefined;
     this.ghostSelectedItemPrevious = undefined;
     this.ghostBuildingElement = undefined;
@@ -194,7 +192,7 @@ export default class Player implements Entity {
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
     this.camera.position.y += 3;
 
-    if (this.buildingGhostClock.getElapsedTime() > 0.1) {
+    if (this.buildingGhostClock != undefined && this.buildingGhostClock.getElapsedTime() > 0.1) {
       if (this.inventory.selected != undefined) {
         this.ghostSelectedItem = this.inventory.selected.item || undefined;
         //Change has happened, generate new mesh and delete the old one
@@ -218,6 +216,10 @@ export default class Player implements Entity {
       }
       this.buildingGhostClock.start();
     }
+  }
+  startGhostClock() {
+    this.buildingGhostClock = new THREE.Clock();
+    this.buildingGhostClock.start();
   }
 
   //@ts-ignore
