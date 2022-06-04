@@ -76,8 +76,9 @@ export default class Player implements Entity {
     // this.cBody.linearDamping = 0.99;
     // this.cBody.linearFactor = new CANNON.Vec3(1, 2, 1);
     this.cBody.position.set(0, 10, 50);
-    this.cBody.addShape(this.cShape);
-    // this.cBody.addShape(this.cShape, new CANNON.Vec3(0, this.colliderRadius, 0));
+    // this.cBody.addShape(this.cShape);
+    this.cBody.addShape(this.cShape, new CANNON.Vec3(0, 3, 0));
+    this.cBody.addShape(this.cShape, new CANNON.Vec3(0, 0, 0));
     this.cBody.fixedRotation = true;
     this.cBody.updateMassProperties();
 
@@ -180,6 +181,7 @@ export default class Player implements Entity {
       this.cBody.velocity.y = 40;
     }
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
+    this.camera.position.y += 3;
   }
 
   //@ts-ignore
