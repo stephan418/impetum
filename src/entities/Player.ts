@@ -98,24 +98,15 @@ export default class Player implements Entity {
         ) {
           let buildingElement = new (this.inventory.selected.item as any).buildingElement(this.resourceManager);
           this.buildingManager.addGridElement(buildingElement);
-          buildingElement.setPosition(
-            this.buildingManager.shotRayCastGetBuildingElementPosition(
-              buildingElement,
-              this.camera.position,
-              this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-              0,
-              50
-            ).position || new THREE.Vector3(0, 0, 0)
+          let rayResult = this.buildingManager.shotRayCastGetBuildingElementPosition(
+            buildingElement,
+            this.camera.position,
+            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+            0,
+            50
           );
-          console.log(
-            this.buildingManager.shotRayCastGetBuildingElementPosition(
-              buildingElement,
-              this.camera.position,
-              this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-              0,
-              50
-            ).position || new THREE.Vector3(0, 0, 0)
-          );
+          buildingElement.setPosition(rayResult.position || new THREE.Vector3(0, 0, 0));
+          buildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion(0, 0, 0));
           //make item -= 1
         }
       }
