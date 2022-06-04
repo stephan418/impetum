@@ -7,8 +7,8 @@ import World from "../core/World";
 export default abstract class GridElement extends BaseElement implements BuildingElement {
   private mesh: THREE.Mesh;
   private cBody: CANNON.Body;
-  protected gridDistanceXZ: number;
-  protected gridDistanceY: number;
+  public gridDistanceXZ: number;
+  public gridDistanceY: number;
   // private materialName: string;
   // private geometryName: string;
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material, cShape: CANNON.Shape) {
@@ -66,8 +66,7 @@ export default abstract class GridElement extends BaseElement implements Buildin
     return this.cBody;
   }
 
-  getPositonOnGrid(position: THREE.Vector3):THREE.Vector3{
-
+  getPositonOnGrid(position: THREE.Vector3): THREE.Vector3 {
     let newPosition: THREE.Vector3 = new THREE.Vector3();
     newPosition.x = Math.round(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
     newPosition.y = Math.round(position.y / this.gridDistanceY) * this.gridDistanceY;

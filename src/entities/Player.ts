@@ -11,6 +11,11 @@ import WoodenFloor from "../building/Floors/WoodenFloor";
 import ResourceManager from "../managers/ResourceManager";
 import WoodenWall from "../building/Walls/WoodenWall";
 import WallElement from "../building/WallElement";
+import WoodenFloorItem from "../inventory/items/WoodenFloor";
+import GridElement from "../building/GridElement";
+import BuildingElement from "../interfaces/BuildingElement";
+import WoodenWallItem from "../inventory/items/WoodenWall";
+import FloorElement from "../building/FloorElement";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -78,59 +83,48 @@ export default class Player implements Entity {
       }
     });
 
+    //no idea how to do this with other elements than just WoodenFloor
+    /* const isBuildable = (obj: any): obj is Buildable<WoodenFloor> => {
+      return "buildingElement" in obj;
+    }; */
+
+    //Building on right mouse button
     this.inputManager.addMouseButtonCallback(3, (down) => {
       if (down == true) {
-        // console.log(this.buildingManager.shootRayCast(this.camera.position, this.camera.getWorldDirection(this.lookDirectionEmptyVector), 0, 20));
-        /* let woodenFloor = new WoodenFloor(this.resourceManager);
-        this.buildingManager.addGridElement(woodenFloor);
-        woodenFloor.setPosition(
-          this.buildingManager.shotRayCastGetBuildingElementPosition(
-            woodenFloor,
-            this.camera.position,
-            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-            0,
-            50
-          ) || new THREE.Vector3(0, 0, 0)
-        ); */
-        let woodenWall = new WoodenFloor(this.resourceManager);
-        this.buildingManager.addGridElement(woodenWall);
-        woodenWall.setPositionOnGrid(
-          this.buildingManager.shotRayCastGetBuildingElementPosition(
-            woodenWall,
-            this.camera.position,
-            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-            0,
-            50
-          ).position || new THREE.Vector3(0, 0, 0)
-        );
-      }
-    });
-this.inputManager.addMouseButtonCallback(2, (down) => {
-      if (down == true) {
-        let woodenWall = new WoodenWall(this.resourceManager);
-        this.buildingManager.addGridElement(woodenWall);
-        woodenWall.setPosition(
-          this.buildingManager.shotRayCastGetBuildingElementPosition(
-            woodenWall,
-            this.camera.position,
-            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-            0,
-            50
-          ).position || new THREE.Vector3(0, 0, 0)
-        );
-        console.log(          this.buildingManager.shotRayCastGetBuildingElementPosition(
-            woodenWall,
-            this.camera.position,
-            this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-            0,
-            50
-          ).position || new THREE.Vector3(0, 0, 0)
-);
+        //I have absolutely no clue how to type this
+        if (
+          this.inventory.selected != undefined &&
+          (this.inventory.selected.item as any).buildingElement != undefined
+        ) {
+          let buildingElement = new (this.inventory.selected.item as any).buildingElement(this.resourceManager);
+          this.buildingManager.addGridElement(buildingElement);
+          buildingElement.setPosition(
+            this.buildingManager.shotRayCastGetBuildingElementPosition(
+              buildingElement,
+              this.camera.position,
+              this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+              0,
+              50
+            ).position || new THREE.Vector3(0, 0, 0)
+          );
+          console.log(
+            this.buildingManager.shotRayCastGetBuildingElementPosition(
+              buildingElement,
+              this.camera.position,
+              this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+              0,
+              50
+            ).position || new THREE.Vector3(0, 0, 0)
+          );
+          //make item -= 1
+        }
       }
     });
     this.lookDirection = new THREE.Vector3();
 
     this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots, inputManager);
+    this.inventory.collect(new WoodenFloorItem(), 10);
+    this.inventory.collect(new WoodenWallItem(), 10);
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.onclick = () => {
