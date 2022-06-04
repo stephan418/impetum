@@ -119,27 +119,6 @@ export default class World {
     this.resourceManager = new ResourceManager(this.loadingManager);
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
-        /* for (let i = 0; i < 100; i++) {
-          let woodenFloor = new WoodenFloor(this.resourceManager);
-          woodenFloor.setPositionOnGrid(new THREE.Vector3(0, i * 10, i * 10));
-          woodenFloor.addToWorld(this);
-        } */
-        let woodenFloor = new WoodenFloor(this.resourceManager);
-        woodenFloor.setPositionOnGrid(new THREE.Vector3(0, 0, 0));
-        woodenFloor.addToWorld(this);
-
-        let woodenWall = new WoodenWall(this.resourceManager);
-        woodenWall.addToWorld(this);
-        woodenFloor.setZBackWall(woodenWall);
-
-        let woodenWall1 = new WoodenWall(this.resourceManager);
-        woodenWall1.addToWorld(this);
-        woodenFloor.setXLeftWall(woodenWall1);
-
-        let woodenFloor1 = new WoodenFloor(this.resourceManager);
-        woodenFloor1.setPositionOnGrid(new THREE.Vector3(0, 10, 0));
-        woodenFloor1.addToWorld(this);
-
         // let floorElement = e
       }).bind(this)
     );
@@ -152,12 +131,18 @@ export default class World {
 
     this.resourceManager.loadModelGeometry("woodenFloor", "static/woodenFloor.glb");
     this.resourceManager.loadModelTexture("woodenFloor", "static/woodenFloorTexture.png");
-    this.resourceManager.addModelMaterial("woodenFloor", new THREE.MeshLambertMaterial({map: this.resourceManager.getModelTexture("woodenFloor")}));
+    this.resourceManager.addModelMaterial(
+      "woodenFloor",
+      new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("woodenFloor") })
+    );
     this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
 
     this.resourceManager.loadModelGeometry("woodenWall", "static/woodenWall.glb");
     this.resourceManager.loadModelTexture("woodenWall", "static/woodenWallTexture.png");
-    this.resourceManager.addModelMaterial("woodenWall", new THREE.MeshLambertMaterial({map: this.resourceManager.getModelTexture("woodenWall")}));
+    this.resourceManager.addModelMaterial(
+      "woodenWall",
+      new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("woodenWall") })
+    );
     this.resourceManager.addModelShape("woodenWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)));
 
     this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
@@ -167,7 +152,6 @@ export default class World {
 
     this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
     this.resourceManager.addModelShape("debugWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)));
-
 
     // -- Setup updateables array --
     // TODO: implement spatial hashing map which gets used for distance, logic based operations
