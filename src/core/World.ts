@@ -8,8 +8,6 @@ import CubeEntity from "../entities/CubeEntity";
 import GridManager from "../managers/GridManager";
 import LoadingManager from "../managers/LoadingManager";
 import ResourceManager from "../managers/ResourceManager";
-import WoodenFloor from "../building/Floors/WoodenFloor";
-import WoodenWall from "../building/Walls/WoodenWall";
 import HUDManager from "../managers/HUDManager";
 import GameStateManager from "../managers/GameStateManager";
 import GameStateError from "../errors/GameStateError";
@@ -25,7 +23,6 @@ export default class World {
   private camera: THREE.PerspectiveCamera;
 
   private sceneSky: Sky;
-  private sceneSkyCounter: number;
 
   private updatables: Updatable[];
 
@@ -41,7 +38,6 @@ export default class World {
   private cSolver: CANNON.GSSolver;
 
   private inputManager: InputManager;
-  private gridManager: GridManager;
   private loadingManager: LoadingManager;
   private resourceManager: ResourceManager;
   private hudManager: HUDManager;
@@ -113,17 +109,14 @@ export default class World {
 
     this.loadingManager = new LoadingManager();
 
-    // -- Initialize the Grid Manager --
-    this.gridManager = new GridManager();
-
     // -- Initialize the Resource Manager --
     this.resourceManager = new ResourceManager(this.loadingManager);
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
         this.player.startGhostClock();
-        for(let i = 0; i < 10; i++){
+        for (let i = 0; i < 10; i++) {
           let newTurret = new GeneralTurret(this.resourceManager);
-          newTurret.setPosition(new THREE.Vector3(i*10,0,0));
+          newTurret.setPosition(new THREE.Vector3(i * 10, 0, 0));
           newTurret.addToWorld(this);
         }
       }).bind(this)
@@ -136,7 +129,13 @@ export default class World {
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
     this.resourceManager.loadModelGeometries("generalTurret", "static/generalTurret.glb");
-    this.resourceManager.addModelShape("generalTurret", new CANNON.Box(new CANNON.Vec3(2.5, 2.5, 2.5)), new CANNON.Vec3(0,0,0), 0, 0);
+    this.resourceManager.addModelShape(
+      "generalTurret",
+      new CANNON.Box(new CANNON.Vec3(2.5, 2.5, 2.5)),
+      new CANNON.Vec3(0, 0, 0),
+      0,
+      0
+    );
 
     this.resourceManager.loadModelGeometry("woodenFloor", "static/woodenFloor.glb");
     this.resourceManager.loadModelTexture("woodenFloor", "static/woodenFloorTexture.png");
@@ -144,7 +143,11 @@ export default class World {
       "woodenFloor",
       new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("woodenFloor") })
     );
-    this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)), new CANNON.Vec3(0,0,0));
+    this.resourceManager.addModelShape(
+      "woodenFloor",
+      new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)),
+      new CANNON.Vec3(0, 0, 0)
+    );
 
     this.resourceManager.loadModelGeometry("woodenWall", "static/woodenWall.glb");
     this.resourceManager.loadModelTexture("woodenWall", "static/woodenWallTexture.png");
@@ -152,15 +155,27 @@ export default class World {
       "woodenWall",
       new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("woodenWall") })
     );
-    this.resourceManager.addModelShape("woodenWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)), new CANNON.Vec3(0,0,0));
+    this.resourceManager.addModelShape(
+      "woodenWall",
+      new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)),
+      new CANNON.Vec3(0, 0, 0)
+    );
 
     this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("debugWall", new THREE.MeshLambertMaterial({ color: 0x00ffff }));
     this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("defaultWorld", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
 
-    this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)), new CANNON.Vec3(0,0,0));
-    this.resourceManager.addModelShape("debugWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)), new CANNON.Vec3(0,0,0));
+    this.resourceManager.addModelShape(
+      "debugFloor",
+      new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)),
+      new CANNON.Vec3(0, 0, 0)
+    );
+    this.resourceManager.addModelShape(
+      "debugWall",
+      new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)),
+      new CANNON.Vec3(0, 0, 0)
+    );
 
     // -- Setup updateables array --
     // TODO: implement spatial hashing map which gets used for distance, logic based operations
@@ -292,7 +307,6 @@ export default class World {
     this.sceneSky.material.uniforms["sunPosition"].value.copy(
       new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - 50), THREE.MathUtils.degToRad(50))
     );
-    this.sceneSkyCounter = 0;
 
     this.scene.add(this.sceneSky);
 
@@ -332,18 +346,18 @@ export default class World {
     return false;
   }
 
-  getUpdatables(){
+  getUpdatables() {
     return this.updatables;
   }
-  addUpdatable(elem: Updatable){
+  addUpdatable(elem: Updatable) {
     this.updatables.push(elem);
   }
-  removeUpdatable(elem: Updatable){
+  removeUpdatable(elem: Updatable) {
     this.updatables.forEach((val, id) => {
-      if(val == elem){
+      if (val == elem) {
         this.updatables.splice(id);
       }
-    })
+    });
   }
 
   public tick() {

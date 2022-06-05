@@ -12,8 +12,8 @@ export const config = {
     shadows: true,
     shadowsize: 1024,
   },
-  building:{
-    ghostTimeDelay: 0.02
+  building: {
+    ghostTimeDelay: 0.02,
   },
   hud: {
     hudScale: 1,

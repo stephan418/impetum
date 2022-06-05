@@ -15,7 +15,7 @@ export default class WoodenFloor extends FloorElement {
     if (!b) {
       throw new Error("Material couldn't be found");
     }
-    if (!( c.shape )) {
+    if (!c.shape) {
       throw new Error("Shape couldn't be found");
     }
     super(a, b, c.shape);

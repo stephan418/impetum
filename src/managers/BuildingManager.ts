@@ -144,10 +144,8 @@ export default class BuildingManager {
   }
   addGridElement(element: GridElement | FreeElement) {
     element.addToWorld(this.world);
-    if(element instanceof GridElement)
-    this.gridElements.push(element);
-    if(element instanceof FreeElement)
-    this.freeElements.push(element);
+    if (element instanceof GridElement) this.gridElements.push(element);
+    if (element instanceof FreeElement) this.freeElements.push(element);
     this.allElements.push(element);
   }
 
