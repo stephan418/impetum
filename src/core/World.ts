@@ -132,8 +132,8 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
-    this.resourceManager.loadModelGeometry("generalTurret", "static/generalTurret.glb");
-    this.resourceManager.addModelShape("generalTurret", new CANNON.Box(new CANNON.Vec3(2.5, 2.5, 2.5)));
+    this.resourceManager.loadModelGeometries("generalTurret", "static/generalTurret.glb");
+    this.resourceManager.addModelShape("generalTurret", new CANNON.Box(new CANNON.Vec3(2.5, 2.5, 2.5)), new CANNON.Vec3(0,0,0), 0, 0);
 
     this.resourceManager.loadModelGeometry("woodenFloor", "static/woodenFloor.glb");
     this.resourceManager.loadModelTexture("woodenFloor", "static/woodenFloorTexture.png");
@@ -141,7 +141,7 @@ export default class World {
       "woodenFloor",
       new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("woodenFloor") })
     );
-    this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
+    this.resourceManager.addModelShape("woodenFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)), new CANNON.Vec3(0,0,0));
 
     this.resourceManager.loadModelGeometry("woodenWall", "static/woodenWall.glb");
     this.resourceManager.loadModelTexture("woodenWall", "static/woodenWallTexture.png");
@@ -149,15 +149,15 @@ export default class World {
       "woodenWall",
       new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("woodenWall") })
     );
-    this.resourceManager.addModelShape("woodenWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)));
+    this.resourceManager.addModelShape("woodenWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)), new CANNON.Vec3(0,0,0));
 
     this.resourceManager.addModelMaterial("debugFloor", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("debugWall", new THREE.MeshLambertMaterial({ color: 0x00ffff }));
     this.resourceManager.addModelMaterial("debugMonke", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
     this.resourceManager.addModelMaterial("defaultWorld", new THREE.MeshLambertMaterial({ color: 0xff00ff }));
 
-    this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)));
-    this.resourceManager.addModelShape("debugWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)));
+    this.resourceManager.addModelShape("debugFloor", new CANNON.Box(new CANNON.Vec3(5, 0.1, 5)), new CANNON.Vec3(0,0,0));
+    this.resourceManager.addModelShape("debugWall", new CANNON.Box(new CANNON.Vec3(5, 5, 0.1)), new CANNON.Vec3(0,0,0));
 
     // -- Setup updateables array --
     // TODO: implement spatial hashing map which gets used for distance, logic based operations
