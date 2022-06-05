@@ -8,11 +8,73 @@ import { LineBasicMaterial, MeshLambertMaterial, MeshStandardMaterial } from "th
 import { config } from "../managers/OptionsManager";
 import { ShapeAndOffset } from "../managers/ResourceManager";
 
-interface MeshContainer {
-  mesh: THREE.Mesh;
-  cBody: CANNON.Body;
-  positionOffset: THREE.Vector3;
-  quaternionOffset: THREE.Quaternion;
+export class MeshContainer {
+  private _mesh: THREE.Mesh;
+  private _cBody: CANNON.Body;
+  private _positionOffset: THREE.Vector3;
+  private _quaternionOffset: THREE.Quaternion;
+  constructor() {
+    this._mesh = new THREE.Mesh();
+    this._cBody = new CANNON.Body({ material: groundMaterial });
+    this._positionOffset = new THREE.Vector3();
+    this._quaternionOffset = new THREE.Quaternion();
+    if (config.graphics.shadows) {
+      this._mesh.receiveShadow = true;
+      this._mesh.castShadow = true;
+    }
+  }
+  addToWorld(world: World) {
+    world.scene.add(this._mesh);
+    world.cScene.addBody(this._cBody);
+  }
+  removeFromWorld(world: World) {
+    world.scene.remove(this._mesh);
+    world.cScene.removeBody(this._cBody);
+  }
+  get mesh(): THREE.Mesh {
+    return this._mesh;
+  }
+  set mesh(mesh: THREE.Mesh) {
+    this._mesh = mesh;
+  }
+  get cBody(): CANNON.Body {
+    return this._cBody;
+  }
+  set cBody(cBody: CANNON.Body) {
+    this._cBody = cBody;
+  }
+  get positionOffset(): THREE.Vector3 {
+    return this._positionOffset;
+  }
+  set positionOffset(vec: THREE.Vector3) {
+    this.mesh.position.set(
+      this._mesh.position.x + this._positionOffset.x,
+      this._mesh.position.y + this._positionOffset.y,
+      this._mesh.position.z + this._positionOffset.z
+    );
+    this.cBody.position.set(
+      this._mesh.position.x + this._positionOffset.x,
+      this._mesh.position.y + this._positionOffset.y,
+      this._mesh.position.z + this._positionOffset.z
+    );
+  }
+  get quaternionOffset(): THREE.Quaternion {
+    return this._quaternionOffset;
+  }
+  set quaternionOffset(quat: THREE.Quaternion) {
+    this.mesh.quaternion.set(
+      this._mesh.quaternion.x + this._quaternionOffset.x,
+      this._mesh.quaternion.y + this._quaternionOffset.y,
+      this._mesh.quaternion.z + this._quaternionOffset.z,
+      this._mesh.quaternion.w + this._quaternionOffset.w
+    );
+    this.cBody.quaternion.set(
+      this._mesh.quaternion.x + this._quaternionOffset.x,
+      this._mesh.quaternion.y + this._quaternionOffset.y,
+      this._mesh.quaternion.z + this._quaternionOffset.z,
+      this._mesh.quaternion.w + this._quaternionOffset.w
+    );
+  }
 }
 export default abstract class FreeElement extends BaseElement implements BuildingElement {
   private parts: MeshContainer[];
@@ -64,24 +126,6 @@ export default abstract class FreeElement extends BaseElement implements Buildin
       });
     };
   }
-  private newPart(): MeshContainer {
-    let tempMesh = new THREE.Mesh();
-    if (config.graphics.shadows) {
-      tempMesh.receiveShadow = true;
-      tempMesh.castShadow = true;
-    }
-    let tempBody = new CANNON.Body({ material: groundMaterial });
-    if(this.addedToWorld){
-      ( this.world as World).scene.add(tempMesh);
-      ( this.world as World ).cScene.addBody(tempBody);
-    }
-    return {
-      mesh: tempMesh,
-      cBody: tempBody,
-      positionOffset: new THREE.Vector3(0, 0, 0),
-      quaternionOffset: new THREE.Quaternion(),
-    };
-  }
   addToWorld(world: World): void {
     this.addedToWorld = true;
     this.world = world;
@@ -103,13 +147,19 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     if (Array.isArray(geometry)) {
       geometry.forEach((val, idx) => {
         if (this.parts[idx] == undefined) {
-          this.parts[idx] = this.newPart();
+          this.parts[idx] = new MeshContainer();
+          if(this.addedToWorld){
+            this.parts[idx].addToWorld(this.world as World);
+          }
         }
         this.parts[idx].mesh.geometry = val;
       });
     } else {
       if (this.parts[0] == undefined) {
-        this.parts[0] = this.newPart();
+        this.parts[0] = new MeshContainer();
+          if(this.addedToWorld){
+            this.parts[0].addToWorld(this.world as World);
+          }
       }
       this.parts[0].mesh.geometry = geometry;
     }
@@ -124,13 +174,19 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     if (Array.isArray(material)) {
       material.forEach((val, idx) => {
         if (this.parts[idx] == undefined) {
-          this.parts[idx] = this.newPart();
+          this.parts[idx] = new MeshContainer;
+          if(this.addedToWorld){
+            this.parts[idx].addToWorld(this.world as World);
+          }
         }
         this.parts[idx].mesh.material = val;
       });
     } else {
       if (this.parts[0] == undefined) {
-        this.parts[0] = this.newPart();
+        this.parts[0] = new MeshContainer();
+          if(this.addedToWorld){
+            this.parts[0].addToWorld(this.world as World);
+          }
       }
       this.parts[0].mesh.material = material;
     }
@@ -141,7 +197,10 @@ export default abstract class FreeElement extends BaseElement implements Buildin
         //Case 1
         (cShapes as ShapeAndOffset[][]).forEach((val1, idx1) => {
           if (this.parts[idx1] == undefined) {
-            this.parts[idx1] = this.newPart();
+            this.parts[idx1] = new MeshContainer();
+          if(this.addedToWorld){
+            this.parts[idx1].addToWorld(this.world as World);
+          }
           }
           (cShapes as ShapeAndOffset[][])[idx1].forEach((val2, idx2) => {
             if (val2.shape != undefined) {
@@ -154,7 +213,10 @@ export default abstract class FreeElement extends BaseElement implements Buildin
       //Case 2
       (cShapes as ShapeAndOffset[]).forEach((val1, idx1) => {
         if (this.parts[idx1] == undefined) {
-          this.parts[idx1] = this.newPart();
+          this.parts[idx1] = new MeshContainer();
+          if(this.addedToWorld){
+            this.parts[idx1].addToWorld(this.world as World);
+          }
         }
         if (val1.shape != undefined) {
           this.parts[idx1].cBody.addShape(val1.shape, val1.offset);
@@ -164,7 +226,10 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     }
     //Case 3
     if (this.parts[0] == undefined) {
-      this.parts[0] = this.newPart();
+      this.parts[0] = new MeshContainer();
+          if(this.addedToWorld){
+            this.parts[0].addToWorld(this.world as World);
+          }
     }
     if (cShapes.shape != undefined) {
       this.parts[0].cBody.addShape(cShapes.shape, cShapes.offset);
