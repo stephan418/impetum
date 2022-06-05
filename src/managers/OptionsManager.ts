@@ -8,6 +8,10 @@ export const config = {
     movementRight: "d",
     jump: " ",
   },
+  graphics: {
+    shadows: true,
+    shadowsize: 1024,
+  },
   hud: {
     hudScale: 1,
   },
