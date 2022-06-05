@@ -255,10 +255,8 @@ export default abstract class FreeElement extends BaseElement implements Buildin
   updatedPosition(): void {}
   updatedGhostStatus(isGhost: boolean): void {
     if (isGhost) {
-      if(( this as any ).update != undefined)
-        ( this as any ).update = undefined;
-      if(( this as any ).updatePhysics != undefined)
-        ( this as any ).updatePhysics = undefined;
+      if ((this as any).update != undefined) (this as any).update = undefined;
+      if ((this as any).updatePhysics != undefined) (this as any).updatePhysics = undefined;
       this.addedToWorld = false;
       this.parts.forEach((curC) => {
         try {

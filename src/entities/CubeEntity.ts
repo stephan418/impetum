@@ -2,7 +2,7 @@ import World from "../core/World";
 import Entity from "../interfaces/Entity";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
-import { groundMaterial, slipperyMaterial } from "../core/CannonMaterials";
+import { groundMaterial } from "../core/CannonMaterials";
 
 export default class CubeEntity implements Entity {
   private geometry: THREE.BoxGeometry;

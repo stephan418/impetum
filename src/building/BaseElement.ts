@@ -25,7 +25,7 @@ export default abstract class BaseElement {
     this.pos = position;
     this.updatedPosition();
   }
-  getPosition(){
+  getPosition() {
     return this.pos;
   }
 

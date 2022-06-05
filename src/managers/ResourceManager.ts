@@ -3,7 +3,7 @@ import * as CANNON from "cannon-es";
 import LoadingManager from "./LoadingManager";
 import { BufferGeometry } from "three";
 
-export interface ShapeAndOffset{
+export interface ShapeAndOffset {
   shape: CANNON.Shape | undefined;
   offset: CANNON.Vec3 | undefined;
 }
@@ -42,15 +42,15 @@ export default class ResourceManager {
     this.finishedTextureLoadingCallback = () => {}; */
   }
   loadModelGeometry(name: string, path: string): void;
-  loadModelGeometry(name: string, path: string, index:number): void;
-  loadModelGeometry(name: string, path: string, index?:number):void {
+  loadModelGeometry(name: string, path: string, index: number): void;
+  loadModelGeometry(name: string, path: string, index?: number): void {
     //TODO: add error handling if model with path isn't found
     if (this.modelGeometries.get(name) != undefined) {
       return;
     }
     this.loadingModelQueue++;
     this.loadingManager.loadGLTFGeometryAsync(path).then((data) => {
-      if(data == undefined){
+      if (data == undefined) {
         return;
       }
       this.addModelGeometry(name, data[index || 0].geometry, index || 0);
@@ -62,19 +62,19 @@ export default class ResourceManager {
     });
   }
 
-  loadModelGeometries(name: string, path: string):void {
+  loadModelGeometries(name: string, path: string): void {
     //TODO: add error handling if model with path isn't found
     if (this.modelGeometries.get(name) != undefined) {
       return;
     }
     this.loadingModelQueue++;
     this.loadingManager.loadGLTFGeometryAsync(path).then((data) => {
-      if(data == undefined){
+      if (data == undefined) {
         return;
       }
       data.forEach((cur, idx) => {
         this.addModelGeometry(name, cur.geometry, idx);
-      })
+      });
       // this.addModelMaterial(name, data.material);
       this.loadingModelQueue--;
       if (this.loadingModelQueue == 0) {
@@ -88,14 +88,14 @@ export default class ResourceManager {
   }
 
   addModelGeometry(name: string, geometry: THREE.BufferGeometry): void;
-  addModelGeometry(name: string,  geometry: THREE.BufferGeometry, index:number,): void;
-  addModelGeometry(name: string,  geometry: THREE.BufferGeometry, index?:number,):void {
+  addModelGeometry(name: string, geometry: THREE.BufferGeometry, index: number): void;
+  addModelGeometry(name: string, geometry: THREE.BufferGeometry, index?: number): void {
     let arr = this.modelGeometries.get(name);
-    if(arr == undefined){
+    if (arr == undefined) {
       this.modelGeometries.set(name, []);
       arr = this.modelGeometries.get(name);
     }
-    ( arr as THREE.BufferGeometry[] )[index || 0] = geometry;
+    (arr as THREE.BufferGeometry[])[index || 0] = geometry;
     this.modelGeometries.set(name, arr || []);
   }
 
@@ -103,21 +103,21 @@ export default class ResourceManager {
   getModelGeometry(name: string, index: number): BufferGeometry | undefined;
   getModelGeometry(name: string, index?: number): BufferGeometry | undefined {
     let found = this.modelGeometries.get(name);
-    if(found == undefined){
+    if (found == undefined) {
       return undefined;
     }
-    return found[index || 0] ;
+    return found[index || 0];
   }
 
   addModelMaterial(name: string, material: THREE.Material): void;
-  addModelMaterial(name: string,  material: THREE.Material, index:number,): void;
-  addModelMaterial(name: string,  material: THREE.Material, index?:number,):void {
+  addModelMaterial(name: string, material: THREE.Material, index: number): void;
+  addModelMaterial(name: string, material: THREE.Material, index?: number): void {
     let arr = this.modelMaterials.get(name);
-    if(arr == undefined){
+    if (arr == undefined) {
       this.modelMaterials.set(name, []);
       arr = this.modelMaterials.get(name);
     }
-    ( arr as THREE.Material[] )[index || 0] = material;
+    (arr as THREE.Material[])[index || 0] = material;
     this.modelMaterials.set(name, arr || []);
   }
 
@@ -125,27 +125,27 @@ export default class ResourceManager {
   getModelMaterial(name: string, index: number): THREE.Material | undefined;
   getModelMaterial(name: string, index?: number): THREE.Material | undefined {
     let found = this.modelMaterials.get(name);
-    if(found == undefined){
+    if (found == undefined) {
       return undefined;
     }
-    return found[index || 0] ;
+    return found[index || 0];
   }
 
   loadModelTexture(name: string, path: string): void;
-  loadModelTexture(name: string, path: string, index:number): void;
-  loadModelTexture(name: string, path: string, index?:number):void {
+  loadModelTexture(name: string, path: string, index: number): void;
+  loadModelTexture(name: string, path: string, index?: number): void {
     this.addModelTexture(name, this.textureLoader.load(path), index || 0);
   }
 
   addModelTexture(name: string, texture: THREE.Texture): void;
-  addModelTexture(name: string,  texture: THREE.Texture, index:number,): void;
-  addModelTexture(name: string,  texture: THREE.Texture, index?:number,):void {
+  addModelTexture(name: string, texture: THREE.Texture, index: number): void;
+  addModelTexture(name: string, texture: THREE.Texture, index?: number): void {
     let arr = this.modelTextures.get(name);
-    if(arr == undefined){
+    if (arr == undefined) {
       this.modelTextures.set(name, []);
       arr = this.modelTextures.get(name);
     }
-    ( arr as THREE.Texture[] )[index || 0] = texture;
+    (arr as THREE.Texture[])[index || 0] = texture;
     this.modelTextures.set(name, arr || []);
   }
 
@@ -153,10 +153,10 @@ export default class ResourceManager {
   getModelTexture(name: string, index: number): THREE.Texture | undefined;
   getModelTexture(name: string, index?: number): THREE.Texture | undefined {
     let found = this.modelTextures.get(name);
-    if(found == undefined){
+    if (found == undefined) {
       return undefined;
     }
-    return found[index || 0] ;
+    return found[index || 0];
   }
 
   addModelShape(name: string, shape: CANNON.Shape, offset: CANNON.Vec3): void;
@@ -167,33 +167,35 @@ export default class ResourceManager {
     if (currentArray == undefined) {
       currentArray = [];
     }
-    if(currentArray[index || 0] == undefined){
+    if (currentArray[index || 0] == undefined) {
       currentArray[index || 0] = [];
     }
-    currentArray[index||0][shapeIndex || 0] = {shape: shape, offset: offset};
+    currentArray[index || 0][shapeIndex || 0] = { shape: shape, offset: offset };
     this.modelShapes.set(name, currentArray);
   }
   getModelShape(name: string): ShapeAndOffset;
   getModelShape(name: string, index: number): ShapeAndOffset;
   getModelShape(name: string, index: number, shapeIndex: number): ShapeAndOffset;
-  getModelShape(name: string, index?: number, shapeIndex?: number): ShapeAndOffset{
+  getModelShape(name: string, index?: number, shapeIndex?: number): ShapeAndOffset {
     let currentArray = this.modelShapes.get(name);
     if (currentArray == undefined) {
-      return {shape: undefined, offset: undefined};
+      return { shape: undefined, offset: undefined };
     }
-    if(currentArray[index || 0] == undefined){
-      return {shape: undefined, offset: undefined};
+    if (currentArray[index || 0] == undefined) {
+      return { shape: undefined, offset: undefined };
     }
-    return {shape: currentArray[index || 0][shapeIndex || 0].shape, offset: currentArray[index || 0][shapeIndex || 0].offset};
+    return {
+      shape: currentArray[index || 0][shapeIndex || 0].shape,
+      offset: currentArray[index || 0][shapeIndex || 0].offset,
+    };
   }
-  getModelShapes(name:string): ShapeAndOffset[];
-  getModelShapes(name:string, index:number): ShapeAndOffset[];
-  getModelShapes(name:string, index?:number): ShapeAndOffset[]{
+  getModelShapes(name: string): ShapeAndOffset[];
+  getModelShapes(name: string, index: number): ShapeAndOffset[];
+  getModelShapes(name: string, index?: number): ShapeAndOffset[] {
     let currentArray = this.modelShapes.get(name);
-    if(currentArray == undefined){
+    if (currentArray == undefined) {
       return [];
     }
     return currentArray[index || 0];
-
   }
 }

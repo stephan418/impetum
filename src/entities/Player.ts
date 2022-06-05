@@ -195,7 +195,10 @@ export default class Player implements Entity {
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
     this.camera.position.y += 3;
 
-    if (this.buildingGhostClock != undefined && this.buildingGhostClock.getElapsedTime() > config.building.ghostTimeDelay) {
+    if (
+      this.buildingGhostClock != undefined &&
+      this.buildingGhostClock.getElapsedTime() > config.building.ghostTimeDelay
+    ) {
       if (this.inventory.selected != undefined) {
         this.ghostSelectedItem = this.inventory.selected.item || undefined;
         //Change has happened, generate new mesh and delete the old one
