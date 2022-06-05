@@ -120,7 +120,7 @@ export default class World {
         for (let i = 0; i < 10; i++) {
           let newTurret = new GeneralTurret(this.resourceManager);
           newTurret.setPosition(new THREE.Vector3(i * 10, 0, 0));
-          newTurret.addToWorld(this);
+          this.buildingManager.addGridElement(newTurret);
         }
 
         this.floorMesh.material = new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("grass") });
@@ -338,7 +338,7 @@ export default class World {
     this.deltaPhysicsTime = 0;
 
     // -- Add CubeEntity to test physics --
-    for (let o = 1; o < 2; o++) {
+    /* for (let o = 1; o < 2; o++) {
       for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 2; j++) {
           let cubeEntity = new CubeEntity(new CANNON.Vec3(i * o * 5, o * o, j * o * 5), new CANNON.Vec3(o, o, o));
@@ -346,7 +346,7 @@ export default class World {
           this.updatables.push(cubeEntity);
         }
       }
-    }
+    } */
   }
 
   public handleResize(): boolean {
