@@ -5,6 +5,7 @@ import * as CANNON from "cannon-es";
 import World from "../core/World";
 import { groundMaterial } from "../core/CannonMaterials";
 import { LineBasicMaterial, MeshLambertMaterial, MeshStandardMaterial } from "three";
+import { config } from "../managers/OptionsManager";
 
 export default abstract class FreeElement extends BaseElement implements BuildingElement {
   private mesh: THREE.Mesh;
@@ -12,6 +13,10 @@ export default abstract class FreeElement extends BaseElement implements Buildin
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material, cShape: CANNON.Shape) {
     super();
     this.mesh = new THREE.Mesh();
+    if(config.graphics.shadows){
+      this.mesh.receiveShadow = true;
+      this.mesh.castShadow = true;
+    }
     this.cBody = new CANNON.Body({ material: groundMaterial });
     this.setGeometry(geometry);
     this.setMaterial(material);

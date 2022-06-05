@@ -16,11 +16,16 @@ import GameStateError from "../errors/GameStateError";
 import BuildingManager from "../managers/BuildingManager";
 import { groundMaterial, slipperyMaterial } from "./CannonMaterials";
 import GeneralTurret from "../building/Turrets/GeneralTurret";
+import { Sky } from "three/examples/jsm/objects/Sky";
+import { config } from "../managers/OptionsManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
   scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
+
+  private sceneSky: Sky;
+  private sceneSkyCounter: number;
 
   private updatables: Updatable[];
 
@@ -61,6 +66,8 @@ export default class World {
     this.floorMesh.receiveShadow = true;
     /* this.floorMesh.rotation.x = -Math.PI / 2;
     this.floorMesh.position.y = -1; */
+    //make optional
+    this.floorMesh.receiveShadow = true;
     this.scene.add(this.floorMesh);
 
     // -- Setup Physics for Floor --
@@ -105,14 +112,6 @@ export default class World {
     const aspect = canvas.clientWidth / canvas.clientHeight;
 
     this.loadingManager = new LoadingManager();
-    this.loadingManager.loadGLTFGeometryAsync("../../static/debugMonke.glb").then((data) => {
-      let loadedMesh: THREE.Mesh = data;
-      // data.position.set(10, 10, 10);
-      // data.scale.set(5, 5, 5);
-      loadedMesh.scale.set(4, 4, 4);
-      loadedMesh.position.set(10, 10, 10);
-      this.scene.add(loadedMesh);
-    });
 
     // -- Initialize the Grid Manager --
     this.gridManager = new GridManager();
@@ -242,13 +241,57 @@ export default class World {
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
-    this.directionalLight = new THREE.DirectionalLight(0xdfdfdf, 0.5);
+    this.directionalLight = new THREE.DirectionalLight(0xdfdfdf, 0.9);
+    this.directionalLight.position.set(1, 1, 1);
+
+    if (config.graphics.shadows) {
+      let side = 50;
+      this.directionalLight.shadow.camera.top = side;
+      this.directionalLight.shadow.camera.bottom = -side;
+      this.directionalLight.shadow.camera.left = side;
+      this.directionalLight.shadow.camera.right = -side;
+
+      this.directionalLight.shadow.mapSize.width = config.graphics.shadowsize;
+      this.directionalLight.shadow.mapSize.height = config.graphics.shadowsize;
+
+      this.directionalLight.shadow.bias = -0.001;
+
+      //make those light shadows optional
+      this.renderer.shadowMap.enabled = true;
+      // this.renderer.shadowMap.type = THREE.PCFShadowMap;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      this.directionalLight.castShadow = true;
+
+      /* let upColor = 0xFFFF80;
+    let downColor = 0x4040FF;
+    let light = new THREE.HemisphereLight(upColor, downColor, 1.0);
+    this.scene.add(light); */
+
+      // -- Setup shadowmap --
+      this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      this.renderer.outputEncoding = THREE.sRGBEncoding;
+      this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      this.renderer.toneMappingExposure = 0.4;
+    }
+
     this.scene.add(this.ambientLight);
     this.scene.add(this.directionalLight);
+    this.scene.add(this.directionalLight.target);
 
-    // -- Setup shadowmap --
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.sceneSky = new Sky();
+    this.sceneSky.scale.setScalar(350000);
+    this.sceneSky.material.uniforms["turbidity"].value = 10;
+    this.sceneSky.material.uniforms["rayleigh"].value = 3;
+    this.sceneSky.material.uniforms["mieCoefficient"].value = 0.005;
+    this.sceneSky.material.uniforms["mieDirectionalG"].value = 0.7;
+    this.sceneSky.material.uniforms["sunPosition"].value.copy(
+      new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - 50), THREE.MathUtils.degToRad(50))
+    );
+    this.sceneSkyCounter = 0;
+
+    this.scene.add(this.sceneSky);
 
     // -- Initializes clock for delta time --
     this.deltaClock = new THREE.Clock();
@@ -303,6 +346,31 @@ export default class World {
     this.updatables.forEach((updateable) => {
       updateable.update(this.deltaTime);
     });
+
+    //makes basically a day light cycle by changing the sun's position
+    /* this.sceneSkyCounter += this.deltaTime * 1;
+    this.sceneSky.material.uniforms["sunPosition"].value.copy(
+      new THREE.Vector3().setFromSphericalCoords(
+        1,
+        THREE.MathUtils.degToRad(90 - this.sceneSkyCounter),
+        THREE.MathUtils.degToRad(180)
+      )
+    ); */
+
+    /* this.directionalLight.position.set(
+      0,
+      Math.cos(this.sceneSkyCounter / 10) * 10,
+      Math.sin(this.sceneSkyCounter / 10) * 10
+    ); */
+
+    if (config.graphics.shadows) {
+      this.directionalLight.position.set(
+        this.player.camera.position.x + 30,
+        this.player.camera.position.y + 30,
+        this.player.camera.position.z + 30
+      );
+      this.directionalLight.target = this.player.camera;
+    }
   }
 
   public updatePhysics() {
