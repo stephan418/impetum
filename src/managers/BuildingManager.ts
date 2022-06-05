@@ -8,16 +8,22 @@ import WallElement from "../building/WallElement";
 import PositionRotationResult from "../interfaces/PositionRotationResult";
 import BuildingElement from "../interfaces/BuildingElement";
 import BaseElement from "../building/BaseElement";
+import TurretElement from "../building/TurretElement";
+import FreeElement from "../building/FreeElement";
 
 export default class BuildingManager {
   raycaster: THREE.Raycaster;
   private scene: THREE.Scene;
   private world: World;
   private gridElements: GridElement[];
+  private freeElements: FreeElement[];
+  private allElements: BaseElement[];
   constructor(world: World) {
     this.raycaster = new THREE.Raycaster();
     this.scene = world.scene;
     this.gridElements = [];
+    this.freeElements = [];
+    this.allElements = [];
     this.world = world;
   }
   shootRayCast(position: THREE.Vector3, direction: THREE.Vector3, near: number, far: number): THREE.Intersection[] {
@@ -40,7 +46,7 @@ export default class BuildingManager {
   }
   private getFirstIntersect(intersections: THREE.Intersection[]) {}
   shotRayCastGetBuildingElementPosition(
-    el: WallElement | FloorElement,
+    el: WallElement | FloorElement | TurretElement,
     position: THREE.Vector3,
     direction: THREE.Vector3,
     near: number,
@@ -124,12 +130,25 @@ export default class BuildingManager {
         }
       }
       return returnThisLater;
+    } else if (el instanceof TurretElement) {
+      let a: THREE.Intersection[] = this.shootRayCast(position, direction, near, far);
+      if (a.length <= 0) {
+        return { position: undefined, rotation: undefined };
+      }
+      return {
+        position: a[0].point.clone(),
+        rotation: new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0)),
+      };
     }
     return { position: undefined, rotation: undefined };
   }
-  addGridElement(element: GridElement) {
+  addGridElement(element: GridElement | FreeElement) {
     element.addToWorld(this.world);
+    if(element instanceof GridElement)
     this.gridElements.push(element);
+    if(element instanceof FreeElement)
+    this.freeElements.push(element);
+    this.allElements.push(element);
   }
 
   addGhostElement(element: BaseElement) {
