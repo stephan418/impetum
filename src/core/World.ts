@@ -144,10 +144,10 @@ export default class World {
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
     this.resourceManager.loadModelGeometries("crystal", "static/crystal.glb");
-    this.resourceManager.loadModelTexture("crystal", "static/woodenFloorTexture.png");
+    this.resourceManager.loadModelTexture("crystal", "static/crystalTexture.png");
     this.resourceManager.addModelShape(
       "crystal",
-      new CANNON.Box(new CANNON.Vec3(2.5, 2.5, 5)),
+      new CANNON.Box(new CANNON.Vec3(2.5, 5, 2.5)),
       new CANNON.Vec3(0, 0, 0)
     );
     this.resourceManager.addModelMaterial(
