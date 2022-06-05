@@ -121,8 +121,11 @@ export default class World {
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
         this.player.startGhostClock();
-        let newTurret = new GeneralTurret(this.resourceManager);
-        newTurret.addToWorld(this);
+        for(let i = 0; i < 10; i++){
+          let newTurret = new GeneralTurret(this.resourceManager);
+          newTurret.setPosition(new THREE.Vector3(i*10,0,0));
+          newTurret.addToWorld(this);
+        }
       }).bind(this)
     );
 
@@ -327,6 +330,20 @@ export default class World {
     }
 
     return false;
+  }
+
+  getUpdatables(){
+    return this.updatables;
+  }
+  addUpdatable(elem: Updatable){
+    this.updatables.push(elem);
+  }
+  removeUpdatable(elem: Updatable){
+    this.updatables.forEach((val, id) => {
+      if(val == elem){
+        this.updatables.splice(id);
+      }
+    })
   }
 
   public tick() {
