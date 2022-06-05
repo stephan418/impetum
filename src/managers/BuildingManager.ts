@@ -24,7 +24,9 @@ export default class BuildingManager {
     this.raycaster.set(position, direction);
     this.raycaster.near = near;
     this.raycaster.far = far;
-    return this.raycaster.intersectObjects(this.world.scene.children, true);
+    return this.raycaster
+      .intersectObjects(this.world.scene.children, true)
+      .filter((intersect) => intersect.object.name != "nointersect");
   }
   private objectIdToGridElement(id: number): GridElement | undefined {
     let returnThisLater = undefined;
@@ -91,6 +93,7 @@ export default class BuildingManager {
             smallest = key;
           }
         }
+        console.log(objDistances);
         switch (smallest) {
           case "zFrontPositionDistance":
             returnThisLater = val.getZFrontWall(el);
@@ -118,11 +121,11 @@ export default class BuildingManager {
     this.gridElements.push(element);
   }
 
-  addGhostElement(element: BaseElement){
+  addGhostElement(element: BaseElement) {
     element.setGhost(true);
     element.addToWorld(this.world);
   }
-  removeGhostElement(element: BaseElement){
+  removeGhostElement(element: BaseElement) {
     element.setGhost(false);
     element.removeFromWorld(this.world);
   }

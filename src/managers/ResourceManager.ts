@@ -59,10 +59,10 @@ export default class ResourceManager {
     this.loadingModelQueue++;
     this.loadingManager.loadGLTFGeometryAsync(path).then((data) => {
       this.addModelGeometry(name, data.geometry);
-      if(Array.isArray( data.material )){
-          this.addModelMaterial(name, data.material[0]);
-      }else{
-          this.addModelMaterial(name, data.material);
+      if (Array.isArray(data.material)) {
+        this.addModelMaterial(name, data.material[0]);
+      } else {
+        this.addModelMaterial(name, data.material);
       }
       this.loadingModelQueue--;
       if (this.loadingModelQueue == 0) {
@@ -84,7 +84,7 @@ export default class ResourceManager {
     this.modelGeometries.delete(name);
   }
 
-  addModelMaterial(name: string, material: THREE.Material ) {
+  addModelMaterial(name: string, material: THREE.Material) {
     this.modelMaterials.set(name, material);
   }
   getModelMaterial(name: string) {
@@ -94,7 +94,7 @@ export default class ResourceManager {
     this.modelMaterials.delete(name);
   }
 
-  loadModelTexture(name: string, path:string) {
+  loadModelTexture(name: string, path: string) {
     this.addModelTexture(name, this.textureLoader.load(path));
   }
 

@@ -15,6 +15,7 @@ import GameStateManager from "../managers/GameStateManager";
 import GameStateError from "../errors/GameStateError";
 import BuildingManager from "../managers/BuildingManager";
 import { groundMaterial, slipperyMaterial } from "./CannonMaterials";
+import GeneralTurret from "../building/Turrets/GeneralTurret";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -121,6 +122,8 @@ export default class World {
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
         this.player.startGhostClock();
+        let newTurret = new GeneralTurret(this.resourceManager);
+        newTurret.addToWorld(this);
       }).bind(this)
     );
 
@@ -129,6 +132,9 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugWall", "static/debugWall.glb");
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
+
+    this.resourceManager.loadModelGeometry("generalTurret", "static/generalTurret.glb");
+    this.resourceManager.addModelShape("generalTurret", new CANNON.Box(new CANNON.Vec3(2.5, 2.5, 2.5)));
 
     this.resourceManager.loadModelGeometry("woodenFloor", "static/woodenFloor.glb");
     this.resourceManager.loadModelTexture("woodenFloor", "static/woodenFloorTexture.png");

@@ -6,13 +6,9 @@ import World from "../core/World";
 import { groundMaterial } from "../core/CannonMaterials";
 import { LineBasicMaterial, MeshLambertMaterial, MeshStandardMaterial } from "three";
 
-export default abstract class GridElement extends BaseElement implements BuildingElement {
+export default abstract class FreeElement extends BaseElement implements BuildingElement {
   private mesh: THREE.Mesh;
   private cBody: CANNON.Body;
-  public gridDistanceXZ: number;
-  public gridDistanceY: number;
-  // private materialName: string;
-  // private geometryName: string;
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material, cShape: CANNON.Shape) {
     super();
     this.mesh = new THREE.Mesh();
@@ -20,10 +16,6 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.setGeometry(geometry);
     this.setMaterial(material);
     this.addCShape(cShape);
-    // this.materialName = "";
-    // this.geometryName = "";
-    this.gridDistanceXZ = 10;
-    this.gridDistanceY = 10;
 
     this.updatedPosition = () => {
       this.mesh.position.copy(this.pos);
@@ -68,21 +60,6 @@ export default abstract class GridElement extends BaseElement implements Buildin
     return this.cBody;
   }
 
-  getPositonOnGrid(position: THREE.Vector3): THREE.Vector3 {
-    let newPosition: THREE.Vector3 = new THREE.Vector3();
-    newPosition.x = Math.round(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
-    newPosition.y = Math.round(position.y / this.gridDistanceY) * this.gridDistanceY;
-    newPosition.z = Math.round(position.z / this.gridDistanceXZ) * this.gridDistanceXZ;
-    return newPosition;
-  }
-
-  setPositionOnGrid(position: THREE.Vector3) {
-    let newPosition: THREE.Vector3 = new THREE.Vector3();
-    newPosition.x = Math.round(position.x / this.gridDistanceXZ) * this.gridDistanceXZ;
-    newPosition.y = Math.round(position.y / this.gridDistanceY) * this.gridDistanceY;
-    newPosition.z = Math.round(position.z / this.gridDistanceXZ) * this.gridDistanceXZ;
-    this.setPosition(newPosition);
-  }
   updatedPosition(): void {}
   updatedGhostStatus(isGhost: boolean): void {
     if (isGhost) {
