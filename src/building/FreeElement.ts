@@ -7,17 +7,22 @@ import { groundMaterial } from "../core/CannonMaterials";
 import { LineBasicMaterial, MeshLambertMaterial, MeshStandardMaterial } from "three";
 import { config } from "../managers/OptionsManager";
 import { ShapeAndOffset } from "../managers/ResourceManager";
+import GeneralTurret from "./Turrets/GeneralTurret";
 
 export class MeshContainer {
   private _mesh: THREE.Mesh;
   private _cBody: CANNON.Body;
   private _positionOffset: THREE.Vector3;
+  private _position: THREE.Vector3;
   private _quaternionOffset: THREE.Quaternion;
+  private _quaternion: THREE.Quaternion;
   constructor() {
     this._mesh = new THREE.Mesh();
     this._cBody = new CANNON.Body({ material: groundMaterial });
     this._positionOffset = new THREE.Vector3();
     this._quaternionOffset = new THREE.Quaternion();
+    this._position = new THREE.Vector3();
+    this._quaternion = new THREE.Quaternion();
     if (config.graphics.shadows) {
       this._mesh.receiveShadow = true;
       this._mesh.castShadow = true;
@@ -30,6 +35,20 @@ export class MeshContainer {
   removeFromWorld(world: World) {
     world.scene.remove(this._mesh);
     world.cScene.removeBody(this._cBody);
+  }
+  private updatePosition(){
+    this._mesh.position.set(this._position.x+this._positionOffset.x, this._position.y+this._positionOffset.y, this._position.z+this._positionOffset.z);
+    this._cBody.position.set(this._position.x+this._positionOffset.x, this._position.y+this._positionOffset.y, this._position.z+this._positionOffset.z);
+  }
+  private updateQuaternion(){
+    let euler: THREE.Euler = new THREE.Euler().setFromQuaternion( this._quaternion );
+    let eulerAdd: THREE.Euler = new THREE.Euler().setFromQuaternion( this._quaternionOffset );
+    let eulerEnd:THREE.Euler = new THREE.Euler(euler.x + eulerAdd.x, euler.y + eulerAdd.y, euler.z + eulerAdd.z)
+    let quat: THREE.Quaternion = new THREE.Quaternion().setFromEuler(eulerEnd);
+    this._mesh.quaternion.copy(quat);
+    this._cBody.quaternion.copy(quat as unknown as CANNON.Quaternion);
+    /* this._mesh.quaternion.set(this._quaternion.x*this._quaternionOffset.x, this._quaternion.y*this._quaternionOffset.y, this._quaternion.z*this._quaternionOffset.z, this._quaternion.w*this._quaternionOffset.w);
+    this._cBody.quaternion.set(this._quaternion.x*this._quaternionOffset.x, this._quaternion.y*this._quaternionOffset.y, this._quaternion.z*this._quaternionOffset.z, this._quaternion.w*this._quaternionOffset.w); */
   }
   get mesh(): THREE.Mesh {
     return this._mesh;
@@ -47,33 +66,29 @@ export class MeshContainer {
     return this._positionOffset;
   }
   set positionOffset(vec: THREE.Vector3) {
-    this.mesh.position.set(
-      this._mesh.position.x + this._positionOffset.x,
-      this._mesh.position.y + this._positionOffset.y,
-      this._mesh.position.z + this._positionOffset.z
-    );
-    this.cBody.position.set(
-      this._mesh.position.x + this._positionOffset.x,
-      this._mesh.position.y + this._positionOffset.y,
-      this._mesh.position.z + this._positionOffset.z
-    );
+    this._positionOffset = vec;
+    this.updatePosition();
   }
   get quaternionOffset(): THREE.Quaternion {
     return this._quaternionOffset;
   }
   set quaternionOffset(quat: THREE.Quaternion) {
-    this.mesh.quaternion.set(
-      this._mesh.quaternion.x + this._quaternionOffset.x,
-      this._mesh.quaternion.y + this._quaternionOffset.y,
-      this._mesh.quaternion.z + this._quaternionOffset.z,
-      this._mesh.quaternion.w + this._quaternionOffset.w
-    );
-    this.cBody.quaternion.set(
-      this._mesh.quaternion.x + this._quaternionOffset.x,
-      this._mesh.quaternion.y + this._quaternionOffset.y,
-      this._mesh.quaternion.z + this._quaternionOffset.z,
-      this._mesh.quaternion.w + this._quaternionOffset.w
-    );
+    this._quaternionOffset = quat;
+    this.updateQuaternion();
+  }
+  get position(): THREE.Vector3 {
+    return this._mesh.position;
+  }
+  set position(vec: THREE.Vector3) {
+    this._position = vec;
+    this.updatePosition();
+  }
+  get quaternion(): THREE.Quaternion {
+    return this._mesh.quaternion;
+  }
+  set quaternion(vec: THREE.Quaternion) {
+    this._quaternion = vec;
+    this.updateQuaternion();
   }
 }
 export default abstract class FreeElement extends BaseElement implements BuildingElement {
@@ -96,39 +111,23 @@ export default abstract class FreeElement extends BaseElement implements Buildin
 
     this.updatedPosition = () => {
       this.parts.forEach((val, idx) => {
-        val.mesh.position.set(
-          this.pos.x + val.positionOffset.x,
-          this.pos.y + val.positionOffset.y,
-          this.pos.z + val.positionOffset.z
-        );
-        val.cBody.position.set(
-          this.pos.x + val.positionOffset.x,
-          this.pos.y + val.positionOffset.y,
-          this.pos.z + val.positionOffset.z
-        );
+        val.position = this.pos.clone();
       });
     };
 
     this.updatedQuaternion = () => {
       this.parts.forEach((val, idx) => {
-        val.mesh.quaternion.set(
-          this.quaternion.x + val.quaternionOffset.x,
-          this.quaternion.y + val.quaternionOffset.y,
-          this.quaternion.z + val.quaternionOffset.z,
-          this.quaternion.w + val.quaternionOffset.w
-        );
-        val.cBody.quaternion.set(
-          this.quaternion.x + val.quaternionOffset.x,
-          this.quaternion.y + val.quaternionOffset.y,
-          this.quaternion.z + val.quaternionOffset.z,
-          this.quaternion.w + val.quaternionOffset.w
-        );
+        val.quaternion = this.quaternion.clone();
       });
     };
   }
   addToWorld(world: World): void {
     this.addedToWorld = true;
     this.world = world;
+    //type correctly, should be true if this implements updatable
+    if(( this  as any).update != undefined && ( this  as any).updatePhysics != undefined){
+      world.addUpdatable(this as any);
+    }
     this.parts.forEach((val, idx) => {
       world.scene.add(val.mesh);
       world.cScene.addBody(val.cBody);
@@ -137,6 +136,10 @@ export default abstract class FreeElement extends BaseElement implements Buildin
   removeFromWorld(world: World): void {
     this.addedToWorld = false;
     this.world = world;
+    //type correctly, should be true if this implements updatable
+    if(( this  as any).update != undefined && ( this  as any).updatePhysics != undefined){
+      world.removeUpdatable(this as any);
+    }
     this.parts.forEach((val, idx) => {
       world.scene.remove(val.mesh);
       world.cScene.removeBody(val.cBody);
