@@ -7,16 +7,15 @@ export default class LoadingManager {
     this.gltfLoader = new GLTFLoader();
   }
 
-  async loadGLTFGeometryAsync(path: string): Promise<THREE.Mesh> {
+  async loadGLTFGeometryAsync(path: string): Promise<THREE.Mesh[] | undefined> {
     try {
       let loadedGLTF = await this.gltfLoader.loadAsync(path);
-      let loadedMesh = loadedGLTF.scene.children[0] as THREE.Mesh;
-      console.log(loadedGLTF.scene.children);
-      return loadedMesh;
+      let loadedMeshs = loadedGLTF.scene.children as THREE.Mesh[];
+      return loadedMeshs;
     } catch (err) {
       //TODO: add error handling if a Model isn't found
       // return undefined;
-      return new THREE.Mesh();
+      return undefined;
     }
   }
 }
