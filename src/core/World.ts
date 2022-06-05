@@ -18,6 +18,7 @@ import { Sky } from "three/examples/jsm/objects/Sky";
 import { config } from "../managers/OptionsManager";
 import Wave from "./wave/Wave";
 import WaveManager from "../managers/WaveManager";
+import Crystal from "../building/Crystal";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -121,6 +122,10 @@ export default class World {
           let newTurret = new GeneralTurret(this.resourceManager);
           newTurret.setPosition(new THREE.Vector3(i * 10, 0, 0));
           this.buildingManager.addGridElement(newTurret);
+
+          const crystal = new Crystal(this.resourceManager);
+          crystal.setPosition(new THREE.Vector3(0, 0, 10));
+          this.buildingManager.addGridElement(crystal);
         }
 
         this.floorMesh.material = new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("grass") });
@@ -137,6 +142,18 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugWall", "static/debugWall.glb");
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
+
+    this.resourceManager.loadModelGeometries("crystal", "static/crystal.glb");
+    this.resourceManager.loadModelTexture("crystal", "static/woodenFloorTexture.png");
+    this.resourceManager.addModelShape(
+      "crystal",
+      new CANNON.Box(new CANNON.Vec3(2.5, 2.5, 5)),
+      new CANNON.Vec3(0, 0, 0)
+    );
+    this.resourceManager.addModelMaterial(
+      "crystal",
+      new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("crystal") })
+    );
 
     this.resourceManager.loadModelGeometries("generalTurret", "static/generalTurret.glb");
     this.resourceManager.addModelShape(
