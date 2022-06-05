@@ -18,6 +18,7 @@ import WoodenWallItem from "../inventory/items/WoodenWall";
 import FloorElement from "../building/FloorElement";
 import { slipperyMaterial } from "../core/CannonMaterials";
 import Item from "../inventory/Item";
+import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -39,7 +40,7 @@ export default class Player implements Entity {
   private howMuchRight: number;
   private howMuchBack: number;
 
-  private buildingGhostClock: THREE.Clock;
+  private buildingGhostClock: THREE.Clock | undefined;
   private ghostSelectedItem: Item | undefined;
   private ghostSelectedItemPrevious: Item | undefined;
   private ghostBuildingElement: any;
@@ -59,6 +60,7 @@ export default class Player implements Entity {
     scene: THREE.Scene,
     domElement?: HTMLElement
   ) {
+    this.buildingGhostClock = undefined;
     this.scene = scene;
     this.howMuchRight = 0;
     this.howMuchBack = 0;
@@ -140,6 +142,7 @@ export default class Player implements Entity {
     this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots, inputManager);
     this.inventory.collect(new WoodenFloorItem(), 10);
     this.inventory.collect(new WoodenWallItem(), 10);
+    this.inventory.collect(new GeneralTurretItem(), 10);
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.onclick = () => {
@@ -213,7 +216,7 @@ export default class Player implements Entity {
         );
         this.ghostBuildingElement.setPosition(rayResult.position || new THREE.Vector3(-100, -100, -100));
         this.ghostBuildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion());
-      }else{
+      } else {
         this.buildingManager.removeGhostElement(this.ghostBuildingElement);
       }
       this.buildingGhostClock.start();
