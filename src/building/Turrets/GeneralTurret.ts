@@ -12,7 +12,7 @@ export default class GeneralTurret extends TurretElement {
     const a = resourceManager.getModelGeometry("generalTurret", 0);
     const aMiddle = resourceManager.getModelGeometry("generalTurret", 1);
     const aTop = resourceManager.getModelGeometry("generalTurret", 2);
-    const b = resourceManager.getModelMaterial("debugWall");
+    const b = resourceManager.getModelMaterial("generalTurret");
     const c = resourceManager.getModelShapes("generalTurret")[0];
     if (!a || !aMiddle || !aTop) {
       throw new Error("Geometry couldn't be found");

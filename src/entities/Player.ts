@@ -19,6 +19,8 @@ import FloorElement from "../building/FloorElement";
 import { slipperyMaterial } from "../core/CannonMaterials";
 import Item from "../inventory/Item";
 import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
+import FreeElement from "../building/FreeElement";
+import BaseElement from "../building/BaseElement";
 
 export default class Player implements Entity {
   camera: THREE.PerspectiveCamera;
@@ -115,6 +117,24 @@ export default class Player implements Entity {
     }; */
 
     //Building on right mouse button
+    this.inputManager.addMouseButtonCallback(1, (down) => {
+      if (down == true) {
+        let rayResult = this.buildingManager.shootRayCast(
+          this.camera.position,
+          this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+          0,
+          50
+        );
+        if (rayResult != undefined) {
+          try {
+            this.buildingManager.removeGridElement(
+              this.buildingManager.objectIdToElement((rayResult[0] as THREE.Intersection).object.id) as any
+            );
+            //TODO: add 1 item
+          } catch (err) {}
+        }
+      }
+    });
     this.inputManager.addMouseButtonCallback(3, (down) => {
       if (down == true) {
         //I have absolutely no clue how to type this
@@ -131,8 +151,15 @@ export default class Player implements Entity {
             0,
             50
           );
-          buildingElement.setPosition(rayResult.position || new THREE.Vector3(0, 0, 0));
-          buildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion(0, 0, 0));
+          if (
+            rayResult.position == undefined ||
+            buildingManager.isSomethingAtPositionAlready(rayResult.position as THREE.Vector3)
+          ) {
+            this.buildingManager.removeGridElement(buildingElement);
+          } else {
+            buildingElement.setPosition(rayResult.position || new THREE.Vector3(0, 0, 0));
+            buildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion(0, 0, 0));
+          }
           //make item -= 1
         }
       }
@@ -193,6 +220,7 @@ export default class Player implements Entity {
       this.cBody.velocity.y = 40;
     }
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
+    this.camera.position.y += 3;
     this.camera.position.y += 3;
 
     if (
