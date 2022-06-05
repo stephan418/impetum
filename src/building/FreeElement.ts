@@ -36,14 +36,22 @@ export class MeshContainer {
     world.scene.remove(this._mesh);
     world.cScene.removeBody(this._cBody);
   }
-  private updatePosition(){
-    this._mesh.position.set(this._position.x+this._positionOffset.x, this._position.y+this._positionOffset.y, this._position.z+this._positionOffset.z);
-    this._cBody.position.set(this._position.x+this._positionOffset.x, this._position.y+this._positionOffset.y, this._position.z+this._positionOffset.z);
+  private updatePosition() {
+    this._mesh.position.set(
+      this._position.x + this._positionOffset.x,
+      this._position.y + this._positionOffset.y,
+      this._position.z + this._positionOffset.z
+    );
+    this._cBody.position.set(
+      this._position.x + this._positionOffset.x,
+      this._position.y + this._positionOffset.y,
+      this._position.z + this._positionOffset.z
+    );
   }
-  private updateQuaternion(){
-    let euler: THREE.Euler = new THREE.Euler().setFromQuaternion( this._quaternion );
-    let eulerAdd: THREE.Euler = new THREE.Euler().setFromQuaternion( this._quaternionOffset );
-    let eulerEnd:THREE.Euler = new THREE.Euler(euler.x + eulerAdd.x, euler.y + eulerAdd.y, euler.z + eulerAdd.z)
+  private updateQuaternion() {
+    let euler: THREE.Euler = new THREE.Euler().setFromQuaternion(this._quaternion);
+    let eulerAdd: THREE.Euler = new THREE.Euler().setFromQuaternion(this._quaternionOffset);
+    let eulerEnd: THREE.Euler = new THREE.Euler(euler.x + eulerAdd.x, euler.y + eulerAdd.y, euler.z + eulerAdd.z);
     let quat: THREE.Quaternion = new THREE.Quaternion().setFromEuler(eulerEnd);
     this._mesh.quaternion.copy(quat);
     this._cBody.quaternion.copy(quat as unknown as CANNON.Quaternion);
@@ -125,7 +133,7 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     this.addedToWorld = true;
     this.world = world;
     //type correctly, should be true if this implements updatable
-    if(( this  as any).update != undefined && ( this  as any).updatePhysics != undefined){
+    if ((this as any).update != undefined && (this as any).updatePhysics != undefined) {
       world.addUpdatable(this as any);
     }
     this.parts.forEach((val, idx) => {
@@ -137,7 +145,7 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     this.addedToWorld = false;
     this.world = world;
     //type correctly, should be true if this implements updatable
-    if(( this  as any).update != undefined && ( this  as any).updatePhysics != undefined){
+    if ((this as any).update != undefined && (this as any).updatePhysics != undefined) {
       world.removeUpdatable(this as any);
     }
     this.parts.forEach((val, idx) => {
@@ -151,7 +159,7 @@ export default abstract class FreeElement extends BaseElement implements Buildin
       geometry.forEach((val, idx) => {
         if (this.parts[idx] == undefined) {
           this.parts[idx] = new MeshContainer();
-          if(this.addedToWorld){
+          if (this.addedToWorld) {
             this.parts[idx].addToWorld(this.world as World);
           }
         }
@@ -160,9 +168,9 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     } else {
       if (this.parts[0] == undefined) {
         this.parts[0] = new MeshContainer();
-          if(this.addedToWorld){
-            this.parts[0].addToWorld(this.world as World);
-          }
+        if (this.addedToWorld) {
+          this.parts[0].addToWorld(this.world as World);
+        }
       }
       this.parts[0].mesh.geometry = geometry;
     }
@@ -177,8 +185,8 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     if (Array.isArray(material)) {
       material.forEach((val, idx) => {
         if (this.parts[idx] == undefined) {
-          this.parts[idx] = new MeshContainer;
-          if(this.addedToWorld){
+          this.parts[idx] = new MeshContainer();
+          if (this.addedToWorld) {
             this.parts[idx].addToWorld(this.world as World);
           }
         }
@@ -187,9 +195,9 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     } else {
       if (this.parts[0] == undefined) {
         this.parts[0] = new MeshContainer();
-          if(this.addedToWorld){
-            this.parts[0].addToWorld(this.world as World);
-          }
+        if (this.addedToWorld) {
+          this.parts[0].addToWorld(this.world as World);
+        }
       }
       this.parts[0].mesh.material = material;
     }
@@ -201,9 +209,9 @@ export default abstract class FreeElement extends BaseElement implements Buildin
         (cShapes as ShapeAndOffset[][]).forEach((val1, idx1) => {
           if (this.parts[idx1] == undefined) {
             this.parts[idx1] = new MeshContainer();
-          if(this.addedToWorld){
-            this.parts[idx1].addToWorld(this.world as World);
-          }
+            if (this.addedToWorld) {
+              this.parts[idx1].addToWorld(this.world as World);
+            }
           }
           (cShapes as ShapeAndOffset[][])[idx1].forEach((val2, idx2) => {
             if (val2.shape != undefined) {
@@ -217,7 +225,7 @@ export default abstract class FreeElement extends BaseElement implements Buildin
       (cShapes as ShapeAndOffset[]).forEach((val1, idx1) => {
         if (this.parts[idx1] == undefined) {
           this.parts[idx1] = new MeshContainer();
-          if(this.addedToWorld){
+          if (this.addedToWorld) {
             this.parts[idx1].addToWorld(this.world as World);
           }
         }
@@ -230,9 +238,9 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     //Case 3
     if (this.parts[0] == undefined) {
       this.parts[0] = new MeshContainer();
-          if(this.addedToWorld){
-            this.parts[0].addToWorld(this.world as World);
-          }
+      if (this.addedToWorld) {
+        this.parts[0].addToWorld(this.world as World);
+      }
     }
     if (cShapes.shape != undefined) {
       this.parts[0].cBody.addShape(cShapes.shape, cShapes.offset);
@@ -247,9 +255,15 @@ export default abstract class FreeElement extends BaseElement implements Buildin
   updatedPosition(): void {}
   updatedGhostStatus(isGhost: boolean): void {
     if (isGhost) {
+      if(( this as any ).update != undefined)
+        ( this as any ).update = undefined;
+      if(( this as any ).updatePhysics != undefined)
+        ( this as any ).updatePhysics = undefined;
       this.addedToWorld = false;
       this.parts.forEach((curC) => {
-        (this.world as World).cScene.removeBody(curC.cBody);
+        try {
+          (this.world as World).cScene.removeBody(curC.cBody);
+        } catch (err) {}
         curC.cBody = new CANNON.Body();
         let newMaterial = ((curC.mesh as THREE.Mesh).material as THREE.Material).clone();
         newMaterial.transparent = true;
