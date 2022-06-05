@@ -8,10 +8,12 @@ import TurretElement from "../TurretElement";
 
 export default class GeneralTurret extends TurretElement {
   constructor(resourceManager: ResourceManager) {
-    const a = resourceManager.getModelGeometry("generalTurret");
+    const a = resourceManager.getModelGeometry("generalTurret",0);
+    const aMiddle = resourceManager.getModelGeometry("generalTurret",1);
+    const aTop = resourceManager.getModelGeometry("generalTurret",2);
     const b = resourceManager.getModelMaterial("woodenWall");
-    const c = resourceManager.getModelShapes("generalTurret")?.[0];
-    if (!a) {
+    const c = resourceManager.getModelShapes("generalTurret")[0];
+    if (!a || !aMiddle || !aTop ) {
       throw new Error("Geometry couldn't be found");
     }
     if (!b) {
@@ -20,6 +22,6 @@ export default class GeneralTurret extends TurretElement {
     if (!c.shape) {
       throw new Error("Shape couldn't be found");
     }
-    super(a, b, c.shape);
+    super([a, aMiddle, aTop], [b,b,b], c);
   }
 }
