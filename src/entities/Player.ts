@@ -129,6 +129,10 @@ export default class Player implements Entity {
             0,
             50
           );
+          console.log("---");
+          console.log(rayResult);
+          console.log(buildingElement);
+          console.log("---");
           buildingElement.setPosition(rayResult.position || new THREE.Vector3(0, 0, 0));
           buildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion(0, 0, 0));
           //make item -= 1
