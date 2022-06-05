@@ -93,7 +93,6 @@ export default class BuildingManager {
             smallest = key;
           }
         }
-        console.log(objDistances);
         switch (smallest) {
           case "zFrontPositionDistance":
             returnThisLater = val.getZFrontWall(el);
@@ -110,6 +109,18 @@ export default class BuildingManager {
           default:
             console.error("No Smallest Position found");
             break;
+        }
+        //place beneath
+        if (a[0].point.y < val.getMesh().position.y && returnThisLater.position != undefined) {
+          returnThisLater.position.y -= val.gridDistanceY;
+        }
+      } else if (val != undefined && val instanceof WallElement) {
+        // console.log(this.gridElements);
+        returnThisLater = { position: val.getMesh().position.clone(), rotation: val.getMesh().quaternion.clone() };
+        if (a[0].point.y < val.getMesh().position.y && returnThisLater.position != undefined) {
+          returnThisLater.position.y -= val.gridDistanceY;
+        } else if (a[0].point.y >= val.getMesh().position.y && returnThisLater.position != undefined) {
+          returnThisLater.position.y += val.gridDistanceY;
         }
       }
       return returnThisLater;
