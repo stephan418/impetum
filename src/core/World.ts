@@ -122,10 +122,17 @@ export default class World {
           newTurret.setPosition(new THREE.Vector3(i * 10, 0, 0));
           newTurret.addToWorld(this);
         }
+
+        this.floorMesh.material = new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("grass") });
       }).bind(this)
     );
 
     //TODO: Add proper loading from an object, which has all filenames of the models
+    this.resourceManager.loadModelTexture("grass", "static/grasTexture.png");
+    (this.resourceManager.getModelTexture("grass") as THREE.Texture).wrapS = THREE.RepeatWrapping;
+    (this.resourceManager.getModelTexture("grass") as THREE.Texture).wrapT = THREE.RepeatWrapping;
+    (this.resourceManager.getModelTexture("grass") as THREE.Texture).repeat = new THREE.Vector2(50, 50);
+
     this.resourceManager.loadModelGeometry("debugFloor", "static/debugFloor.glb");
     this.resourceManager.loadModelGeometry("debugWall", "static/debugWall.glb");
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
@@ -138,6 +145,11 @@ export default class World {
       new CANNON.Vec3(0, 0, 0),
       0,
       0
+    );
+    this.resourceManager.loadModelTexture("generalTurret", "static/generalTurretTexture.png");
+    this.resourceManager.addModelMaterial(
+      "generalTurret",
+      new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("generalTurret") })
     );
 
     this.resourceManager.loadModelGeometry("woodenFloor", "static/woodenFloor.glb");

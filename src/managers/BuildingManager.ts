@@ -15,8 +15,8 @@ export default class BuildingManager {
   raycaster: THREE.Raycaster;
   private scene: THREE.Scene;
   private world: World;
-  private gridElements: GridElement[];
-  private freeElements: FreeElement[];
+  public gridElements: GridElement[];
+  public freeElements: FreeElement[];
   private allElements: BaseElement[];
   constructor(world: World) {
     this.raycaster = new THREE.Raycaster();
@@ -34,7 +34,20 @@ export default class BuildingManager {
       .intersectObjects(this.world.scene.children, true)
       .filter((intersect) => intersect.object.name != "nointersect");
   }
-  private objectIdToGridElement(id: number): GridElement | undefined {
+  public isSomethingAtPositionAlready(vec: THREE.Vector3) {
+    //TODO: optimize please
+    for (let val of this.allElements) {
+      if (
+        Math.floor(val.getPosition().x) == Math.floor(vec.x) &&
+        Math.floor(val.getPosition().y) == Math.floor(vec.y) &&
+        Math.floor(val.getPosition().z) == Math.floor(vec.z)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+  public objectIdToGridElement(id: number): GridElement | undefined {
     let returnThisLater = undefined;
     for (let val of this.gridElements) {
       if (val.getMesh().id == id) {
@@ -43,6 +56,22 @@ export default class BuildingManager {
       }
     }
     return returnThisLater;
+  }
+  public objectIdToFreeElement(id: number): FreeElement | undefined {
+    let returnThisLater = undefined;
+    for (let val of this.freeElements) {
+      val.getParts().forEach((partVal, partId) => {
+        if (partVal.mesh.id == id) {
+          returnThisLater = val;
+        }
+      });
+    }
+    return returnThisLater;
+  }
+  public objectIdToElement(id: number): GridElement | FreeElement | undefined {
+    let g = this.objectIdToGridElement(id);
+    let f = this.objectIdToFreeElement(id);
+    return f || g || undefined;
   }
   private getFirstIntersect(intersections: THREE.Intersection[]) {}
   shotRayCastGetBuildingElementPosition(
@@ -121,7 +150,6 @@ export default class BuildingManager {
           returnThisLater.position.y -= val.gridDistanceY;
         }
       } else if (val != undefined && val instanceof WallElement) {
-        // console.log(this.gridElements);
         returnThisLater = { position: val.getMesh().position.clone(), rotation: val.getMesh().quaternion.clone() };
         if (a[0].point.y < val.getMesh().position.y && returnThisLater.position != undefined) {
           returnThisLater.position.y -= val.gridDistanceY;
@@ -147,6 +175,28 @@ export default class BuildingManager {
     if (element instanceof GridElement) this.gridElements.push(element);
     if (element instanceof FreeElement) this.freeElements.push(element);
     this.allElements.push(element);
+  }
+  removeGridElement(element: GridElement | FreeElement) {
+    element.removeFromWorld(this.world);
+    if (element instanceof GridElement) {
+      this.gridElements.forEach((val, idx) => {
+        if (val == element) {
+          this.gridElements.splice(idx, 1);
+        }
+      });
+    }
+    if (element instanceof FreeElement) {
+      this.freeElements.forEach((val, idx) => {
+        if (val == element) {
+          this.freeElements.splice(idx, 1);
+        }
+      });
+    }
+    this.allElements.forEach((val, idx) => {
+      if (val == element) {
+        this.allElements.splice(idx, 1);
+      }
+    });
   }
 
   addGhostElement(element: BaseElement) {
