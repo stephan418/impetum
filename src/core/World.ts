@@ -335,10 +335,6 @@ export default class World {
     }
   }
 
-  public addUpdatable(updatable: Updatable) {
-    this.updatables.push(updatable);
-  }
-
   public handleResize(): boolean {
     const canvas = this.renderer.domElement;
 
