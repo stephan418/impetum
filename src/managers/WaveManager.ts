@@ -31,12 +31,21 @@ export default class WaveManager {
   private world: World;
   private intervalId?: number;
   private nextInterval?: number;
+  private stopTime?: number;
 
-  constructor(config: WaveManagerConfig, world: World, private target: THREE.Vector3) {
+  constructor(config: WaveManagerConfig, world: World, private target: THREE.Vector3, startImmediately = true) {
     this.config = populateWaveManagerConfig(config);
     this.world = world;
 
-    this.initializeNextInterval();
+    if (startImmediately) {
+      this.initializeNextInterval();
+    }
+  }
+
+  public start() {
+    if (!this.nextInterval && !this.intervalId) {
+      this.initializeNextInterval();
+    }
   }
 
   private initializeNextInterval(forward = true) {
@@ -71,6 +80,32 @@ export default class WaveManager {
     }
 
     return this.currentWaves.splice(index, 1);
+  }
+
+  public pause() {
+    if (!this.intervalId) {
+      console.warn("The WaveManager can only be paused when waves are scheduled");
+      return;
+    }
+
+    this.stopTime = new Date().getTime();
+
+    clearTimeout(this.intervalId);
+    this.intervalId = undefined;
+  }
+
+  public unpause() {
+    if (!this.stopTime || !this.nextInterval) {
+      return;
+    }
+
+    const until = this.nextInterval - this.stopTime;
+
+    this.nextInterval = new Date().getTime() + until;
+
+    this.intervalId = setTimeout(() => this.startWave(), until);
+
+    console.log(`New wave at ${new Date(this.nextInterval)}`);
   }
 
   private static generateInterval(interval: number, deviation: number) {

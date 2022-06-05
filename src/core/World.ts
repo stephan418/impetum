@@ -260,7 +260,9 @@ export default class World {
 
     this.hudManager.attach();
 
-    this.waveManager = new WaveManager({}, this, new THREE.Vector3(0, 1, 0));
+    this.waveManager = new WaveManager({}, this, new THREE.Vector3(0, 1, 0), false);
+
+    // this.waveManager.start();
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
@@ -441,6 +443,9 @@ export default class World {
     // Reset requestId
     this.requestId = undefined;
     this.player.pointerLockControls.unlock();
+
+    // Pause waves
+    this.waveManager.pause();
   }
 
   private _unpause() {
@@ -457,6 +462,9 @@ export default class World {
     document.body.focus();
 
     // TODO: Pointer lock
+
+    // Unpause waves
+    this.waveManager.unpause();
   }
 
   public start() {
