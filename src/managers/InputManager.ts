@@ -15,7 +15,7 @@ export default class InputManager {
   private scrollCallbacks: ScrollCallback[];
 
   private pressedMouseButtons: Map<number, boolean>;
-  private mouseCallbacks: Map<number, Function>;
+  private mouseCallbacks: Map<number, Function[]>;
 
   private mouseRoot;
   private lockControls;
@@ -101,14 +101,14 @@ export default class InputManager {
     if (!this.lockControls || this.lockControls.isLocked) {
       this.pressedMouseButtons.set(ev.which, true);
       if (this.mouseCallbacks.get(ev.which) == undefined) return;
-      this.mouseCallbacks.get(ev.which)?.(true);
+      this.mouseCallbacks.get(ev.which)?.forEach((func) => func(true));
     }
   }
   private onMouseUp(ev: MouseEvent) {
     if (!this.lockControls || this.lockControls.isLocked) {
       this.pressedMouseButtons.set(ev.which, false);
       if (this.mouseCallbacks.get(ev.which) == undefined) return;
-      this.mouseCallbacks.get(ev.which)?.(false);
+      this.mouseCallbacks.get(ev.which)?.forEach((func) => func(false));
     }
   }
   isClicked(which: number) {
@@ -120,7 +120,8 @@ export default class InputManager {
   }
 
   addMouseButtonCallback(which: number, callback: (pressed: boolean) => void) {
-    this.mouseCallbacks.set(which, callback);
+    const callbacks = this.mouseCallbacks.get(which) || [];
+    this.mouseCallbacks.set(which, [...callbacks, callback]);
   }
 
   addScrollCallback(callback: ScrollCallback) {
