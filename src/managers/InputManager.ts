@@ -1,3 +1,5 @@
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
+
 export interface ScrollInput {
   direction: "up" | "down";
   deltaY?: number;
@@ -15,7 +17,10 @@ export default class InputManager {
   private pressedMouseButtons: Map<number, boolean>;
   private mouseCallbacks: Map<number, Function>;
 
-  constructor() {
+  private mouseRoot;
+  private lockControls;
+
+  constructor(lockControls?: PointerLockControls) {
     this.pressedKeys = new Map();
     this.keysCallbacks = new Map();
     this.scrollCallbacks = [];
@@ -23,13 +28,23 @@ export default class InputManager {
     this.pressedMouseButtons = new Map();
     this.mouseCallbacks = new Map();
 
+    this.lockControls = lockControls;
+
+    const mouseRoot = document.querySelector<HTMLCanvasElement>("canvas#view");
+
+    if (!mouseRoot) {
+      throw new Error("Root canvas could not be found");
+    }
+
+    this.mouseRoot = mouseRoot;
+
     document.body.oncontextmenu = () => false;
 
     document.addEventListener("keydown", this.onKeyDown.bind(this));
     document.addEventListener("keyup", this.onKeyUp.bind(this));
 
-    document.addEventListener("mousedown", this.onMouseDown.bind(this));
-    document.addEventListener("mouseup", this.onMouseUp.bind(this));
+    this.mouseRoot.addEventListener("mousedown", this.onMouseDown.bind(this));
+    this.mouseRoot.addEventListener("mouseup", this.onMouseUp.bind(this));
 
     document.addEventListener("wheel", this.onScroll.bind(this));
   }
@@ -83,14 +98,18 @@ export default class InputManager {
   }
 
   private onMouseDown(ev: MouseEvent) {
-    this.pressedMouseButtons.set(ev.which, true);
-    if (this.mouseCallbacks.get(ev.which) == undefined) return;
-    this.mouseCallbacks.get(ev.which)?.(true);
+    if (!this.lockControls || this.lockControls.isLocked) {
+      this.pressedMouseButtons.set(ev.which, true);
+      if (this.mouseCallbacks.get(ev.which) == undefined) return;
+      this.mouseCallbacks.get(ev.which)?.(true);
+    }
   }
   private onMouseUp(ev: MouseEvent) {
-    this.pressedMouseButtons.set(ev.which, false);
-    if (this.mouseCallbacks.get(ev.which) == undefined) return;
-    this.mouseCallbacks.get(ev.which)?.(false);
+    if (!this.lockControls || this.lockControls.isLocked) {
+      this.pressedMouseButtons.set(ev.which, false);
+      if (this.mouseCallbacks.get(ev.which) == undefined) return;
+      this.mouseCallbacks.get(ev.which)?.(false);
+    }
   }
   isClicked(which: number) {
     let result = this.pressedMouseButtons.get(which);
@@ -118,5 +137,9 @@ export default class InputManager {
     this.scrollCallbacks.splice(index, 1);
 
     return true;
+  }
+
+  set pointerLockControls(lockControls: PointerLockControls) {
+    this.lockControls = lockControls;
   }
 }
