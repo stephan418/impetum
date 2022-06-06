@@ -116,25 +116,33 @@ export default class Player implements Entity {
       return "buildingElement" in obj;
     }; */
 
-    //Building on right mouse button
-    this.inputManager.addMouseButtonCallback(1, (down) => {
-      if (down == true) {
-        let rayResult = this.buildingManager.shootRayCast(
-          this.camera.position,
-          this.camera.getWorldDirection(this.lookDirectionEmptyVector),
-          0,
-          50
-        );
-        if (rayResult != undefined) {
-          try {
-            this.buildingManager.removeGridElement(
-              this.buildingManager.objectIdToElement((rayResult[0] as THREE.Intersection).object.id) as any
-            );
-            //TODO: add 1 item
-          } catch (err) {}
-        }
-      }
+    window.interactionManager.addEventListener({ type: "left" }, (e) => {
+      try {
+        this.buildingManager.removeGridElement(this.buildingManager.objectIdToElement(e.id) as any);
+      } catch (err) {}
     });
+
+    //Building on right mouse button
+    // this.inputManager.addMouseButtonCallback(1, (down) => {
+    //   if (down == true) {
+    //     let rayResult = this.buildingManager.shootRayCast(
+    //       this.camera.position,
+    //       this.camera.getWorldDirection(this.lookDirectionEmptyVector),
+    //       0,
+    //       50
+    //     );
+    //     if (rayResult != undefined) {
+    //       console.log((rayResult[0] as THREE.Intersection).object.id);
+    //       try {
+    //         this.buildingManager.removeGridElement(
+    //           this.buildingManager.objectIdToElement((rayResult[0] as THREE.Intersection).object.id) as any
+    //         );
+    //         //TODO: add 1 item
+    //       } catch (err) {}
+    //     }
+    //   }
+    // });
+
     this.inputManager.addMouseButtonCallback(3, (down) => {
       if (down == true) {
         //I have absolutely no clue how to type this
