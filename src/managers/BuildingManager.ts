@@ -47,6 +47,19 @@ export default class BuildingManager {
     }
     return false;
   }
+  public isGridElementAtPositionAlready(vec: THREE.Vector3) {
+    //TODO: optimize please
+    for (let val of this.gridElements) {
+      if (
+        Math.floor(val.getPosition().x) == Math.floor(vec.x) &&
+        Math.floor(val.getPosition().y) == Math.floor(vec.y) &&
+        Math.floor(val.getPosition().z) == Math.floor(vec.z)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
   public objectIdToGridElement(id: number): GridElement | undefined {
     let returnThisLater = undefined;
     for (let val of this.gridElements) {

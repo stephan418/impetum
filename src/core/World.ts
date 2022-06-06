@@ -403,7 +403,7 @@ export default class World {
   removeUpdatable(elem: Updatable) {
     this.updatables.forEach((val, id) => {
       if (val == elem) {
-        this.updatables.splice(id);
+        this.updatables.splice(id, 1);
       }
     });
   }
