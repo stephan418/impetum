@@ -20,6 +20,7 @@ import Wave from "./wave/Wave";
 import WaveManager from "../managers/WaveManager";
 import Crystal from "../building/Crystal";
 import FloatingItem from "../inventory/FloatingItem";
+import InteractionManager from "../managers/InteractionManager";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -48,6 +49,7 @@ export default class World {
   private gameStateManager: GameStateManager;
   private buildingManager: BuildingManager;
   private waveManager: WaveManager;
+  private interactionManager: InteractionManager;
 
   private floorGeometry!: THREE.PlaneGeometry;
   private floorMaterial!: THREE.MeshLambertMaterial;
@@ -262,6 +264,9 @@ export default class World {
 
     // -- Initialize the player, with camera --
 
+    this.interactionManager = new InteractionManager(this.scene, this.inputManager);
+    (window as any).interactionManager = this.interactionManager;
+
     this.player = new Player(
       aspect,
       fov,
@@ -294,6 +299,8 @@ export default class World {
     this.waveManager = new WaveManager({}, this, new THREE.Vector3(0, 1, 0), false);
 
     // this.waveManager.start();
+
+    this.interactionManager.perspectiveCamera = this.player.camera;
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
@@ -500,5 +507,11 @@ export default class World {
 
   public start() {
     this.gameStateManager.unpause();
+  }
+}
+
+declare global {
+  interface Window {
+    readonly interactionManager: InteractionManager;
   }
 }
