@@ -22,6 +22,7 @@ import Crystal from "../building/Crystal";
 import FloatingItem from "../inventory/FloatingItem";
 import InteractionManager from "../managers/InteractionManager";
 import PlayerInventory from "../inventory/PlayerInventory";
+import { isFrequencyUpdatable } from "../interfaces/FrequencyUpdatable";
 
 export default class World {
   private turrets: GeneralTurret[];
@@ -63,6 +64,9 @@ export default class World {
   private directionalLight: THREE.DirectionalLight;
 
   private player: Player;
+
+  private lastMediumDispatch?: number;
+  private lastLowDispatch?: number;
 
   generateFloor() {
     this.floorGeometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
@@ -420,6 +424,14 @@ export default class World {
     this.updatePhysics();
     this.render();
     this.requestId = requestAnimationFrame(this.tick.bind(this));
+
+    if (this.deltaClock.getElapsedTime() - (this.lastMediumDispatch ?? 0) > 0.1) {
+      this.updateFrequencyMedium(this.deltaClock.getElapsedTime() - (this.lastMediumDispatch ?? 0));
+    }
+
+    if (this.deltaClock.getElapsedTime() - (this.lastLowDispatch ?? 0) > 1) {
+      this.updateFrequencyLow(this.deltaClock.getElapsedTime() - (this.lastLowDispatch ?? 0));
+    }
   }
 
   public update() {
@@ -470,6 +482,26 @@ export default class World {
     this.player.updatePhysics(this.deltaPhysicsTime);
     this.updatables.forEach((updateable) => {
       updateable.updatePhysics(this.deltaPhysicsTime);
+    });
+  }
+
+  public updateFrequencyMedium(deltaTime: number) {
+    this.lastMediumDispatch = this.deltaClock.getElapsedTime();
+
+    this.updatables.forEach((u) => {
+      if (isFrequencyUpdatable(u)) {
+        u.updateFrequencyMedium(deltaTime);
+      }
+    });
+  }
+
+  public updateFrequencyLow(deltaTime: number) {
+    this.lastLowDispatch = this.deltaClock.getElapsedTime();
+
+    this.updatables.forEach((u) => {
+      if (isFrequencyUpdatable(u)) {
+        u.updateFrequencyLow(deltaTime);
+      }
     });
   }
 
