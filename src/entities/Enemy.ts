@@ -21,9 +21,12 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
   private toBreak?: FreeElement | GridElement;
 
+  private health = 100;
+  private onNoHealth;
+
   private onStopMoving?: () => unknown;
 
-  constructor(position: THREE.Vector3) {
+  constructor(position: THREE.Vector3, onNoHealth?: Function) {
     const geometry = new THREE.SphereGeometry(this.radius);
     const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
     const cShape = new CANNON.Sphere(this.colliderRadius);
@@ -35,6 +38,8 @@ export default class Enemy implements Entity, FrequencyUpdatable {
     this.cBody = new CANNON.Body({ mass: 10, shape: cShape });
     this.cBody.linearDamping = 0.999;
     this.cBody.fixedRotation = false;
+
+    this.onNoHealth = onNoHealth;
 
     this.cBody.position.copy(position as unknown as CANNON.Vec3);
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
@@ -50,6 +55,7 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
         if (this.isMoving) {
           this.movePaused = false;
+          this.cBody.applyForce(this.targetNormal as unknown as CANNON.Vec3);
         }
       }
     }
@@ -105,6 +111,22 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
   isAtTarget() {
     return this.cBody.position.distanceTo(this.targetPosition as unknown as CANNON.Vec3) < this.targetRadius;
+  }
+
+  decrementHealth(amount: number) {
+    this.health -= amount;
+
+    if (this.health <= 0) {
+      this.onNoHealth?.();
+    }
+  }
+
+  set onNoHealthFunction(onNoHealth: typeof this.onNoHealth) {
+    this.onNoHealth = onNoHealth;
+  }
+
+  get currentHealth() {
+    return this.health;
   }
 
   get isBreaking() {
