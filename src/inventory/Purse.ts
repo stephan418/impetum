@@ -22,4 +22,8 @@ export default class Purse {
   deposit(amount: number) {
     this.ownedCurrency += amount;
   }
+
+  get content() {
+    return this.ownedCurrency;
+  }
 }

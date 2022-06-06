@@ -21,6 +21,7 @@ import WaveManager from "../managers/WaveManager";
 import Crystal from "../building/Crystal";
 import FloatingItem from "../inventory/FloatingItem";
 import InteractionManager from "../managers/InteractionManager";
+import PlayerInventory from "../inventory/PlayerInventory";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -281,6 +282,8 @@ export default class World {
     this.player.addToWorld(this);
     this.camera = this.player.camera;
 
+    (window as any).playerInventory = this.player.inventory;
+
     this.inputManager.pointerLockControls = this.player.pointerLockControls;
 
     // -- Initialize the GameStateManager --
@@ -513,5 +516,6 @@ export default class World {
 declare global {
   interface Window {
     readonly interactionManager: InteractionManager;
+    readonly playerInventory: PlayerInventory;
   }
 }
