@@ -19,6 +19,7 @@ import { config } from "../managers/OptionsManager";
 import Wave from "./wave/Wave";
 import WaveManager from "../managers/WaveManager";
 import Crystal from "../building/Crystal";
+import FloatingItem from "../inventory/FloatingItem";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -122,12 +123,11 @@ export default class World {
           let newTurret = new GeneralTurret(this.resourceManager);
           newTurret.setPosition(new THREE.Vector3(i * 10, 0, 0));
           this.buildingManager.addGridElement(newTurret);
-
-          const crystal = new Crystal(this.resourceManager);
-          crystal.setPosition(new THREE.Vector3(0, 0, 10));
-          this.buildingManager.addGridElement(crystal);
         }
 
+        const crystal = new Crystal(this.resourceManager, this.gameStateManager);
+        crystal.setPosition(new THREE.Vector3(0, 0, 10));
+        this.buildingManager.addGridElement(crystal);
         this.floorMesh.material = new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("grass") });
       }).bind(this)
     );
