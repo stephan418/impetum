@@ -276,6 +276,8 @@ export default class World {
     this.player.addToWorld(this);
     this.camera = this.player.camera;
 
+    this.inputManager.pointerLockControls = this.player.pointerLockControls;
+
     // -- Initialize the GameStateManager --
     this.gameStateManager = new GameStateManager(
       this,
