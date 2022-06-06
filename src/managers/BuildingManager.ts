@@ -189,7 +189,7 @@ export default class BuildingManager {
     if (element instanceof FreeElement) this.freeElements.push(element);
     this.allElements.push(element);
   }
-  removeGridElement(element: GridElement | FreeElement) {
+  removeGridElement(element: BaseElement) {
     element.removeFromWorld(this.world);
     if (element instanceof GridElement) {
       this.gridElements.forEach((val, idx) => {
