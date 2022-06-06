@@ -1,9 +1,12 @@
 import * as CANNON from "cannon-es";
 import * as THREE from "three";
+import FreeElement from "../building/FreeElement";
+import GridElement from "../building/GridElement";
 import World from "../core/World";
 import Entity from "../interfaces/Entity";
+import FrequencyUpdatable from "../interfaces/FrequencyUpdatable";
 
-export default class Enemy implements Entity {
+export default class Enemy implements Entity, FrequencyUpdatable {
   private mesh: THREE.Mesh;
   private cBody: CANNON.Body;
   private radius = 1.3;
@@ -13,7 +16,10 @@ export default class Enemy implements Entity {
   private targetNormal?: THREE.Vector3;
   private velocityMultiplier = 10;
   private isMoving: boolean = false;
+  private movePaused: boolean = false;
   private targetRadius = 2;
+
+  private toBreak?: FreeElement | GridElement;
 
   private onStopMoving?: () => unknown;
 
@@ -32,6 +38,40 @@ export default class Enemy implements Entity {
 
     this.cBody.position.copy(position as unknown as CANNON.Vec3);
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
+  }
+
+  updateFrequencyMedium(deltaTime: number) {
+    if (this.toBreak) {
+      if (this.toBreak.health <= 0) {
+      }
+
+      if (this.toBreak.decrementHealth(1)) {
+        this.toBreak = undefined;
+
+        if (this.isMoving) {
+          this.movePaused = false;
+        }
+      }
+    }
+  }
+
+  updateFrequencyLow(deltaTime: number) {
+    if (!this.toBreak) {
+      const freeElements = window.buildingManager.freeElements;
+      const gridElements = window.buildingManager.gridElements;
+
+      const elements = [...freeElements, ...gridElements].filter((element) => {
+        return element.getPosition().distanceTo(this.mesh.position) < 10;
+      });
+
+      if (elements.length > 0) {
+        this.toBreak = elements[0];
+
+        if (this.isMoving) {
+          this.movePaused = true;
+        }
+      }
+    }
   }
 
   addToWorld(world: World) {
@@ -67,6 +107,10 @@ export default class Enemy implements Entity {
     return this.cBody.position.distanceTo(this.targetPosition as unknown as CANNON.Vec3) < this.targetRadius;
   }
 
+  get isBreaking() {
+    return this.toBreak !== undefined;
+  }
+
   //@ts-ignore
   update(deltaTime: number): void {}
 
@@ -75,12 +119,14 @@ export default class Enemy implements Entity {
     this.mesh.quaternion.copy(this.cBody.quaternion as unknown as THREE.Quaternion);
 
     if (this.isMoving) {
-      this.cBody.velocity.x = this.targetNormal?.x || this.cBody.velocity.x;
-      this.cBody.velocity.z = this.targetNormal?.z || this.cBody.velocity.z;
+      this.cBody.velocity.x = (this.targetNormal?.x || this.cBody.velocity.x) * (this.movePaused ? 0.001 : 1);
+      this.cBody.velocity.z = (this.targetNormal?.z || this.cBody.velocity.z) * (this.movePaused ? 0.001 : 1);
+
+      if (this.isAtTarget()) {
+        this.isMoving = false;
+      }
     }
 
-    if (this.isAtTarget()) {
-      this.isMoving = false;
-    }
+    console.log(this.cBody.velocity.x, this.cBody.velocity.z);
   }
 }

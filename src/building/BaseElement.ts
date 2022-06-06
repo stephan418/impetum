@@ -38,4 +38,15 @@ export default abstract class BaseElement {
     this.isGhost = ghostMode;
     this.updatedGhostStatus(this.isGhost);
   }
+
+  decrementHealth(amount: number) {
+    this.health -= amount;
+
+    if (this.health <= 0) {
+      window.buildingManager.removeGridElement(this);
+      return true;
+    }
+
+    return false;
+  }
 }

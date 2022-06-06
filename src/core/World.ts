@@ -23,6 +23,7 @@ import FloatingItem from "../inventory/FloatingItem";
 import InteractionManager from "../managers/InteractionManager";
 import PlayerInventory from "../inventory/PlayerInventory";
 import { isFrequencyUpdatable } from "../interfaces/FrequencyUpdatable";
+import Enemy from "../entities/Enemy";
 
 export default class World {
   private turrets: GeneralTurret[];
@@ -291,6 +292,13 @@ export default class World {
     this.camera = this.player.camera;
 
     (window as any).playerInventory = this.player.inventory;
+    (window as any).buildingManager = this.buildingManager;
+
+    const enemy = new Enemy(new THREE.Vector3(5, 5, 100));
+
+    enemy.addToWorld(this);
+
+    enemy.moveTowards(new THREE.Vector3(0, 1, 0));
 
     this.inputManager.pointerLockControls = this.player.pointerLockControls;
 
@@ -558,5 +566,7 @@ declare global {
   interface Window {
     readonly interactionManager: InteractionManager;
     readonly playerInventory: PlayerInventory;
+    readonly buildingManager: BuildingManager;
+    readonly world: World;
   }
 }
