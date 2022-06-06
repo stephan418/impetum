@@ -101,6 +101,15 @@ export default class PlayerInventory {
     }
   }
 
+  @mutation
+  desposit(amount: number) {
+    this.purse.deposit(amount);
+  }
+
+  get purseContent() {
+    return this.purse.content;
+  }
+
   getIndex(index: number) {
     if (index < this.hotbar.size) return this.hotbar.getIndex(index);
 

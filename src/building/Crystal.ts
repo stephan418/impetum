@@ -35,6 +35,11 @@ export default class Crystal extends FreeElement implements Updatable {
 
     this.gameStateManager?.addEventListener("pause", this.pause.bind(this));
     this.gameStateManager?.addEventListener("unpause", this.unpause.bind(this));
+
+    window.interactionManager.addEventListener(
+      { type: "right", id: this.getParts()[1].mesh.id },
+      this.collectShards.bind(this)
+    );
   }
 
   addShard() {
@@ -53,6 +58,14 @@ export default class Crystal extends FreeElement implements Updatable {
     shard.addToObject(this.getParts()[1].mesh);
 
     this.shards.push(shard);
+  }
+
+  collectShards() {
+    const amount = this.shards.length * 10;
+    window.playerInventory.desposit(amount);
+
+    this.shards.forEach((shard) => shard.removeFromObject(this.getParts()[1].mesh));
+    this.shards = [];
   }
 
   pause() {
