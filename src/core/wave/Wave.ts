@@ -23,7 +23,9 @@ export default class Wave {
 
       const position = new THREE.Vector3(x, center.y, y);
 
-      this.enemies.push(new Enemy(position));
+      const enemy = new Enemy(position);
+
+      this.enemies.push(enemy);
     }
 
     this.updateIntervalId = setInterval(() => {
