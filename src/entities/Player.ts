@@ -161,7 +161,7 @@ export default class Player implements Entity {
           );
           if (
             rayResult.position == undefined ||
-            buildingManager.isSomethingAtPositionAlready(rayResult.position as THREE.Vector3)
+            buildingManager.isGridElementAtPositionAlready(rayResult.position as THREE.Vector3)
           ) {
             this.buildingManager.removeGridElement(buildingElement);
           } else {
