@@ -55,6 +55,11 @@ export default class FloatingItem implements Entity, Updatable {
     this.addedToObject = true;
   }
 
+  removeFromObject(obj: THREE.Mesh) {
+    obj.remove(this.mesh);
+    this.addedToObject = false;
+  }
+
   update(deltaTime: number): void {
     this.timeAlive += deltaTime;
 
