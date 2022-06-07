@@ -14,6 +14,6 @@ export default class GeneralTurretItem extends Item implements Buildable<typeof 
   }
 
   get icon() {
-    return undefined;
+    return "../../../static/items/generalTurretItem.png";
   }
 }
