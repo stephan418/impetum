@@ -1,10 +1,14 @@
+import WoodenWall from "../building/Walls/WoodenWall";
 import ElementNotFoundError from "../errors/ElementNotFoundError";
 import Crosshair from "../hud/Crosshair";
 import { InventorySlot } from "../hud/inventory/InventorySlot";
 import InventoryOverlay from "../hud/inventory/Overlay";
 import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
+import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
+import WoodenWallItem from "../inventory/items/WoodenWall";
 import PlayerInventory from "../inventory/PlayerInventory";
+import Store from "../inventory/store/store";
 import GameStateManager from "./GameStateManager";
 import InputManager from "./InputManager";
 
@@ -14,6 +18,7 @@ export default class HUDManager {
   private inputManager;
 
   private playerInventory: PlayerInventory;
+  private store: Store;
 
   private crossHair: Crosshair;
   private itemBar: ItemBar;
@@ -40,6 +45,10 @@ export default class HUDManager {
     this.root = root;
     this.gameStateManager = gameStateManager;
     this.inputManager = inputManager;
+    this.store = new Store([
+      { batchPrize: 100, batchSize: 1, description: "General Turret", item: new GeneralTurretItem() },
+      { batchPrize: 50, batchSize: 10, description: "Wooden Wall", item: new WoodenWallItem() },
+    ]);
 
     this.playerInventory = playerInventory;
 
@@ -54,6 +63,7 @@ export default class HUDManager {
     this.inventoryOverlay.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.itemBar.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.inventoryOverlay.inventory = playerInventory;
+    this.inventoryOverlay.store = this.store;
     this.itemBar.inventory = playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());

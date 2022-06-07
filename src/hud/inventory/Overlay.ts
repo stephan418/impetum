@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import PlayerInventory from "../../inventory/PlayerInventory";
+import InternalStore from "../../inventory/store/store";
 
 @customElement("i-inventory-overlay")
 export default class InventoryOverlay extends LitElement {
@@ -58,6 +59,9 @@ export default class InventoryOverlay extends LitElement {
     this._inventory = v;
   }
 
+  @property()
+  store?: InternalStore;
+
   handleSlotClick(idx: number, e: CustomEvent) {
     this.dispatchEvent(new CustomEvent("slot-click", { detail: { idx, mouse: e.detail.mouse } }));
   }
@@ -73,7 +77,7 @@ export default class InventoryOverlay extends LitElement {
       </div>
       <div id="store">
         <h1>Store</h1>
-        <div>{{store content}}</div>
+        <i-store .store=${this.store}></i-store>
       </div>
     `;
   }
