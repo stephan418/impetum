@@ -56,10 +56,14 @@ export default abstract class BaseElement {
     if (this.health <= 0 && !this.isRemoved) {
       this.isRemoved = true;
       window.buildingManager.removeGridElement(this);
-      this.eventManager.dispatchEvent("broken");
       return true;
     }
 
     return false;
+  }
+
+  break() {
+    this.isRemoved = true;
+    this.eventManager.dispatchEvent("broken");
   }
 }
