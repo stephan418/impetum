@@ -30,13 +30,15 @@ export default class EventManager<E extends string> {
   removeEventListener(event: E, handler: Function): boolean {
     const handlers = this.eventHandlers[event];
 
+    const handlerIndex = handlers.findIndex((c) => c === handler);
+
+    if (handlerIndex < 0) {
+      console.error("The handler could not be removed because it does not exist");
+      return false;
+    }
+
     if (handlers) {
-      return Boolean(
-        handlers.splice(
-          handlers.findIndex((c) => c === handler),
-          1
-        )
-      );
+      return Boolean(handlers.splice(handlerIndex, 1));
     }
 
     return false;

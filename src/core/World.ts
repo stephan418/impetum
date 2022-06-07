@@ -296,10 +296,6 @@ export default class World {
 
     const enemy = new Enemy(new THREE.Vector3(5, 5, 100));
 
-    enemy.addToWorld(this);
-
-    enemy.moveTowards(new THREE.Vector3(0, 1, 0));
-
     this.inputManager.pointerLockControls = this.player.pointerLockControls;
 
     // -- Initialize the GameStateManager --
@@ -315,9 +311,14 @@ export default class World {
 
     this.hudManager.attach();
 
-    this.waveManager = new WaveManager({}, this, new THREE.Vector3(0, 1, 0), false);
+    this.waveManager = new WaveManager(
+      { currentInterval: 10_000, intervalMultiplier: 90 },
+      this,
+      new THREE.Vector3(0, 0, 10),
+      false
+    );
 
-    // this.waveManager.start();
+    this.waveManager.start();
 
     this.interactionManager.perspectiveCamera = this.player.camera;
 

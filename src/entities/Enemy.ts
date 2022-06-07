@@ -17,7 +17,7 @@ export default class Enemy implements Entity, FrequencyUpdatable {
   private velocityMultiplier = 10;
   private isMoving: boolean = false;
   private movePaused: boolean = false;
-  private targetRadius = 2;
+  private targetRadius = 8;
 
   private toBreak?: FreeElement | GridElement;
 
@@ -43,21 +43,23 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
     this.cBody.position.copy(position as unknown as CANNON.Vec3);
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
+
+    this.onBroken = this.onBroken.bind(this);
+  }
+
+  private onBroken() {
+    // this.toBreak?.removeEventListener("broken", this.onBroken); // TODO: This causes a bug where no other lisetners are caught
+    this.toBreak = undefined;
+
+    if (this.isMoving) {
+      this.movePaused = false;
+      this.cBody.applyForce(this.targetNormal as unknown as CANNON.Vec3);
+    }
   }
 
   updateFrequencyMedium(deltaTime: number) {
     if (this.toBreak) {
-      if (this.toBreak.health <= 0) {
-      }
-
-      if (this.toBreak.decrementHealth(1)) {
-        this.toBreak = undefined;
-
-        if (this.isMoving) {
-          this.movePaused = false;
-          this.cBody.applyForce(this.targetNormal as unknown as CANNON.Vec3);
-        }
-      }
+      this.toBreak.decrementHealth(1);
     }
   }
 
@@ -72,6 +74,7 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
       if (elements.length > 0) {
         this.toBreak = elements[0];
+        this.toBreak.addEventListener("broken", this.onBroken);
 
         if (this.isMoving) {
           this.movePaused = true;
@@ -91,7 +94,7 @@ export default class Enemy implements Entity, FrequencyUpdatable {
     world.cScene.removeBody(this.cBody);
   }
 
-  moveTowards(targetPosition: THREE.Vector3, targetRadius = 10) {
+  moveTowards(targetPosition: THREE.Vector3, targetRadius = 8) {
     this.targetPosition = targetPosition;
     this.isMoving = true;
     this.targetRadius = targetRadius;
@@ -148,7 +151,5 @@ export default class Enemy implements Entity, FrequencyUpdatable {
         this.isMoving = false;
       }
     }
-
-    console.log(this.cBody.velocity.x, this.cBody.velocity.z);
   }
 }
