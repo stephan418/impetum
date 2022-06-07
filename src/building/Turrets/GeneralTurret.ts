@@ -8,6 +8,7 @@ import TurretElement from "../TurretElement";
 import Updatable from "../../interfaces/Updatable";
 
 export default class GeneralTurret extends TurretElement {
+  private turretRotationY: number;
   constructor(resourceManager: ResourceManager) {
     const a = resourceManager.getModelGeometry("generalTurret", 0);
     const aMiddle = resourceManager.getModelGeometry("generalTurret", 1);
@@ -24,5 +25,39 @@ export default class GeneralTurret extends TurretElement {
       throw new Error("Shape couldn't be found");
     }
     super([a, aMiddle, aTop], [b, b, b], c);
+    this.getParts()[1].positionOffset = new THREE.Vector3(0, 1, 0);
+    this.getParts()[2].positionOffset = new THREE.Vector3(0, 2, 0);
+    this.turretRotationY = 0;
   }
+  protected _update(deltaTime: number): void {
+    /* this.turretRotationY += deltaTime;
+    let tempQuat = new THREE.Quaternion();
+    tempQuat.setFromEuler(new THREE.Euler(0, this.turretRotationY / 2, 0));
+    this.getParts()[1].quaternionOffset = tempQuat.clone();
+    this.getParts()[1].mesh.add(this.getParts()[2].mesh);
+    this.getParts()[2].position = new THREE.Vector3();
+    this.getParts()[2].quaternionOffset = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(Math.cos(this.turretRotationY) / 2, 0, 0)
+    ); */
+  }
+  protected _updatePhysics(deltaTime: number): void {}
+
+  private rotateToDegree(euler: THREE.Euler) {
+    let tempQuat = new THREE.Quaternion();
+    tempQuat.setFromEuler(new THREE.Euler(0, euler.y, 0));
+    this.getParts()[1].quaternionOffset = tempQuat.clone();
+    this.getParts()[1].mesh.add(this.getParts()[2].mesh);
+    this.getParts()[2].position = new THREE.Vector3();
+    this.getParts()[2].quaternionOffset = new THREE.Quaternion().setFromEuler(new THREE.Euler(euler.x, 0, 0));
+  }
+
+  _lookAt(pos: THREE.Vector3): void {
+    let res = Math.atan2(this.getPosition().z - pos.z, this.getPosition().x - pos.x);
+    let res1 = Math.atan(
+      (pos.y - this.getPosition().y) /
+        this.getPosition().distanceTo(pos.clone().add(new THREE.Vector3(0, -(pos.y - this.getPosition().y), 0)))
+    );
+    this.rotateToDegree(new THREE.Euler(-res1, -res - Math.PI / 2, 0));
+  }
+  _shoot(): void {}
 }

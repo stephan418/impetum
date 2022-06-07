@@ -24,6 +24,7 @@ import InteractionManager from "../managers/InteractionManager";
 import PlayerInventory from "../inventory/PlayerInventory";
 
 export default class World {
+  private turrets: GeneralTurret[];
   private renderer: THREE.WebGLRenderer;
   scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
@@ -117,15 +118,18 @@ export default class World {
 
     this.loadingManager = new LoadingManager();
 
+    this.turrets = [];
     // -- Initialize the Resource Manager --
     this.resourceManager = new ResourceManager(this.loadingManager);
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
         this.player.startGhostClock();
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1; i++) {
           let newTurret = new GeneralTurret(this.resourceManager);
           newTurret.setPosition(new THREE.Vector3(i * 10, 0, 0));
           this.buildingManager.addGridElement(newTurret);
+          newTurret.lookAt(this.player.camera.position);
+          this.turrets.push(newTurret);
         }
 
         const crystal = new Crystal(this.resourceManager, this.gameStateManager);
@@ -424,6 +428,11 @@ export default class World {
     this.player.update(this.deltaTime);
     this.updatables.forEach((updateable) => {
       updateable.update(this.deltaTime);
+    });
+
+    //Please delete this, this is just for testing
+    this.turrets.forEach((val, id) => {
+      val.lookAt(this.player.camera.position);
     });
 
     //makes basically a day light cycle by changing the sun's position
