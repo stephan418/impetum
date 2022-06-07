@@ -62,7 +62,7 @@ export default class WaveManager {
   }
 
   private startWave() {
-    const wave = new Wave(this.target, this.config.enemySpawnRadius, this.config.currentEnemyCount);
+    const wave = new Wave(this.target, this.config.enemySpawnRadius, this.world, this.config.currentEnemyCount);
 
     wave.addToWorld(this.world);
     wave.startMoving(() => this.removeWaveFromArray(wave));

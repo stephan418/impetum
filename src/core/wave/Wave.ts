@@ -7,9 +7,18 @@ export default class Wave {
   private enemies: Enemy[] = [];
   private updateIntervalId: number;
   private onFinish?: () => unknown;
+  private world: World;
 
-  constructor(center: THREE.Vector3 = new THREE.Vector3(0, 0, 0), initialRadius = 10, numberOfEnemies?: number) {
+  constructor(
+    center: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
+    initialRadius = 10,
+    world: World,
+    numberOfEnemies?: number,
+    onFinished?: () => unknown
+  ) {
     this.center = center;
+    this.onFinish = onFinished;
+    this.world = world;
 
     if (!numberOfEnemies) {
       numberOfEnemies = 10; // Load from some sort of storage
@@ -22,9 +31,7 @@ export default class Wave {
       const y = initialRadius * Math.sin(randomPolarAngle) + center.z;
 
       const position = new THREE.Vector3(x, center.y, y);
-
       const enemy = new Enemy(position);
-
       this.enemies.push(enemy);
     }
 
@@ -33,6 +40,22 @@ export default class Wave {
         enemy.updateTargetNormal();
       }
     }, 2000);
+  }
+
+  removeEnemy(enemy: Enemy) {
+    const enemyIndex = this.enemies.findIndex((e) => enemy === e);
+
+    if (enemyIndex < 0) {
+      throw new Error("The enemy to be removed is not part of this wave");
+    }
+
+    enemy.removeFromWorld(this.world);
+
+    this.enemies.splice(enemyIndex, 1);
+
+    if (this.enemies.length <= 0) {
+      this.onFinish?.();
+    }
   }
 
   addToWorld(world: World) {
@@ -51,5 +74,9 @@ export default class Wave {
 
   stopMoving() {
     clearInterval(this.updateIntervalId);
+  }
+
+  set onFinished(onFinished: typeof this.onFinish) {
+    this.onFinish = onFinished;
   }
 }

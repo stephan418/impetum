@@ -1,11 +1,17 @@
 import * as THREE from "three";
 import World from "../core/World";
+import EventManager from "../inventory/utils/EventManager";
 
 export default abstract class BaseElement {
   pos: THREE.Vector3;
   quaternion: THREE.Quaternion;
   health: number;
   isGhost: boolean;
+  private isRemoved = false;
+  private eventManager;
+
+  public addEventListener;
+  public removeEventListener;
 
   abstract addToWorld(world: World): void;
   abstract removeFromWorld(world: World): void;
@@ -19,6 +25,11 @@ export default abstract class BaseElement {
     this.quaternion = new THREE.Quaternion();
     this.health = 100;
     this.isGhost = false;
+
+    this.eventManager = new EventManager(["broken"]);
+
+    this.addEventListener = this.eventManager.addEventListener.bind(this.eventManager);
+    this.removeEventListener = this.eventManager.removeEventListener.bind(this.eventManager);
   }
 
   setPosition(position: THREE.Vector3) {
@@ -42,8 +53,10 @@ export default abstract class BaseElement {
   decrementHealth(amount: number) {
     this.health -= amount;
 
-    if (this.health <= 0) {
+    if (this.health <= 0 && !this.isRemoved) {
+      this.isRemoved = true;
       window.buildingManager.removeGridElement(this);
+      this.eventManager.dispatchEvent("broken");
       return true;
     }
 
