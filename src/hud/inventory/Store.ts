@@ -18,8 +18,16 @@ export class Store extends LitElement {
       flex-direction: column;
 
       gap: 10px;
+
+      overflow-y: auto;
     }
   `;
+
+  constructor() {
+    super();
+
+    this.addEventListener("wheel", (e) => e.stopPropagation());
+  }
 
   @property()
   store?: InternalStore;

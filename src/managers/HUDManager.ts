@@ -1,6 +1,7 @@
 import WoodenWall from "../building/Walls/WoodenWall";
 import ElementNotFoundError from "../errors/ElementNotFoundError";
 import Crosshair from "../hud/Crosshair";
+import { InfoBox, InfoBox } from "../hud/InfoBox";
 import { InventorySlot } from "../hud/inventory/InventorySlot";
 import InventoryOverlay from "../hud/inventory/Overlay";
 import ItemBar from "../hud/ItemBar";
@@ -48,6 +49,7 @@ export default class HUDManager {
     this.store = new Store([
       { batchPrize: 100, batchSize: 1, description: "General Turret", item: new GeneralTurretItem() },
       { batchPrize: 50, batchSize: 10, description: "Wooden Wall", item: new WoodenWallItem() },
+      { batchPrize: 50, batchSize: 10, description: "Wooden Wall", item: new WoodenWallItem() },
     ]);
 
     this.playerInventory = playerInventory;
@@ -62,6 +64,7 @@ export default class HUDManager {
     this.pauseMenu.addEventListener("unpause", () => this.hidePauseMenu());
     this.inventoryOverlay.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.itemBar.addEventListener("slot-click", this.onSlotClick.bind(this));
+    this.inventoryOverlay.addEventListener("not-enough-money", this.showNotEnoughMoneyInfo.bind(this));
     this.inventoryOverlay.inventory = playerInventory;
     this.inventoryOverlay.store = this.store;
     this.itemBar.inventory = playerInventory;
@@ -71,6 +74,15 @@ export default class HUDManager {
     this.inputManager.addKeyCallback("i", (e) => e && this.toggleInventory());
     this.inputManager.addKeyCallback("Escape", (e) => e && this.exitImmediateMenu());
     this.inputManager.addKeyCallback("p", (e) => e && this.togglePauseMenu());
+  }
+
+  private showNotEnoughMoneyInfo() {
+    const box = new InfoBox();
+    box.message = "You do not have enough money to purchase this!";
+
+    box.addEventListener("close", () => this.root.removeChild(box));
+
+    this.root.appendChild(box);
   }
 
   public attach() {

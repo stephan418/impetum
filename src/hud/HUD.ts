@@ -6,3 +6,4 @@ import "./inventory/InventorySlot";
 import "./inventory/Overlay";
 import "./inventory/Store";
 import "./inventory/StoreSlot";
+import "./InfoBox";

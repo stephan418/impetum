@@ -39,6 +39,14 @@ export default class InventoryOverlay extends LitElement {
 
       grid: 20% 1fr / 1fr;
       justify-items: center;
+
+      height: 100%;
+
+      overflow: auto;
+    }
+
+    #inventory {
+      overflow: hidden;
     }
 
     :host > div > div {
