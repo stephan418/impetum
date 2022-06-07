@@ -12,6 +12,9 @@ export const config = {
     shadows: true,
     shadowsize: 1024,
   },
+  game: {
+    creativeMode: false,
+  },
   building: {
     ghostTimeDelay: 0.02,
   },

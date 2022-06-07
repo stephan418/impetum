@@ -169,6 +169,9 @@ export default class Player implements Entity {
             buildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion(0, 0, 0));
           }
           //make item -= 1
+          if (config.game.creativeMode != true) {
+            this.inventory.retrieveFromIndex(1, this.inventory.selectedIdx);
+          }
         }
       }
     });
