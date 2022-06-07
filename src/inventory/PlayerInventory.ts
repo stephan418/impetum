@@ -135,4 +135,8 @@ export default class PlayerInventory {
   get selectedIdx() {
     return this.selectedIndex;
   }
+
+  get pursePaymentMethod() {
+    return this.purse;
+  }
 }

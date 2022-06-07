@@ -69,6 +69,12 @@ export class StoreSlot extends LitElement {
   @property()
   definition?: ProductDefinition;
 
+  handleBuyClick() {
+    const event = new CustomEvent("buy-click");
+
+    this.dispatchEvent(event);
+  }
+
   render() {
     if (!this.definition) {
       return html``;
@@ -81,7 +87,7 @@ export class StoreSlot extends LitElement {
         <h1>${this.definition.description}</h1>
         <h2>x ${this.definition.batchSize}</h2>
 
-        <button>Buy for ${this.definition.batchPrize} shards</button>
+        <button @click=${() => this.handleBuyClick()}>Buy for ${this.definition.batchPrize} shards</button>
       </div>`;
   }
 }

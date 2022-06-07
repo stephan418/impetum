@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import ValueError from "../../errors/ValueError";
 import PlayerInventory from "../../inventory/PlayerInventory";
 import InternalStore from "../../inventory/store/store";
 
@@ -62,8 +63,27 @@ export default class InventoryOverlay extends LitElement {
   @property()
   store?: InternalStore;
 
+  handleNotEnoughMoney() {
+    this.dispatchEvent(new CustomEvent("not-enough-money"));
+  }
+
   handleSlotClick(idx: number, e: CustomEvent) {
     this.dispatchEvent(new CustomEvent("slot-click", { detail: { idx, mouse: e.detail.mouse } }));
+  }
+
+  handleStoreBuy(e: CustomEvent<{ index: number }>) {
+    if (this.store && this._inventory) {
+      try {
+        const boughtItem = this.store.buyIndex(e.detail.index, this._inventory.pursePaymentMethod);
+
+        this._inventory.collect(boughtItem.item, boughtItem.amount);
+      } catch (e) {
+        if (e instanceof ValueError) {
+          return this.handleNotEnoughMoney();
+        }
+      }
+      throw e;
+    }
   }
 
   render() {
@@ -77,7 +97,7 @@ export default class InventoryOverlay extends LitElement {
       </div>
       <div id="store">
         <h1>Store</h1>
-        <i-store .store=${this.store}></i-store>
+        <i-store @store-buy=${this.handleStoreBuy} .store=${this.store}></i-store>
       </div>
     `;
   }
