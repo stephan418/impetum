@@ -24,11 +24,16 @@ export class Store extends LitElement {
   @property()
   store?: InternalStore;
 
-  render() {
-    console.log(this.store);
+  handleBuyClick(idx: number) {
+    const event = new CustomEvent("store-buy", { detail: { index: idx } });
 
+    this.dispatchEvent(event);
+  }
+
+  render() {
     return this.store?.productRange.map(
-      (definition, idx) => html`<i-store-slot .definition=${definition}></i-store-slot>`
+      (definition, idx) =>
+        html`<i-store-slot @buy-click=${() => this.handleBuyClick(idx)} .definition=${definition}></i-store-slot>`
     );
   }
 }
