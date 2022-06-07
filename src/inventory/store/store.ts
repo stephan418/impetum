@@ -1,5 +1,5 @@
 import ValueError from "../../errors/ValueError";
-import Item from "../../interfaces/Item";
+import Item from "../../inventory/Item";
 import { Group } from "../../interfaces/Storage";
 
 interface PaymentMethod {
@@ -15,7 +15,7 @@ export interface ProductDefinition {
 }
 
 export default class Store {
-  private productRange: ProductDefinition[];
+  readonly productRange: ProductDefinition[];
   private saleMultiplier: number;
 
   constructor(productRange: ProductDefinition[], saleMultiplier = 0.5) {
