@@ -1,7 +1,7 @@
 import WoodenWall from "../building/Walls/WoodenWall";
 import ElementNotFoundError from "../errors/ElementNotFoundError";
 import Crosshair from "../hud/Crosshair";
-import { InfoBox, InfoBox } from "../hud/InfoBox";
+import { InfoBox } from "../hud/InfoBox";
 import { InventorySlot } from "../hud/inventory/InventorySlot";
 import InventoryOverlay from "../hud/inventory/Overlay";
 import ItemBar from "../hud/ItemBar";
