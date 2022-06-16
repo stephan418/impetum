@@ -26,7 +26,7 @@ export default class GameStateManager {
     pointerLockControls: PointerLockControls,
     domElement: HTMLElement
   ) {
-    this.eventManager = new EventManager(["pause", "unpause"]);
+    this.eventManager = new EventManager(["pause", "unpause", "lose"]);
 
     this.addEventListener = this.eventManager.addEventListener.bind(this.eventManager);
     this.removeEventListener = this.eventManager.removeEventListener.bind(this.eventManager);

@@ -10,6 +10,7 @@ import BuildingElement from "../interfaces/BuildingElement";
 import BaseElement from "../building/BaseElement";
 import TurretElement from "../building/TurretElement";
 import FreeElement from "../building/FreeElement";
+import EventManager, { ParameterizedEventManager } from "../inventory/utils/EventManager";
 
 export default class BuildingManager {
   raycaster: THREE.Raycaster;
@@ -18,6 +19,10 @@ export default class BuildingManager {
   public gridElements: GridElement[];
   public freeElements: FreeElement[];
   private allElements: BaseElement[];
+
+  private eventManager: ParameterizedEventManager<{ remove: { element: BaseElement } }>;
+  public addEventListener;
+
   constructor(world: World) {
     this.raycaster = new THREE.Raycaster();
     this.scene = world.scene;
@@ -25,6 +30,9 @@ export default class BuildingManager {
     this.freeElements = [];
     this.allElements = [];
     this.world = world;
+
+    this.eventManager = new ParameterizedEventManager();
+    this.addEventListener = this.eventManager.addEventlistener.bind(this.eventManager);
   }
   shootRayCast(position: THREE.Vector3, direction: THREE.Vector3, near: number, far: number): THREE.Intersection[] {
     this.raycaster.set(position, direction);
@@ -211,6 +219,8 @@ export default class BuildingManager {
         this.allElements.splice(idx, 1);
       }
     });
+
+    this.eventManager.dispatchEvent("remove", { element: element });
   }
 
   addGhostElement(element: BaseElement) {
