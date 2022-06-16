@@ -53,7 +53,7 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
     if (this.isMoving) {
       this.movePaused = false;
-      this.cBody.applyForce(this.targetNormal as unknown as CANNON.Vec3);
+      this.cBody.wakeUp();
     }
   }
 
