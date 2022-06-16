@@ -417,10 +417,9 @@ export default class World {
     });
   }
 
-  getPlayer(){
+  getPlayer() {
     return this.player;
   }
-
 
   public tick(now: number) {
     //get delta time
@@ -439,7 +438,6 @@ export default class World {
       this.updateFrequencyLow(this.deltaClock.elapsedTime - (this.lastLowDispatch ?? 0));
     }
   }
-
 
   public update() {
     // Update all updatables
@@ -517,6 +515,9 @@ export default class World {
     if (!this.requestId) {
       throw new GameStateError("The game is already paused");
     }
+
+    this.lastMediumDispatch = undefined;
+    this.lastLowDispatch = undefined;
 
     // Stop game loop
     cancelAnimationFrame(this.requestId);
