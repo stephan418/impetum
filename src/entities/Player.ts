@@ -72,7 +72,7 @@ export default class Player implements Entity {
     this.ghostBuildingElement = undefined;
 
     this.moveVelocity = 1900;
-    this.jumpVelocity = 40;
+    this.jumpVelocity = 180;
     this.canJump = false;
     this.buildingManager = buildingManager;
     this.resourceManager = resourceManager;
@@ -85,13 +85,14 @@ export default class Player implements Entity {
     this.colliderRadius = 1.3;
     this.cShape = new CANNON.Sphere(this.colliderRadius);
     //TODO: actually fix player jumping speed, not just add mass
-    this.cBody = new CANNON.Body({ mass: 100, material: slipperyMaterial });
+    this.cBody = new CANNON.Body({ mass: 1000, material: slipperyMaterial });
     // this.cBody.linearDamping = 0.99;
-    // this.cBody.linearFactor = new CANNON.Vec3(1, 2, 1);
+    // this.cBody.linearFactor = new CANNON.Vec3(1, 1, 1);
     this.cBody.position.set(0, 10, 50);
     // this.cBody.addShape(this.cShape);
-    this.cBody.addShape(this.cShape, new CANNON.Vec3(0, 3, 0));
-    this.cBody.addShape(this.cShape, new CANNON.Vec3(0, 0, 0));
+    for (let i = 0; i < 6; i++) {
+      this.cBody.addShape(this.cShape, new CANNON.Vec3(0, i, 0));
+    }
     this.cBody.fixedRotation = true;
     this.cBody.updateMassProperties();
 
@@ -178,9 +179,9 @@ export default class Player implements Entity {
     this.lookDirection = new THREE.Vector3();
 
     this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots, inputManager);
-    this.inventory.collect(new WoodenFloorItem(), 10);
-    this.inventory.collect(new WoodenWallItem(), 10);
-    this.inventory.collect(new GeneralTurretItem(), 10);
+    this.inventory.collect(new WoodenFloorItem(), 10000);
+    this.inventory.collect(new WoodenWallItem(), 10000);
+    this.inventory.collect(new GeneralTurretItem(), 10000);
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.onclick = () => {
@@ -200,8 +201,18 @@ export default class Player implements Entity {
     this.lookDirection.y = y;
     this.lookDirection.z = z;
     this.lookDirection.applyQuaternion(this.camera.quaternion);
-    this.cBody.velocity.x = this.lookDirection.x * 2;
-    this.cBody.velocity.z = this.lookDirection.z * 2;
+    if (x == 0 && z == 0) {
+      this.cBody.velocity.set(this.cBody.velocity.x * 0.95, this.cBody.velocity.y, this.cBody.velocity.z * 0.95);
+    } else {
+      // if (this.cBody.velocity.x < 40 && this.cBody.velocity.x > -40) {
+      this.cBody.velocity.x = this.lookDirection.x * 0.02;
+      /* }
+      if (this.cBody.velocity.z < 40 && this.cBody.velocity.z > -40) { */
+      this.cBody.velocity.z = this.lookDirection.z * 0.02;
+      // }
+    }
+
+    this.cBody.wakeUp();
   }
 
   update(deltaTime: number): void {
@@ -210,29 +221,23 @@ export default class Player implements Entity {
     this.howMuchRight = 0;
 
     if (this.inputManager.isPressed(config.keys.movementForward)) {
-      this.howMuchBack = -this.moveVelocity * deltaTime;
+      this.howMuchBack = -this.moveVelocity;
     } else if (this.inputManager.isPressed(config.keys.movementBackward)) {
-      this.howMuchBack = this.moveVelocity * deltaTime;
+      this.howMuchBack = this.moveVelocity;
     }
 
     if (this.inputManager.isPressed(config.keys.movementLeft)) {
-      this.howMuchRight = -this.moveVelocity * deltaTime;
+      this.howMuchRight = -this.moveVelocity;
     } else if (this.inputManager.isPressed(config.keys.movementRight)) {
-      this.howMuchRight = this.moveVelocity * deltaTime;
+      this.howMuchRight = this.moveVelocity;
     }
 
     this.movePlayer(this.howMuchRight, 0, this.howMuchBack);
-    this.cBody.velocity.x = parseFloat(this.cBody.velocity.x.toFixed(2));
-    this.cBody.velocity.y = parseFloat(this.cBody.velocity.y.toFixed(2));
-    this.cBody.velocity.z = parseFloat(this.cBody.velocity.z.toFixed(2));
-    if (this.cBody.velocity.y == 0) {
-      this.cBody.velocity.y = 0.1;
-    } else if (this.cBody.velocity.y > 40) {
-      this.cBody.velocity.y = 40;
-    }
     this.camera.position.copy(this.cBody.position as unknown as THREE.Vector3);
-    this.camera.position.y += 3;
-    this.camera.position.y += 3;
+    this.camera.position.y += 6;
+    if (this.cBody.velocity.y > 40) {
+      this.cBody.velocity.set(this.cBody.velocity.x, 40, this.cBody.velocity.z);
+    }
 
     if (
       this.buildingGhostClock != undefined &&

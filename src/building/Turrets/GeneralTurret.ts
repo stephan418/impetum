@@ -30,17 +30,13 @@ export default class GeneralTurret extends TurretElement {
     this.turretRotationY = 0;
   }
   protected _update(deltaTime: number): void {
-    /* this.turretRotationY += deltaTime;
-    let tempQuat = new THREE.Quaternion();
-    tempQuat.setFromEuler(new THREE.Euler(0, this.turretRotationY / 2, 0));
-    this.getParts()[1].quaternionOffset = tempQuat.clone();
-    this.getParts()[1].mesh.add(this.getParts()[2].mesh);
-    this.getParts()[2].position = new THREE.Vector3();
-    this.getParts()[2].quaternionOffset = new THREE.Quaternion().setFromEuler(
-      new THREE.Euler(Math.cos(this.turretRotationY) / 2, 0, 0)
-    ); */
   }
   protected _updatePhysics(deltaTime: number): void {}
+  protected _updateFrequencyLow(deltaTime: number): void {
+  }
+  protected _updateFrequencyMedium(deltaTime: number): void {
+    this._lookAt(window.world.getPlayer().camera.position);  
+  }
 
   private rotateToDegree(euler: THREE.Euler) {
     let tempQuat = new THREE.Quaternion();
