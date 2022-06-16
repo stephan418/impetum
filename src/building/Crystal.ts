@@ -89,4 +89,10 @@ export default class Crystal extends FreeElement implements Updatable {
   }
 
   updatePhysics(deltaTime: number): void {}
+
+  break(): void {
+    super.break();
+
+    this.gameStateManager?.dispatchEvent("lose");
+  }
 }
