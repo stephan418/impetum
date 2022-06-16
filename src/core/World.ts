@@ -13,7 +13,6 @@ import GameStateManager from "../managers/GameStateManager";
 import GameStateError from "../errors/GameStateError";
 import BuildingManager from "../managers/BuildingManager";
 import { groundMaterial, slipperyMaterial } from "./CannonMaterials";
-import GeneralTurret from "../building/Turrets/GeneralTurret";
 import { Sky } from "three/examples/jsm/objects/Sky";
 import { config } from "../managers/OptionsManager";
 import Wave from "./wave/Wave";
@@ -26,7 +25,6 @@ import { isFrequencyUpdatable } from "../interfaces/FrequencyUpdatable";
 import Enemy from "../entities/Enemy";
 
 export default class World {
-  private turrets: GeneralTurret[];
   private renderer: THREE.WebGLRenderer;
   scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
@@ -123,19 +121,11 @@ export default class World {
 
     this.loadingManager = new LoadingManager();
 
-    this.turrets = [];
     // -- Initialize the Resource Manager --
     this.resourceManager = new ResourceManager(this.loadingManager);
     this.resourceManager.setFinishedModelLoadingCallback(
       (() => {
         this.player.startGhostClock();
-        for (let i = 0; i < 1; i++) {
-          let newTurret = new GeneralTurret(this.resourceManager);
-          newTurret.setPosition(new THREE.Vector3(i * 10, 0, 0));
-          this.buildingManager.addGridElement(newTurret);
-          newTurret.lookAt(this.player.camera.position);
-          this.turrets.push(newTurret);
-        }
 
         const crystal = new Crystal(this.resourceManager, this.gameStateManager);
         crystal.setPosition(new THREE.Vector3(0, 0, 10));
@@ -228,7 +218,7 @@ export default class World {
     // -- Setup physics world --
     this.cScene = new CANNON.World();
     // this.cScene.gravity.set(0, -9.81, 0);
-    this.cScene.gravity.set(0, -50, 0);
+    this.cScene.gravity.set(0, -60, 0);
     this.cScene.broadphase = new CANNON.SAPBroadphase(this.cScene);
 
     //Setup Contact Material for Ground and Ground
@@ -245,9 +235,11 @@ export default class World {
     const cSlipperyGround = new CANNON.ContactMaterial(groundMaterial, slipperyMaterial, {
       friction: 0.02,
       restitution: 0.01,
-      contactEquationStiffness: 1e8,
+      /* friction: 0.0,
+      restitution: 0.3, */
+      // contactEquationStiffness: 1e8,
       // contactEquationStiffness: 1e1,
-      contactEquationRelaxation: 5,
+      // contactEquationRelaxation: 5,
     });
     this.cScene.addContactMaterial(cSlipperyGround);
 
@@ -425,7 +417,12 @@ export default class World {
     });
   }
 
-  public tick() {
+  getPlayer(){
+    return this.player;
+  }
+
+
+  public tick(now: number) {
     //get delta time
     this.deltaTime = this.deltaClock.getDelta();
     //run update method
@@ -434,14 +431,15 @@ export default class World {
     this.render();
     this.requestId = requestAnimationFrame(this.tick.bind(this));
 
-    if (this.deltaClock.getElapsedTime() - (this.lastMediumDispatch ?? 0) > 0.1) {
-      this.updateFrequencyMedium(this.deltaClock.getElapsedTime() - (this.lastMediumDispatch ?? 0));
+    if (this.deltaClock.elapsedTime - (this.lastMediumDispatch ?? 0) > 0.1) {
+      this.updateFrequencyMedium(this.deltaClock.elapsedTime - (this.lastMediumDispatch ?? 0));
     }
 
-    if (this.deltaClock.getElapsedTime() - (this.lastLowDispatch ?? 0) > 1) {
-      this.updateFrequencyLow(this.deltaClock.getElapsedTime() - (this.lastLowDispatch ?? 0));
+    if (this.deltaClock.elapsedTime - (this.lastLowDispatch ?? 0) > 1) {
+      this.updateFrequencyLow(this.deltaClock.elapsedTime - (this.lastLowDispatch ?? 0));
     }
   }
+
 
   public update() {
     // Update all updatables
@@ -449,11 +447,6 @@ export default class World {
     this.player.update(this.deltaTime);
     this.updatables.forEach((updateable) => {
       updateable.update(this.deltaTime);
-    });
-
-    //Please delete this, this is just for testing
-    this.turrets.forEach((val, id) => {
-      val.lookAt(this.player.camera.position);
     });
 
     //makes basically a day light cycle by changing the sun's position
@@ -484,18 +477,19 @@ export default class World {
 
   public updatePhysics() {
     this.deltaPhysicsTime = this.deltaPhysicsClock.getDelta();
-    if (this.deltaPhysicsTime > 0) {
-      this.cScene.step(this.deltaPhysicsTime);
-    }
 
     this.player.updatePhysics(this.deltaPhysicsTime);
     this.updatables.forEach((updateable) => {
       updateable.updatePhysics(this.deltaPhysicsTime);
     });
+
+    if (this.deltaPhysicsTime > 0) {
+      this.cScene.step(this.deltaPhysicsTime);
+    }
   }
 
   public updateFrequencyMedium(deltaTime: number) {
-    this.lastMediumDispatch = this.deltaClock.getElapsedTime();
+    this.lastMediumDispatch = this.deltaClock.elapsedTime;
 
     this.updatables.forEach((u) => {
       if (isFrequencyUpdatable(u)) {
@@ -505,7 +499,7 @@ export default class World {
   }
 
   public updateFrequencyLow(deltaTime: number) {
-    this.lastLowDispatch = this.deltaClock.getElapsedTime();
+    this.lastLowDispatch = this.deltaClock.elapsedTime;
 
     this.updatables.forEach((u) => {
       if (isFrequencyUpdatable(u)) {

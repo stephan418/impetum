@@ -5,8 +5,9 @@ import { groundMaterial, slipperyMaterial } from "../core/CannonMaterials";
 import FreeElement from "./FreeElement";
 import { ShapeAndOffset } from "../managers/ResourceManager";
 import Updatable from "../interfaces/Updatable";
+import FrequencyUpdatable from "../interfaces/FrequencyUpdatable";
 
-export default abstract class TurretElement extends FreeElement implements Updatable {
+export default abstract class TurretElement extends FreeElement implements FrequencyUpdatable, Updatable {
   constructor(
     geometries: THREE.BufferGeometry[] | THREE.BufferGeometry,
     materials: THREE.Material[] | THREE.Material,
@@ -20,6 +21,13 @@ export default abstract class TurretElement extends FreeElement implements Updat
   updatePhysics(deltaTime: number): void {
     this._updatePhysics(deltaTime);
   }
+  updateFrequencyLow(deltaTime: number): void {
+    this._updateFrequencyLow(deltaTime);
+  }
+  updateFrequencyMedium(deltaTime: number): void {
+    this._updateFrequencyMedium(deltaTime);
+      
+  }
 
   public lookAt(pos: THREE.Vector3) {
     this._lookAt(pos);
@@ -31,4 +39,6 @@ export default abstract class TurretElement extends FreeElement implements Updat
   protected abstract _shoot(): void;
   protected abstract _update(deltaTime: number): void;
   protected abstract _updatePhysics(deltaTime: number): void;
+  protected abstract _updateFrequencyLow(deltaTime: number): void;
+  protected abstract _updateFrequencyMedium(deltaTime: number): void;
 }

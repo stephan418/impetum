@@ -133,7 +133,7 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     this.addedToWorld = true;
     this.world = world;
     //type correctly, should be true if this implements updatable
-    if ((this as any).update != undefined && (this as any).updatePhysics != undefined) {
+    if (( (this as any).update != undefined && (this as any).updatePhysics != undefined ) || (this as any).updateFrequencyMedium != undefined) {
       world.addUpdatable(this as any);
     }
     this.parts.forEach((val, idx) => {
@@ -145,7 +145,7 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     this.addedToWorld = false;
     this.world = world;
     //type correctly, should be true if this implements updatable
-    if ((this as any).update != undefined && (this as any).updatePhysics != undefined) {
+    if (( (this as any).update != undefined && (this as any).updatePhysics != undefined ) || (this as any).updateFrequencyMedium != undefined) {
       world.removeUpdatable(this as any);
     }
     this.parts.forEach((val, idx) => {
@@ -257,6 +257,8 @@ export default abstract class FreeElement extends BaseElement implements Buildin
     if (isGhost) {
       if ((this as any).update != undefined) (this as any).update = undefined;
       if ((this as any).updatePhysics != undefined) (this as any).updatePhysics = undefined;
+      if ((this as any).updateFrequencyMedium != undefined) (this as any).updateFrequencyMedium = undefined;
+      if ((this as any).updateFrequencyLow != undefined) (this as any).updateFrequencyLow = undefined;
       this.addedToWorld = false;
       this.parts.forEach((curC) => {
         try {

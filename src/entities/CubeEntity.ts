@@ -2,7 +2,7 @@ import World from "../core/World";
 import Entity from "../interfaces/Entity";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
-import { groundMaterial } from "../core/CannonMaterials";
+import { groundMaterial, slipperyMaterial } from "../core/CannonMaterials";
 
 export default class CubeEntity implements Entity {
   private geometry: THREE.BoxGeometry;
@@ -23,7 +23,7 @@ export default class CubeEntity implements Entity {
     this.mesh.receiveShadow = true;
 
     this.cShape = new CANNON.Box(new CANNON.Vec3(this.mesh.scale.x / 2, this.mesh.scale.y / 2, this.mesh.scale.z / 2));
-    this.cBody = new CANNON.Body({ mass: 0.1, material: groundMaterial });
+    this.cBody = new CANNON.Body({ mass: 0.1, material: slipperyMaterial });
     this.cBody.position.copy(position);
     this.cBody.addShape(this.cShape);
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
