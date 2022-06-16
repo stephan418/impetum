@@ -30,12 +30,12 @@ export default class GeneralTurret extends TurretElement {
     this.turretRotationY = 0;
   }
   protected _update(deltaTime: number): void {
+    this._lookAt(window.world.getPlayer().camera.position);  
   }
   protected _updatePhysics(deltaTime: number): void {}
   protected _updateFrequencyLow(deltaTime: number): void {
   }
   protected _updateFrequencyMedium(deltaTime: number): void {
-    this._lookAt(window.world.getPlayer().camera.position);  
   }
 
   private rotateToDegree(euler: THREE.Euler) {
