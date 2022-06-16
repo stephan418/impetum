@@ -6,6 +6,7 @@ import { InventorySlot } from "../hud/inventory/InventorySlot";
 import InventoryOverlay from "../hud/inventory/Overlay";
 import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
+import PermanentHudController from "../hud/permanent_hud/PermanentHudContainer";
 import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
 import WoodenWallItem from "../inventory/items/WoodenWall";
 import PlayerInventory from "../inventory/PlayerInventory";
@@ -25,6 +26,7 @@ export default class HUDManager {
   private itemBar: ItemBar;
   private pauseMenu: PauseMenu;
   private inventoryOverlay: InventoryOverlay;
+  private permanentHud: PermanentHudController;
 
   private movingSlot?: number;
   private slot?: InventorySlot;
@@ -58,8 +60,10 @@ export default class HUDManager {
     this.itemBar = new ItemBar();
     this.pauseMenu = new PauseMenu();
     this.inventoryOverlay = new InventoryOverlay();
+    this.permanentHud = new PermanentHudController();
 
-    this.root.onclick = (e) => e.stopImmediatePropagation();
+    // TODO: stop propagation when menus are open (outside click)
+    this.root.onclick = (e) => e.target !== this.permanentHud && e.stopImmediatePropagation();
 
     this.pauseMenu.addEventListener("unpause", () => this.hidePauseMenu());
     this.inventoryOverlay.addEventListener("slot-click", this.onSlotClick.bind(this));
@@ -74,6 +78,8 @@ export default class HUDManager {
     this.inputManager.addKeyCallback("i", (e) => e && this.toggleInventory());
     this.inputManager.addKeyCallback("Escape", (e) => e && this.exitImmediateMenu());
     this.inputManager.addKeyCallback("p", (e) => e && this.togglePauseMenu());
+
+    this.root.appendChild(this.permanentHud);
   }
 
   private showNotEnoughMoneyInfo() {

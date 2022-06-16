@@ -7,3 +7,5 @@ import "./inventory/Overlay";
 import "./inventory/Store";
 import "./inventory/StoreSlot";
 import "./InfoBox";
+import "./permanent_hud/PermanentHudContainer";
+import "./permanent_hud/WaveInfo";
