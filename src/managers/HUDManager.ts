@@ -77,6 +77,7 @@ export default class HUDManager {
     this.inventoryOverlay.store = this.store;
     this.itemBar.inventory = playerInventory;
     this.permanentHud.waveManager = this.waveManager;
+    this.permanentHud.inventory = this.playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
 
