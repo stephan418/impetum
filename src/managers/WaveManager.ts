@@ -1,6 +1,7 @@
 import World from "../core/World";
 import Wave from "../core/wave/Wave";
 import THREE from "three";
+import { ParameterizedEventManager } from "../inventory/utils/EventManager";
 
 interface WaveManagerConfig {
   currentInterval?: number;
@@ -32,10 +33,17 @@ export default class WaveManager {
   private intervalId?: number;
   private nextInterval?: number;
   private stopTime?: number;
+  private waveNr?: number;
+
+  private eventManager: ParameterizedEventManager<{ wave: number }>;
+  public addEventListener;
 
   constructor(config: WaveManagerConfig, world: World, private target: THREE.Vector3, startImmediately = true) {
     this.config = populateWaveManagerConfig(config);
     this.world = world;
+
+    this.eventManager = new ParameterizedEventManager();
+    this.addEventListener = this.eventManager.addEventlistener.bind(this);
 
     if (startImmediately) {
       this.initializeNextInterval();
@@ -62,6 +70,10 @@ export default class WaveManager {
   }
 
   private startWave() {
+    this.waveNr = (this.waveNr ?? 0) + 1;
+
+    this.eventManager.dispatchEvent("wave", this.waveNr);
+
     const wave = new Wave(this.target, this.config.enemySpawnRadius, this.world, this.config.currentEnemyCount);
 
     wave.addToWorld(this.world);
@@ -115,5 +127,9 @@ export default class WaveManager {
     console.log(min, max, interval);
 
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  get waveNumber() {
+    return this.waveNr;
   }
 }
