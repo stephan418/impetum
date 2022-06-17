@@ -10,3 +10,4 @@ import "./InfoBox";
 import "./components/progressCircle";
 import "./permanent_hud/PermanentHudContainer";
 import "./permanent_hud/WaveInfo";
+import "./permanent_hud/PurseInfo";

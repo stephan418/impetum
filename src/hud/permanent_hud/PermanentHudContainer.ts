@@ -33,9 +33,10 @@ export default class PermanentHudController extends LitElement {
 
   render() {
     return html`<i-wave-info
-      waveNr=${ifDefined(this.waveManager?.waveNumber)}
-      waveCount=${ifDefined(this.waveManager?.waveCount)}
-      totalEnemies=${ifDefined(this.waveManager?.totalEnemyCount)}
-      enemiesAlive=${ifDefined(this.waveManager?.aliveEnemyCount)}></i-wave-info>`;
+        waveNr=${ifDefined(this.waveManager?.waveNumber)}
+        waveCount=${ifDefined(this.waveManager?.waveCount)}
+        totalEnemies=${ifDefined(this.waveManager?.totalEnemyCount)}
+        enemiesAlive=${ifDefined(this.waveManager?.aliveEnemyCount)}></i-wave-info
+      ><i-purse-info purseAmount=${ifDefined(this.inventory?.purseContent)}></i-purse-info>`;
   }
 }
