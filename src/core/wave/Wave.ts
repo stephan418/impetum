@@ -1,6 +1,7 @@
 import World from "../World";
 import * as THREE from "three";
 import Enemy from "../../entities/Enemy";
+import { ParameterizedEventManager } from "../../inventory/utils/EventManager";
 
 export default class Wave {
   private center: THREE.Vector3;
@@ -9,6 +10,8 @@ export default class Wave {
   private onFinish?: () => unknown;
   private world: World;
   private initialEnemyCount: number;
+  private eventManager: ParameterizedEventManager<{ removed_enemy: Enemy }>;
+  public addEventListener;
 
   constructor(
     center: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
@@ -20,6 +23,8 @@ export default class Wave {
     this.center = center;
     this.onFinish = onFinished;
     this.world = world;
+    this.eventManager = new ParameterizedEventManager();
+    this.addEventListener = this.eventManager.addEventlistener.bind(this.eventManager);
 
     if (!numberOfEnemies) {
       numberOfEnemies = 10; // Load from some sort of storage
@@ -35,6 +40,7 @@ export default class Wave {
 
       const position = new THREE.Vector3(x, center.y, y);
       const enemy = new Enemy(position);
+      enemy.onNoHealthFunction = () => this.removeEnemy(enemy);
       this.enemies.push(enemy);
     }
 
@@ -59,6 +65,8 @@ export default class Wave {
     if (this.enemies.length <= 0) {
       this.onFinish?.();
     }
+
+    this.eventManager.dispatchEvent("removed_enemy", enemy);
   }
 
   addToWorld(world: World) {

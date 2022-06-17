@@ -77,6 +77,8 @@ export default class WaveManager {
 
     const wave = new Wave(this.target, this.config.enemySpawnRadius, this.world, this.config.currentEnemyCount);
 
+    wave.addEventListener("removed_enemy", () => this.eventManager.dispatchEvent("update", undefined));
+
     wave.addToWorld(this.world);
     wave.startMoving(() => this.removeWaveFromArray(wave));
 
