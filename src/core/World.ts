@@ -298,17 +298,23 @@ export default class World {
       this.renderer.domElement
     );
 
-    // -- Initialize the HUD --
-    this.hudManager = new HUDManager("hud-root", this.gameStateManager, this.inputManager, this.player.inventory);
-
-    this.hudManager.attach();
-
     this.waveManager = new WaveManager(
       { currentInterval: 10_000, intervalMultiplier: 90 },
       this,
       new THREE.Vector3(0, 0, 10),
       false
     );
+
+    // -- Initialize the HUD --
+    this.hudManager = new HUDManager(
+      "hud-root",
+      this.gameStateManager,
+      this.inputManager,
+      this.player.inventory,
+      this.waveManager
+    );
+
+    this.hudManager.attach();
 
     this.waveManager.start();
 
