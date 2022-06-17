@@ -35,7 +35,7 @@ export default class WaveManager {
   private stopTime?: number;
   private waveNr?: number;
 
-  private eventManager: ParameterizedEventManager<{ wave: number }>;
+  private eventManager: ParameterizedEventManager<{ wave: number; finish: Wave; update: never }>;
   public addEventListener;
 
   constructor(config: WaveManagerConfig, world: World, private target: THREE.Vector3, startImmediately = true) {
@@ -43,7 +43,7 @@ export default class WaveManager {
     this.world = world;
 
     this.eventManager = new ParameterizedEventManager();
-    this.addEventListener = this.eventManager.addEventlistener.bind(this);
+    this.addEventListener = this.eventManager.addEventlistener.bind(this.eventManager);
 
     if (startImmediately) {
       this.initializeNextInterval();
@@ -73,6 +73,7 @@ export default class WaveManager {
     this.waveNr = (this.waveNr ?? 0) + 1;
 
     this.eventManager.dispatchEvent("wave", this.waveNr);
+    this.eventManager.dispatchEvent("update", undefined);
 
     const wave = new Wave(this.target, this.config.enemySpawnRadius, this.world, this.config.currentEnemyCount);
 
@@ -91,7 +92,12 @@ export default class WaveManager {
       return;
     }
 
-    return this.currentWaves.splice(index, 1);
+    const w = this.currentWaves.splice(index, 1);
+
+    this.eventManager.dispatchEvent("finish", w[0]);
+    this.eventManager.dispatchEvent("update", undefined);
+
+    return w;
   }
 
   public pause() {
@@ -131,5 +137,17 @@ export default class WaveManager {
 
   get waveNumber() {
     return this.waveNr;
+  }
+
+  get totalEnemyCount() {
+    return this.currentWaves.reduce((p, c) => p + c.totalEnemyCount, 0);
+  }
+
+  get aliveEnemyCount() {
+    return this.currentWaves.reduce((p, c) => p + c.aliveEnemyCount, 0);
+  }
+
+  get waveCount() {
+    return this.currentWaves.length;
   }
 }
