@@ -76,7 +76,7 @@ class WaveInfo extends LitElement {
   render() {
     return html` <div id="progress-indicator">
         <i-progress-circle
-          percentage="${this.enemiesAlive / this.totalEnemies}"
+          percentage="${100 - (this.enemiesAlive / this.totalEnemies) * 100}"
           color="red"
           weight="4"></i-progress-circle
         ><i-progress-circle color="#000000aa"></i-progress-circle>
