@@ -45,6 +45,8 @@ export default class Enemy implements Entity, FrequencyUpdatable {
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
 
     this.onBroken = this.onBroken.bind(this);
+
+    window.interactionManager.addEventListener({ type: "left", id: this.mesh.id }, () => this.decrementHealth(50));
   }
 
   private onBroken() {
