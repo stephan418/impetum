@@ -8,6 +8,7 @@ export default class Wave {
   private updateIntervalId: number;
   private onFinish?: () => unknown;
   private world: World;
+  private initialEnemyCount: number;
 
   constructor(
     center: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
@@ -23,6 +24,8 @@ export default class Wave {
     if (!numberOfEnemies) {
       numberOfEnemies = 10; // Load from some sort of storage
     }
+
+    this.initialEnemyCount = numberOfEnemies;
 
     for (let i = 0; i < numberOfEnemies; i++) {
       const randomPolarAngle = Math.random() * 2 * Math.PI;
@@ -78,5 +81,13 @@ export default class Wave {
 
   set onFinished(onFinished: typeof this.onFinish) {
     this.onFinish = onFinished;
+  }
+
+  get totalEnemyCount() {
+    return this.initialEnemyCount;
+  }
+
+  get aliveEnemyCount() {
+    return this.enemies.length;
   }
 }

@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import PlayerInventory from "../../inventory/PlayerInventory";
 import WaveManager from "../../managers/WaveManager";
 
@@ -21,7 +22,7 @@ export default class PermanentHudController extends LitElement {
     super.connectedCallback();
 
     this.inventory?.addEventListener("change", async () => await this.requestUpdate());
-    this.waveManager?.addEventListener("wave", async () => await this.requestUpdate());
+    this.waveManager?.addEventListener("update", async () => await this.requestUpdate());
   }
 
   @property()
@@ -31,6 +32,10 @@ export default class PermanentHudController extends LitElement {
   waveManager?: WaveManager;
 
   render() {
-    return html`<i-wave-info></i-wave-info>`;
+    return html`<i-wave-info
+      waveNr=${ifDefined(this.waveManager?.waveNumber)}
+      waveCount=${ifDefined(this.waveManager?.waveCount)}
+      totalEnemies=${ifDefined(this.waveManager?.totalEnemyCount)}
+      enemiesAlive=${ifDefined(this.waveManager?.aliveEnemyCount)}></i-wave-info>`;
   }
 }

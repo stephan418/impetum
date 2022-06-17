@@ -13,11 +13,13 @@ import PlayerInventory from "../inventory/PlayerInventory";
 import Store from "../inventory/store/store";
 import GameStateManager from "./GameStateManager";
 import InputManager from "./InputManager";
+import WaveManager from "./WaveManager";
 
 export default class HUDManager {
   private root: HTMLElement;
   private gameStateManager: GameStateManager;
   private inputManager;
+  private waveManager;
 
   private playerInventory: PlayerInventory;
   private store: Store;
@@ -37,7 +39,8 @@ export default class HUDManager {
     rootId: string,
     gameStateManager: GameStateManager,
     inputManager: InputManager,
-    playerInventory: PlayerInventory
+    playerInventory: PlayerInventory,
+    waveManager: WaveManager
   ) {
     const root = document.getElementById(rootId);
 
@@ -48,6 +51,7 @@ export default class HUDManager {
     this.root = root;
     this.gameStateManager = gameStateManager;
     this.inputManager = inputManager;
+    this.waveManager = waveManager;
     this.store = new Store([
       { batchPrize: 100, batchSize: 1, description: "General Turret", item: new GeneralTurretItem() },
       { batchPrize: 50, batchSize: 10, description: "Wooden Wall", item: new WoodenWallItem() },
@@ -72,6 +76,7 @@ export default class HUDManager {
     this.inventoryOverlay.inventory = playerInventory;
     this.inventoryOverlay.store = this.store;
     this.itemBar.inventory = playerInventory;
+    this.permanentHud.waveManager = this.waveManager;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
 

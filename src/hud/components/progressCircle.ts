@@ -34,10 +34,12 @@ export class ProgressCircle extends LitElement {
   weight = 2;
 
   render() {
+    const percentage = isNaN(this.percentage) ? 0 : this.percentage;
+
     return html`
       <style>
         div {
-          transform: rotate(calc(45deg + ${this.percentage * 1.8}deg));
+          transform: rotate(calc(45deg + ${percentage * 1.8}deg));
 
           border: ${this.weight}px solid ${this.color};
         }
