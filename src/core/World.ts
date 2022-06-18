@@ -23,6 +23,11 @@ import InteractionManager from "../managers/InteractionManager";
 import PlayerInventory from "../inventory/PlayerInventory";
 import { isFrequencyUpdatable } from "../interfaces/FrequencyUpdatable";
 import Enemy from "../entities/Enemy";
+import ItemTypeRegistry from "../managers/ItemTypeRegistry";
+import WoodenFloorItem from "../inventory/items/WoodenFloor";
+import GeneralTurret from "../building/Turrets/GeneralTurret";
+import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
+import WoodenWallItem from "../inventory/items/WoodenWall";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -343,6 +348,11 @@ export default class World {
 
     this.interactionManager.perspectiveCamera = this.player.camera;
 
+    (window.itemTypeRegistry as ItemTypeRegistry) = new ItemTypeRegistry();
+    window.itemTypeRegistry.registerItem("woodenfloor", WoodenFloorItem);
+    window.itemTypeRegistry.registerItem("generalTurret", GeneralTurretItem);
+    window.itemTypeRegistry.registerItem("woodenwall", WoodenWallItem);
+
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
     this.directionalLight = new THREE.DirectionalLight(0xdfdfdf, 0.9);
@@ -595,5 +605,6 @@ declare global {
     readonly waveManager: WaveManager;
     readonly resourceManager: ResourceManager;
     readonly world: World;
+    readonly itemTypeRegistry: ItemTypeRegistry;
   }
 }

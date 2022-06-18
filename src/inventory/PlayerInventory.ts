@@ -66,6 +66,8 @@ export default class PlayerInventory {
 
   @mutation
   retrieveFromIndex(amount: number, index: number) {
+    console.log(this.hotbar.serialize());
+    console.log(this.selected);
     if (index < this.hotbar.size) {
       return this.hotbar.retrieveIndex(index, amount);
     }
