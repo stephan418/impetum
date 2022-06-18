@@ -1,12 +1,35 @@
 import IStorage, { Group } from "../interfaces/Storage";
-import Item from "../interfaces/Item";
+import IItem from "../interfaces/Item";
 import InventoryError from "../errors/InventoryError";
+import { Serializable } from "../interfaces/Saveable";
+import safeDeserialize from "../helpers/safeDeserialization";
+import DeserializationError from "../errors/DeserializationError";
+import Item from "./Item";
 
-export default class Storage<C extends Item> implements IStorage<C> {
-  private slots: (Group<C> | undefined)[];
+type Slots<C extends IItem> = (Group<C> | undefined)[];
 
-  constructor(slots: number) {
+function isGroupOrUndefined(payload: any): payload is Group<any> | undefined {
+  return (
+    typeof payload === "undefined" ||
+    (typeof payload === "object" &&
+      typeof payload.item === "object" &&
+      typeof payload.item.id === "string" &&
+      typeof payload.amount === "number")
+  );
+}
+
+function isSlotsObject(payload: any): payload is Slots<any> {
+  return Array.isArray(payload) && payload.every((groupOrUndefined) => isGroupOrUndefined(groupOrUndefined));
+}
+
+export default class Storage<C extends IItem> implements IStorage<C>, Serializable {
+  private slots: Slots<C>;
+
+  constructor(slots: number, slotsPrefill?: Slots<C>) {
     this.slots = Array(slots).fill(undefined);
+    if (slotsPrefill) {
+      this.slots = slotsPrefill;
+    }
   }
 
   open() {
@@ -126,6 +149,24 @@ export default class Storage<C extends Item> implements IStorage<C> {
         this.slots[from] = undefined;
       }
     }
+  }
+
+  public static fromSerialized(serialized: string, config: { slots: number }): Storage<any> {
+    const deserialied = safeDeserialize(() => JSON.parse(serialized));
+
+    if (!isSlotsObject(deserialied)) {
+      throw new DeserializationError("Not a valid slots object");
+    }
+
+    return new Storage(config.slots, deserialied);
+  }
+
+  public serialize(): string {
+    return JSON.stringify(
+      this.slots.map((slot) =>
+        slot?.item instanceof Item ? { amount: slot.amount, item: slot.item.toSerializable() } : slot
+      )
+    );
   }
 
   private find(id: C["id"]) {
