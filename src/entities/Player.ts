@@ -178,10 +178,11 @@ export default class Player implements Entity {
     });
     this.lookDirection = new THREE.Vector3();
 
-    this.inventory = new PlayerInventory(config.inventory.hotbarSlots, config.inventory.backSlots, inputManager);
-    this.inventory.collect(new WoodenFloorItem(), 10000);
-    this.inventory.collect(new WoodenWallItem(), 10000);
-    this.inventory.collect(new GeneralTurretItem(), 10000);
+    this.inventory = window.storageManager.getOrInitInventory(
+      config.inventory.hotbarSlots,
+      config.inventory.backSlots,
+      inputManager
+    );
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.onclick = () => {

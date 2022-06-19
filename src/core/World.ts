@@ -28,6 +28,7 @@ import WoodenFloorItem from "../inventory/items/WoodenFloor";
 import GeneralTurret from "../building/Turrets/GeneralTurret";
 import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
 import WoodenWallItem from "../inventory/items/WoodenWall";
+import StorageManager from "../managers/StorageManagers";
 
 export default class World {
   private renderer: THREE.WebGLRenderer;
@@ -98,6 +99,12 @@ export default class World {
   }
 
   constructor(canvasId: string, fov = 80, near = 0.1, far = 1000) {
+    (window.itemTypeRegistry as ItemTypeRegistry) = new ItemTypeRegistry();
+
+    window.itemTypeRegistry.registerItem("woodenfloor", WoodenFloorItem);
+    window.itemTypeRegistry.registerItem("generalTurret", GeneralTurretItem);
+    window.itemTypeRegistry.registerItem("woodenwall", WoodenWallItem);
+
     const canvas = document.getElementById(canvasId);
 
     if (!canvas) {
@@ -296,6 +303,8 @@ export default class World {
     this.interactionManager = new InteractionManager(this.scene, this.inputManager);
     (window as any).interactionManager = this.interactionManager;
 
+    (window as any).storageManager = new StorageManager();
+
     this.player = new Player(
       aspect,
       fov,
@@ -347,11 +356,6 @@ export default class World {
     this.waveManager.start();
 
     this.interactionManager.perspectiveCamera = this.player.camera;
-
-    (window.itemTypeRegistry as ItemTypeRegistry) = new ItemTypeRegistry();
-    window.itemTypeRegistry.registerItem("woodenfloor", WoodenFloorItem);
-    window.itemTypeRegistry.registerItem("generalTurret", GeneralTurretItem);
-    window.itemTypeRegistry.registerItem("woodenwall", WoodenWallItem);
 
     // -- Setup Light --
     this.ambientLight = new THREE.AmbientLight(0x808080);
@@ -424,6 +428,11 @@ export default class World {
         }
       }
     } */
+
+    window.onbeforeunload = () => {
+      window.storageManager.saveAll();
+      return null;
+    };
   }
 
   public handleResize(): boolean {
@@ -606,5 +615,6 @@ declare global {
     readonly resourceManager: ResourceManager;
     readonly world: World;
     readonly itemTypeRegistry: ItemTypeRegistry;
+    readonly storageManager: StorageManager;
   }
 }
