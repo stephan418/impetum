@@ -1,4 +1,7 @@
+import DeserializationError from "../errors/DeserializationError";
 import InventoryError from "../errors/InventoryError";
+import safeDeserialize from "../helpers/safeDeserialization";
+import { Serializable } from "../interfaces/Saveable";
 import InputManager, { ScrollInput } from "../managers/InputManager";
 import BackInventory from "./BackInventory";
 import HotbarInventory from "./HotbarInvetory";
@@ -6,7 +9,22 @@ import Item from "./Item";
 import Purse from "./Purse";
 import EventManager, { mutation } from "./utils/EventManager";
 
-export default class PlayerInventory {
+interface PlayerInventorySerialized {
+  hotbar: string;
+  back: string;
+  purse: string;
+}
+
+function isPlayerInventorySerialized(payload: any): payload is PlayerInventorySerialized {
+  return (
+    typeof payload === "object" &&
+    typeof payload.hotbar == "string" &&
+    typeof payload.back == "string" &&
+    typeof payload.purse === "string"
+  );
+}
+
+export default class PlayerInventory implements Serializable {
   private hotbar: HotbarInventory;
   private back: BackInventory;
   private purse: Purse;
@@ -19,10 +37,16 @@ export default class PlayerInventory {
   public addEventListener;
   public removeEventListener;
 
-  constructor(hotbarSlots: number, backSlots: number, inputManager?: InputManager) {
-    this.hotbar = new HotbarInventory(hotbarSlots);
-    this.back = new BackInventory(backSlots);
-    this.purse = new Purse();
+  constructor(hotbarSlots: number, backSlots: number, inputManager?: InputManager, init?: PlayerInventorySerialized) {
+    if (!init) {
+      this.hotbar = new HotbarInventory(hotbarSlots);
+      this.back = new BackInventory(backSlots);
+      this.purse = new Purse();
+    } else {
+      this.hotbar = HotbarInventory.fromSerialized(init.hotbar, { slots: hotbarSlots });
+      this.back = BackInventory.fromSerialized(init.back, { slots: backSlots });
+      this.purse = Purse.fromSerialized(init.purse);
+    }
 
     this.inputManager = inputManager;
 
@@ -66,8 +90,6 @@ export default class PlayerInventory {
 
   @mutation
   retrieveFromIndex(amount: number, index: number) {
-    console.log(this.hotbar.serialize());
-    console.log(this.selected);
     if (index < this.hotbar.size) {
       return this.hotbar.retrieveIndex(index, amount);
     }
@@ -106,6 +128,24 @@ export default class PlayerInventory {
   @mutation
   desposit(amount: number) {
     this.purse.deposit(amount);
+  }
+
+  serialize(): string {
+    return JSON.stringify({
+      hotbar: this.hotbar.serialize(),
+      back: this.back.serialize(),
+      purse: this.purse.serialize(),
+    });
+  }
+
+  static fromSerialized(serialized: string, hotbarSlots = 9, backSlots = 36, inputManager?: InputManager) {
+    const deserialized = safeDeserialize(() => JSON.parse(serialized));
+
+    if (!isPlayerInventorySerialized(deserialized)) {
+      throw new DeserializationError("Cannot interpret value");
+    }
+
+    return new PlayerInventory(hotbarSlots, backSlots, inputManager, deserialized);
   }
 
   get purseContent() {
