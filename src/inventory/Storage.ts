@@ -5,6 +5,7 @@ import { Serializable } from "../interfaces/Saveable";
 import safeDeserialize from "../helpers/safeDeserialization";
 import DeserializationError from "../errors/DeserializationError";
 import Item from "./Item";
+import nullToUndefined from "../helpers/nullToUndefined";
 
 type Slots<C extends IItem> = (Group<C> | undefined)[];
 
@@ -152,13 +153,16 @@ export default class Storage<C extends IItem> implements IStorage<C>, Serializab
   }
 
   public static fromSerialized(serialized: string, config: { slots: number }): Storage<any> {
-    const deserialied = safeDeserialize(() => JSON.parse(serialized));
+    const deserialied = nullToUndefined(safeDeserialize(() => JSON.parse(serialized)));
 
     if (!isSlotsObject(deserialied)) {
       throw new DeserializationError("Not a valid slots object");
     }
 
-    return new Storage(config.slots, deserialied);
+    return new Storage(
+      config.slots,
+      deserialied.map((slot) => window.itemTypeRegistry.safeSlotToObject(slot))
+    );
   }
 
   public serialize(): string {
