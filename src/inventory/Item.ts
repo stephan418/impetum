@@ -31,7 +31,7 @@ export default abstract class Item implements IItem {
   }
 
   toSerializable() {
-    return { id: this.id };
+    return { id: this.id, class: true };
   }
 
   abstract get id(): string;
