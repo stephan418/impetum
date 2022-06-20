@@ -264,7 +264,7 @@ export default class Player implements Entity {
         );
         this.ghostBuildingElement.setPosition(rayResult.position || new THREE.Vector3(-100, -100, -100));
         this.ghostBuildingElement.setQuaternion(rayResult.rotation || new THREE.Quaternion());
-      } else {
+      } else if (this.ghostBuildingElement) {
         this.buildingManager.removeGhostElement(this.ghostBuildingElement);
       }
       this.buildingGhostClock.start();
