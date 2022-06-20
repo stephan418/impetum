@@ -38,6 +38,12 @@ export default class GameStateManager {
     this.domElement = domElement;
 
     this.pointerLockControls.addEventListener("unlock", () => this.pause());
+
+    this.addEventListener("lose", this.onLose.bind(this));
+  }
+
+  onLose() {
+    this.pause(), (window.onkeydown = (e) => e.stopImmediatePropagation());
   }
 
   private togglePause() {
