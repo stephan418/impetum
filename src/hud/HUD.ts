@@ -11,3 +11,4 @@ import "./components/progressCircle";
 import "./permanent_hud/PermanentHudContainer";
 import "./permanent_hud/WaveInfo";
 import "./permanent_hud/PurseInfo";
+import "./state_screens/LoseScreen";

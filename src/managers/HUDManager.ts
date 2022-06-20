@@ -7,6 +7,7 @@ import InventoryOverlay from "../hud/inventory/Overlay";
 import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
 import PermanentHudController from "../hud/permanent_hud/PermanentHudContainer";
+import { LoseScreen } from "../hud/state_screens/LoseScreen";
 import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
 import WoodenWallItem from "../inventory/items/WoodenWall";
 import PlayerInventory from "../inventory/PlayerInventory";
@@ -29,6 +30,7 @@ export default class HUDManager {
   private pauseMenu: PauseMenu;
   private inventoryOverlay: InventoryOverlay;
   private permanentHud: PermanentHudController;
+  private loseScreen: LoseScreen;
 
   private movingSlot?: number;
   private slot?: InventorySlot;
@@ -65,6 +67,7 @@ export default class HUDManager {
     this.pauseMenu = new PauseMenu();
     this.inventoryOverlay = new InventoryOverlay();
     this.permanentHud = new PermanentHudController();
+    this.loseScreen = new LoseScreen();
 
     // TODO: stop propagation when menus are open (outside click)
     this.root.onclick = (e) => e.target !== this.permanentHud && e.stopImmediatePropagation();
@@ -80,12 +83,19 @@ export default class HUDManager {
     this.permanentHud.inventory = this.playerInventory;
 
     this.gameStateManager.addEventListener("pause", () => this.showPauseMenu());
+    this.gameStateManager.addEventListener("lose", this.onLose.bind(this));
 
     this.inputManager.addKeyCallback("i", (e) => e && this.toggleInventory());
     this.inputManager.addKeyCallback("Escape", (e) => e && this.exitImmediateMenu());
     this.inputManager.addKeyCallback("p", (e) => e && this.togglePauseMenu());
 
     this.root.appendChild(this.permanentHud);
+  }
+
+  private onLose() {
+    this.root.appendChild(this.loseScreen);
+    this.showPauseMenu = () => undefined;
+    this.hidePauseMenu();
   }
 
   private showNotEnoughMoneyInfo() {
