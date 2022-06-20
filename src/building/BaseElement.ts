@@ -1,8 +1,30 @@
 import * as THREE from "three";
 import World from "../core/World";
+import DeserializationError from "../errors/DeserializationError";
+import safeDeserialize from "../helpers/safeDeserialization";
+import { Serializable } from "../interfaces/Saveable";
 import EventManager from "../inventory/utils/EventManager";
+import ResourceManager from "../managers/ResourceManager";
+import WoodenFloor from "./Floors/WoodenFloor";
 
-export default abstract class BaseElement {
+interface SerializedElement {
+  position: any[];
+  quaternion: any[];
+  health: number;
+  type?: string;
+}
+
+function isSerializedElement(payload: any): payload is SerializedElement {
+  return (
+    typeof payload === "object" &&
+    Array.isArray(payload.position) &&
+    Array.isArray(payload.quaternion) &&
+    typeof payload.health === "number" &&
+    (payload.type ? typeof payload.type === "string" : true)
+  );
+}
+
+export default abstract class BaseElement implements Serializable {
   pos: THREE.Vector3;
   quaternion: THREE.Quaternion;
   health: number;
@@ -20,10 +42,17 @@ export default abstract class BaseElement {
   abstract updatedQuaternion(): void;
   abstract updatedGhostStatus(isGhost: boolean): void;
 
-  constructor() {
-    this.pos = new THREE.Vector3(0, 0, 0);
-    this.quaternion = new THREE.Quaternion();
-    this.health = 100;
+  constructor(init?: { position: THREE.Vector3; quaternion: THREE.Quaternion; health: number }) {
+    if (init) {
+      this.pos = init.position;
+      this.quaternion = init.quaternion;
+      this.health = init.health;
+    } else {
+      this.pos = new THREE.Vector3(0, 0, 0);
+      this.quaternion = new THREE.Quaternion();
+      this.health = 100;
+    }
+
     this.isGhost = false;
 
     this.eventManager = new EventManager(["broken"]);
@@ -35,6 +64,7 @@ export default abstract class BaseElement {
   setPosition(position: THREE.Vector3) {
     this.pos = position;
     this.updatedPosition();
+    if (!this.isGhost) console.log(this.serialize());
   }
   getPosition() {
     return this.pos;
@@ -65,5 +95,13 @@ export default abstract class BaseElement {
   break() {
     this.isRemoved = true;
     this.eventManager.dispatchEvent("broken");
+  }
+
+  serialize(): string {
+    return JSON.stringify({
+      position: this.pos.toArray(),
+      quaternion: this.quaternion.toArray(),
+      health: this.health,
+    });
   }
 }
