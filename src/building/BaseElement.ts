@@ -41,6 +41,7 @@ export default abstract class BaseElement implements Serializable {
   abstract updatedPosition(): void;
   abstract updatedQuaternion(): void;
   abstract updatedGhostStatus(isGhost: boolean): void;
+  abstract onRemove(): void;
 
   constructor(init?: { position: THREE.Vector3; quaternion: THREE.Quaternion; health: number }) {
     if (init) {
@@ -64,7 +65,7 @@ export default abstract class BaseElement implements Serializable {
   setPosition(position: THREE.Vector3) {
     this.pos = position;
     this.updatedPosition();
-    if (!this.isGhost) console.log(this.serialize());
+    // if (!this.isGhost) console.log(this.serialize());
   }
   getPosition() {
     return this.pos;
