@@ -132,7 +132,7 @@ export default class WaveManager {
     const min = interval - interval * deviation;
     const max = interval + interval * deviation;
 
-    console.log(min, max, interval);
+    // console.log(min, max, interval);
 
     return Math.floor(Math.random() * (max - min + 1) + min);
   }

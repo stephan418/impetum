@@ -31,7 +31,7 @@ export default class Crystal extends FreeElement implements Updatable {
 
     super([socketGeometry, crystalGeometry], [material, material], cShape);
 
-    this.interval = new PausableInterval(() => this.addShard(), 5_000);
+    this.interval = new PausableInterval(() => this.addShard(), 2_000);
 
     this.gameStateManager?.addEventListener("pause", this.pause.bind(this));
     this.gameStateManager?.addEventListener("unpause", this.unpause.bind(this));
