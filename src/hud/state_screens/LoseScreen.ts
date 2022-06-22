@@ -44,7 +44,7 @@ export class LoseScreen extends LitElement {
       animation: ease-in-out forwards 3s animate-up;
     }
 
-    button {
+    i-button {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -95,7 +95,7 @@ export class LoseScreen extends LitElement {
     return html`
       <h1>The enemies destroyed the last crystal</h1>
       <h2>There goes the last bit of hope...</h2>
-      <button @click=${() => location.reload()}>Restart</button>
+      <i-button @click=${() => location.reload()}>Restart</i-button>
     `;
   }
 }
