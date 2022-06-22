@@ -21,6 +21,7 @@ export default class PauseMenu extends LitElement {
         <button @click=${this.handleUnpauseClick} id="resume">Resume</button>
         <button @click=${this.handleOptionsClick}>Options</button>
         <button>Save and Exit</button>
+        <i-toggle-button falseText="test"></i-toggle-button>
       </i-menu>
     `;
   }

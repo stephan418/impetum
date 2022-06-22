@@ -6,6 +6,7 @@ import { InventorySlot } from "../hud/inventory/InventorySlot";
 import InventoryOverlay from "../hud/inventory/Overlay";
 import ItemBar from "../hud/ItemBar";
 import PauseMenu from "../hud/menu/PauseMenu";
+import Options from "../hud/Options";
 import PermanentHudController from "../hud/permanent_hud/PermanentHudContainer";
 import { LoseScreen } from "../hud/state_screens/LoseScreen";
 import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
@@ -28,6 +29,7 @@ export default class HUDManager {
   private crossHair: Crosshair;
   private itemBar: ItemBar;
   private pauseMenu: PauseMenu;
+  private options: Options;
   private inventoryOverlay: InventoryOverlay;
   private permanentHud: PermanentHudController;
   private loseScreen: LoseScreen;
@@ -35,7 +37,7 @@ export default class HUDManager {
   private movingSlot?: number;
   private slot?: InventorySlot;
 
-  private stateMap = { inventoryOverlay: false, pauseMenu: false };
+  private stateMap = { inventoryOverlay: false, pauseMenu: false, options: false };
 
   constructor(
     rootId: string,
@@ -65,6 +67,7 @@ export default class HUDManager {
     this.crossHair = new Crosshair();
     this.itemBar = new ItemBar();
     this.pauseMenu = new PauseMenu();
+    this.options = new Options();
     this.inventoryOverlay = new InventoryOverlay();
     this.permanentHud = new PermanentHudController();
     this.loseScreen = new LoseScreen();
@@ -73,6 +76,7 @@ export default class HUDManager {
     this.root.onclick = (e) => e.target !== this.permanentHud && e.stopImmediatePropagation();
 
     this.pauseMenu.addEventListener("unpause", () => this.hidePauseMenu());
+    this.pauseMenu.addEventListener("options-click", () => this.showOptions());
     this.inventoryOverlay.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.itemBar.addEventListener("slot-click", this.onSlotClick.bind(this));
     this.inventoryOverlay.addEventListener("not-enough-money", this.showNotEnoughMoneyInfo.bind(this));
@@ -110,6 +114,14 @@ export default class HUDManager {
   public attach() {
     this.root.appendChild(this.crossHair);
     this.root.appendChild(this.itemBar);
+  }
+
+  private showOptions() {
+    this.root.appendChild(this.options);
+    this.root.removeChild(this.pauseMenu);
+
+    this.stateMap.options = true;
+    this.stateMap.pauseMenu = false;
   }
 
   private handlePause() {

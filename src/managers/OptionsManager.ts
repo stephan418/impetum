@@ -1,4 +1,4 @@
-type ConfigD = {
+export type ConfigD = {
   [K: string]: {
     [k: string]:
       | { t: "key"; default: string }
@@ -43,7 +43,7 @@ const ConfigDescription = {
 
 type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : never;
 
-type ConcreteConfigD = typeof ConfigDescription;
+export type ConcreteConfigD = typeof ConfigDescription;
 
 type X<T extends ConfigD> = {
   [K in keyof T]: {
@@ -97,6 +97,19 @@ export class ConfigManager {
     }
 
     return new ConfigManager();
+  }
+
+  getSetting<OK extends keyof ConcreteConfigD, IK extends keyof ConcreteConfigD[OK]>(ok: OK, ik: IK) {
+    return this._config[ok][ik];
+  }
+
+  updateSetting<OK extends keyof ConcreteConfigD, IK extends keyof ConcreteConfigD[OK]>(
+    ok: OK,
+    ik: IK,
+    value: typeof this._config[OK][IK]
+  ) {
+    this._config[ok][ik] = value;
+    console.log(this._config);
   }
 
   get config() {
