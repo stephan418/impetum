@@ -331,7 +331,7 @@ export default class World {
     );
 
     this.waveManager = new WaveManager(
-      { currentInterval: 10_000, intervalMultiplier: 1.9 },
+      { currentInterval: 20_000, intervalMultiplier: 0.9 },
       this,
       new THREE.Vector3(0, 0, 10),
       false
