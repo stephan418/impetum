@@ -44,17 +44,8 @@ export class StoreSlot extends LitElement {
       font-weight: normal;
     }
 
-    button {
-      font-size: 1rem;
-
-      outline: none;
-      border: 2px solid #777777;
-      border-radius: 5px;
-
-      background: white;
-
+    i-button {
       margin-top: 20px;
-      padding: 5px 20px;
     }
 
     .transaction-area {
@@ -87,7 +78,7 @@ export class StoreSlot extends LitElement {
         <h1>${this.definition.description}</h1>
         <h2>x ${this.definition.batchSize}</h2>
 
-        <button @click=${() => this.handleBuyClick()}>Buy for ${this.definition.batchPrize} shards</button>
+        <i-button @click=${() => this.handleBuyClick()}>Buy for ${this.definition.batchPrize} shards</i-button>
       </div>`;
   }
 }

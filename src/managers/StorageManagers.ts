@@ -18,4 +18,8 @@ export default class StorageManager {
   saveAll() {
     if (this.inventory) localStorage.setItem("i-store.inventory", this.inventory.serialize());
   }
+
+  clearAll() {
+    localStorage.removeItem("i-store.inventory");
+  }
 }

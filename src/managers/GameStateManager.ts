@@ -43,7 +43,11 @@ export default class GameStateManager {
   }
 
   onLose() {
-    this.pause(), (window.onkeydown = (e) => e.stopImmediatePropagation());
+    this.pause();
+
+    window.onkeydown = (e) => e.stopImmediatePropagation();
+
+    window.storageManager.clearAll();
   }
 
   private togglePause() {
