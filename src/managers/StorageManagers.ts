@@ -2,6 +2,7 @@ import PlayerInventory from "../inventory/PlayerInventory";
 
 export default class StorageManager {
   private inventory?: PlayerInventory;
+  private cleared = false;
 
   getOrInitInventory(...args: ConstructorParameters<typeof PlayerInventory>) {
     const serialized = localStorage.getItem("i-store.inventory");
@@ -16,10 +17,16 @@ export default class StorageManager {
   }
 
   saveAll() {
+    if (this.cleared) {
+      this.cleared = false;
+      return;
+    }
+
     if (this.inventory) localStorage.setItem("i-store.inventory", this.inventory.serialize());
   }
 
   clearAll() {
     localStorage.removeItem("i-store.inventory");
+    this.cleared = true;
   }
 }
