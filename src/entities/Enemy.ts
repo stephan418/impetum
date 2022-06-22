@@ -7,7 +7,7 @@ import Entity from "../interfaces/Entity";
 import FrequencyUpdatable from "../interfaces/FrequencyUpdatable";
 
 export default class Enemy implements Entity, FrequencyUpdatable {
-  private mesh: THREE.Mesh;
+  mesh: THREE.Mesh;
   private cBody: CANNON.Body;
   private radius = 1.3;
   private colliderRadius = 1.3;
@@ -27,8 +27,11 @@ export default class Enemy implements Entity, FrequencyUpdatable {
   private onStopMoving?: () => unknown;
 
   constructor(position: THREE.Vector3, onNoHealth?: Function) {
-    const geometry = new THREE.SphereGeometry(this.radius);
-    const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    /* const geometry = new THREE.SphereGeometry(this.radius);
+    const material = new THREE.MeshLambertMaterial({ color: 0xffffff }); */
+    const geometry = window.resourceManager.getModelGeometry("alien");
+    console.log(geometry);
+    const material = window.resourceManager.getModelMaterial("alien");
     const cShape = new CANNON.Sphere(this.colliderRadius);
 
     this.mesh = new THREE.Mesh(geometry, material);

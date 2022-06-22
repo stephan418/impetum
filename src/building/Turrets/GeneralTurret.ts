@@ -6,6 +6,7 @@ import { BufferGeometry } from "three";
 import WallElement from "../WallElement";
 import TurretElement from "../TurretElement";
 import Updatable from "../../interfaces/Updatable";
+import Enemy from "../../entities/Enemy";
 
 export default class GeneralTurret extends TurretElement {
   private turretRotationY: number;
@@ -30,12 +31,27 @@ export default class GeneralTurret extends TurretElement {
     this.turretRotationY = 0;
   }
   protected _update(deltaTime: number): void {
-    this._lookAt(window.world.getPlayer().camera.position);  
+    // this._lookAt(window.world.getPlayer().camera.position);
   }
   protected _updatePhysics(deltaTime: number): void {}
-  protected _updateFrequencyLow(deltaTime: number): void {
-  }
+  protected _updateFrequencyLow(deltaTime: number): void {}
   protected _updateFrequencyMedium(deltaTime: number): void {
+    window.waveManager.currentWaves.forEach((curWave, curWaveIdx) => {
+      let enemyWithLowestDistance: Enemy | undefined = undefined;
+      let enemyLowestDistance = 999999999;
+      curWave.enemies.forEach((curEnemy: Enemy, curEnemyIdx) => {
+        if (curEnemy.mesh.position.distanceTo(this.pos) < enemyLowestDistance) {
+          enemyWithLowestDistance = curEnemy;
+          enemyLowestDistance = curEnemy.mesh.position.distanceTo(this.pos);
+        }
+        // console.log(curEnemy);
+        // this._lookAt(curEenemy.);
+      });
+      if (enemyWithLowestDistance != undefined) {
+        this._lookAt((enemyWithLowestDistance as Enemy).mesh.position.clone());
+        (enemyWithLowestDistance as Enemy).decrementHealth(1);
+      }
+    });
   }
 
   private rotateToDegree(euler: THREE.Euler) {
