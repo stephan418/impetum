@@ -22,9 +22,14 @@ export default class FloatingItem implements Entity, Updatable {
   private staticElevation = 0;
 
   constructor(position: THREE.Vector3, private deltaY: number = 0.2) {
-    this.geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+    /* this.geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
     this.material = new THREE.MeshLambertMaterial({ color: 0xfffffff });
+    this.mesh = new THREE.Mesh(this.geometry, this.material); */
+
+    this.geometry = window.resourceManager.getModelGeometry("crystalShard");
+    this.material = window.resourceManager.getModelMaterial("crystalShard");
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.scale.set(0.3, 0.3, 0.3);
 
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = false;

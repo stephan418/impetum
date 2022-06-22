@@ -5,7 +5,7 @@ import { ParameterizedEventManager } from "../../inventory/utils/EventManager";
 
 export default class Wave {
   private center: THREE.Vector3;
-  private enemies: Enemy[] = [];
+  enemies: Enemy[] = [];
   private updateIntervalId: number;
   private onFinish?: () => unknown;
   private world: World;

@@ -133,6 +133,7 @@ export default class World {
         this.floorMesh.material = new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("grass") });
       }).bind(this)
     );
+    (window as any).resourceManager = this.resourceManager;
 
     //TODO: Add proper loading from an object, which has all filenames of the models
     this.resourceManager.loadModelTexture("grass", "static/grasTexture.png");
@@ -145,6 +146,20 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
+
+    this.resourceManager.loadModelGeometries("alien", "static/alien.glb");
+    this.resourceManager.loadModelTexture("alien", "static/alienTexture.png");
+    this.resourceManager.addModelShape(
+      "alien",
+      new CANNON.Box(new CANNON.Vec3(2, 2, 2)),
+      new CANNON.Vec3(0, 0, 0)
+    );
+    this.resourceManager.addModelMaterial(
+      "alien",
+      new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("alien") })
+    );
+
+
     this.resourceManager.loadModelGeometries("crystal", "static/crystal.glb");
     this.resourceManager.loadModelTexture("crystal", "static/crystalTexture.png");
     this.resourceManager.addModelShape(
@@ -155,6 +170,13 @@ export default class World {
     this.resourceManager.addModelMaterial(
       "crystal",
       new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("crystal") })
+    );
+
+    this.resourceManager.loadModelGeometries("crystalShard", "static/crystalShard.glb");
+    this.resourceManager.loadModelTexture("crystalShard", "static/crystalShardTexture.png");
+    this.resourceManager.addModelMaterial(
+      "crystalShard",
+      new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("crystalShard") })
     );
 
     this.resourceManager.loadModelGeometries("generalTurret", "static/generalTurret.glb");
@@ -299,7 +321,7 @@ export default class World {
     );
 
     this.waveManager = new WaveManager(
-      { currentInterval: 10_000, intervalMultiplier: 90 },
+      { currentInterval: 10_000, intervalMultiplier: 0.1 },
       this,
       new THREE.Vector3(0, 0, 10),
       false
@@ -316,6 +338,7 @@ export default class World {
 
     this.hudManager.attach();
 
+    (window as any).waveManager = this.waveManager;
     this.waveManager.start();
 
     this.interactionManager.perspectiveCamera = this.player.camera;
@@ -569,6 +592,8 @@ declare global {
     readonly interactionManager: InteractionManager;
     readonly playerInventory: PlayerInventory;
     readonly buildingManager: BuildingManager;
+    readonly waveManager: WaveManager;
+    readonly resourceManager: ResourceManager;
     readonly world: World;
   }
 }

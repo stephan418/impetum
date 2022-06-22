@@ -28,7 +28,7 @@ function populateWaveManagerConfig(config: WaveManagerConfig): Required<WaveMana
 
 export default class WaveManager {
   private config;
-  private currentWaves: Wave[] = [];
+  currentWaves: Wave[] = [];
   private world: World;
   private intervalId?: number;
   private nextInterval?: number;
