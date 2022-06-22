@@ -140,7 +140,7 @@ export default class World {
         this.player.startGhostClock();
 
         const crystal = new Crystal(this.resourceManager, this.gameStateManager);
-        crystal.setPosition(new THREE.Vector3(0, 0, 10));
+        crystal.setPosition(new THREE.Vector3(0, 0, 0));
         this.buildingManager.addGridElement(crystal);
         this.floorMesh.material = new THREE.MeshLambertMaterial({ map: this.resourceManager.getModelTexture("grass") });
       }).bind(this)
@@ -157,6 +157,8 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugWall", "static/debugWall.glb");
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
+
+    this.resourceManager.addModelMaterial("bullet", new THREE.MeshLambertMaterial({color: 0x607470}));
 
     this.resourceManager.loadModelGeometries("alien", "static/alien.glb");
     this.resourceManager.loadModelTexture("alien", "static/alienTexture.png");
@@ -329,7 +331,7 @@ export default class World {
     );
 
     this.waveManager = new WaveManager(
-      { currentInterval: 150_000, intervalMultiplier: 0.9 },
+      { currentInterval: 10_000, intervalMultiplier: 1.9 },
       this,
       new THREE.Vector3(0, 0, 10),
       false

@@ -198,6 +198,7 @@ export default class BuildingManager {
     this.allElements.push(element);
   }
   removeGridElement(element: BaseElement) {
+    element.onRemove();
     element.break();
     element.removeFromWorld(this.world);
     if (element instanceof GridElement) {

@@ -251,7 +251,6 @@ export default abstract class FreeElement extends BaseElement implements Buildin
   getParts() {
     return this.parts;
   }
-
   updatedPosition(): void {}
   updatedGhostStatus(isGhost: boolean): void {
     if (isGhost) {

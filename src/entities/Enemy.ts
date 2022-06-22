@@ -33,11 +33,11 @@ export default class Enemy implements Entity, FrequencyUpdatable {
     /* const geometry = new THREE.SphereGeometry(this.radius);
     const material = new THREE.MeshLambertMaterial({ color: 0xffffff }); */
     const geometry = window.resourceManager.getModelGeometry("alien");
-    console.log(geometry);
     const material = window.resourceManager.getModelMaterial("alien");
     const cShape = new CANNON.Sphere(this.colliderRadius);
 
     this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.name = "alien";
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
     this.mesh.scale.set(1.3, 1.3, 1.3);

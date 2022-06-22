@@ -183,6 +183,7 @@ export default class Player implements Entity {
       config.inventory.backSlots,
       inputManager
     );
+
   }
   private addPointerLockOnClick(domElement: HTMLElement) {
     domElement.onclick = () => {

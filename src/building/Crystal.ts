@@ -90,6 +90,9 @@ export default class Crystal extends FreeElement implements Updatable {
 
   updatePhysics(deltaTime: number): void {}
 
+  onRemove(): void {
+      this.break();
+  }
   break(): void {
     super.break();
 
