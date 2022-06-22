@@ -8,6 +8,7 @@ import "./inventory/Store";
 import "./inventory/StoreSlot";
 import "./InfoBox";
 import "./components/progressCircle";
+import "./components/Button";
 import "./permanent_hud/PermanentHudContainer";
 import "./permanent_hud/WaveInfo";
 import "./permanent_hud/PurseInfo";
