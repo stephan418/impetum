@@ -1,5 +1,6 @@
 import * as CANNON from "cannon-es";
 import * as THREE from "three";
+import { Euler } from "three";
 import FreeElement from "../building/FreeElement";
 import GridElement from "../building/GridElement";
 import World from "../core/World";
@@ -10,7 +11,7 @@ export default class Enemy implements Entity, FrequencyUpdatable {
   mesh: THREE.Mesh;
   private cBody: CANNON.Body;
   private radius = 1.3;
-  private colliderRadius = 1.3;
+  private colliderRadius = 3;
 
   private targetPosition?: THREE.Vector3;
   private targetNormal?: THREE.Vector3;
@@ -26,6 +27,8 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
   private onStopMoving?: () => unknown;
 
+  private deltaC = 0;
+
   constructor(position: THREE.Vector3, onNoHealth?: Function) {
     /* const geometry = new THREE.SphereGeometry(this.radius);
     const material = new THREE.MeshLambertMaterial({ color: 0xffffff }); */
@@ -37,10 +40,11 @@ export default class Enemy implements Entity, FrequencyUpdatable {
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
+    this.mesh.scale.set(1.3, 1.3, 1.3);
 
     this.cBody = new CANNON.Body({ mass: 10, shape: cShape });
     this.cBody.linearDamping = 0.999;
-    this.cBody.fixedRotation = false;
+    this.cBody.fixedRotation = true;
 
     this.onNoHealth = onNoHealth;
 
@@ -146,11 +150,19 @@ export default class Enemy implements Entity, FrequencyUpdatable {
 
   updatePhysics(deltaTime: number): void {
     this.mesh.position.copy(this.cBody.position as unknown as THREE.Vector3);
-    this.mesh.quaternion.copy(this.cBody.quaternion as unknown as THREE.Quaternion);
 
     if (this.isMoving) {
       this.cBody.velocity.x = (this.targetNormal?.x || this.cBody.velocity.x) * (this.movePaused ? 0.001 : 1);
       this.cBody.velocity.z = (this.targetNormal?.z || this.cBody.velocity.z) * (this.movePaused ? 0.001 : 1);
+
+      if (this.targetPosition) {
+        const xRotationAngle = Math.atan2(
+          this.mesh.position.z - this.targetPosition.z,
+          this.mesh.position.x - this.targetPosition.x
+        );
+
+        this.mesh.setRotationFromEuler(new Euler(0, -xRotationAngle - Math.PI, 0));
+      }
 
       if (this.isAtTarget()) {
         this.isMoving = false;
