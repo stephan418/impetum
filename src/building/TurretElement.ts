@@ -26,7 +26,6 @@ export default abstract class TurretElement extends FreeElement implements Frequ
   }
   updateFrequencyMedium(deltaTime: number): void {
     this._updateFrequencyMedium(deltaTime);
-      
   }
 
   public lookAt(pos: THREE.Vector3) {

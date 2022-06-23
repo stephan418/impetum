@@ -89,9 +89,7 @@ export default abstract class GridElement extends BaseElement implements Buildin
     this.setPosition(newPosition);
   }
   updatedPosition(): void {}
-  onRemove():void {
-    
-  }
+  onRemove(): void {}
   updatedGhostStatus(isGhost: boolean): void {
     if (isGhost) {
       this.cBody.world?.removeBody(this.cBody);
