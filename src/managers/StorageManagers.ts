@@ -9,6 +9,7 @@ export default class StorageManager {
 
     if (!serialized) {
       this.inventory = new PlayerInventory(...args);
+      this.inventory.desposit(200);
       return this.inventory;
     }
 
