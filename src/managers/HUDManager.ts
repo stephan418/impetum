@@ -9,6 +9,7 @@ import PauseMenu from "../hud/menu/PauseMenu";
 import PermanentHudController from "../hud/permanent_hud/PermanentHudContainer";
 import { LoseScreen } from "../hud/state_screens/LoseScreen";
 import GeneralTurretItem from "../inventory/items/GeneralTurretItem";
+import WoodenFloorItem from "../inventory/items/WoodenFloor";
 import WoodenWallItem from "../inventory/items/WoodenWall";
 import PlayerInventory from "../inventory/PlayerInventory";
 import Store from "../inventory/store/store";
@@ -57,7 +58,7 @@ export default class HUDManager {
     this.store = new Store([
       { batchPrize: 100, batchSize: 1, description: "General Turret", item: new GeneralTurretItem() },
       { batchPrize: 50, batchSize: 10, description: "Wooden Wall", item: new WoodenWallItem() },
-      { batchPrize: 50, batchSize: 10, description: "Wooden Wall", item: new WoodenWallItem() },
+      { batchPrize: 50, batchSize: 10, description: "Wooden Floor", item: new WoodenFloorItem() },
     ]);
 
     this.playerInventory = playerInventory;

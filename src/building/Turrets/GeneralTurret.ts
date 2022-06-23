@@ -101,7 +101,7 @@ export default class GeneralTurret extends TurretElement {
           ),
         });
         let curSh:ShootingElementProperties = this.shootingElements[this.shootingElements.length -1];
-        curSh.shootingMesh.scale.set(0.4, 0.2, 4.4);
+        curSh.shootingMesh.scale.set(0.2, 0.1, 4.4);
         curSh.shootingMesh.lookAt(curSh.targetPosition);
         window.world.scene.add(curSh.shootingMesh);
       }
