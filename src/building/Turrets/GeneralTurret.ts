@@ -37,7 +37,7 @@ export default class GeneralTurret extends TurretElement {
     super([a, aMiddle, aTop], [b, b, b], c);
     this.getParts()[1].positionOffset = new THREE.Vector3(0, 1, 0);
     this.getParts()[2].positionOffset = new THREE.Vector3(0, 2, 0);
-    this.uNameID = ( Math.random() * 10000 ).toString();
+    this.uNameID = (Math.random() * 10000).toString();
     this.getParts()[0].mesh.name = this.uNameID;
     this.getParts()[1].mesh.name = this.uNameID;
     this.getParts()[2].mesh.name = this.uNameID;
@@ -48,12 +48,12 @@ export default class GeneralTurret extends TurretElement {
   }
   protected _update(deltaTime: number): void {
     // this._lookAt(window.world.getPlayer().camera.position);
-    let removeThese:number[] = [];
+    let removeThese: number[] = [];
     this.shootingElements.forEach((val, idx) => {
       val.progress += 3 * deltaTime;
       val.shootingMesh.lookAt(val.targetPosition);
       val.shootingMesh.position.lerpVectors(val.startingPosition, val.targetPosition, val.progress);
-      if(val.progress >= 1){
+      if (val.progress >= 1) {
         removeThese.push(idx);
       }
     });
@@ -61,7 +61,6 @@ export default class GeneralTurret extends TurretElement {
       window.world.scene.remove(this.shootingElements[idx].shootingMesh);
       this.shootingElements.splice(vla, 1);
     });
-
   }
   protected _updatePhysics(deltaTime: number): void {}
   protected _updateFrequencyMedium(deltaTime: number): void {}
@@ -90,17 +89,19 @@ export default class GeneralTurret extends TurretElement {
         .filter((intersect) => intersect.object.name != "nointersect" && intersect.object.name != this.uNameID);
       if (found[0].object.name == "alien" || found[1].object.name == "alien") {
         this._lookAt((enemyWithLowestDistance as Enemy).mesh.position.clone());
-        ( enemyWithLowestDistance as Enemy ).decrementHealth(20);
+        (enemyWithLowestDistance as Enemy).decrementHealth(20);
         this.shootingElements.push({
           progress: 0,
-          targetPosition: ( ( enemyWithLowestDistance as any ).mesh.position as THREE.Vector3 ).clone().add(new THREE.Vector3( 0,0,0 )),
-          startingPosition: ( this.pos as THREE.Vector3 ).clone().add(new THREE.Vector3( 0,2.4,0 )),
+          targetPosition: ((enemyWithLowestDistance as any).mesh.position as THREE.Vector3)
+            .clone()
+            .add(new THREE.Vector3(0, 0, 0)),
+          startingPosition: (this.pos as THREE.Vector3).clone().add(new THREE.Vector3(0, 2.4, 0)),
           shootingMesh: new THREE.Mesh(
             window.resourceManager.getModelGeometry("crystalShard"),
             window.resourceManager.getModelMaterial("bullet")
           ),
         });
-        let curSh:ShootingElementProperties = this.shootingElements[this.shootingElements.length -1];
+        let curSh: ShootingElementProperties = this.shootingElements[this.shootingElements.length - 1];
         curSh.shootingMesh.scale.set(0.2, 0.1, 4.4);
         curSh.shootingMesh.lookAt(curSh.targetPosition);
         window.world.scene.add(curSh.shootingMesh);
@@ -111,7 +112,7 @@ export default class GeneralTurret extends TurretElement {
   onRemove(): void {
     this.shootingElements.forEach((vla, idx) => {
       window.world.scene.remove(this.shootingElements[idx].shootingMesh);
-    })
+    });
     this.shootingElements.splice(0);
   }
 

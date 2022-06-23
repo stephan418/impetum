@@ -158,7 +158,7 @@ export default class World {
     this.resourceManager.loadModelGeometry("debugMonke", "static/debugMonke.glb");
     this.resourceManager.loadModelGeometry("defaultWorld", "static/defaultWorld.glb");
 
-    this.resourceManager.addModelMaterial("bullet", new THREE.MeshLambertMaterial({color: 0x607470}));
+    this.resourceManager.addModelMaterial("bullet", new THREE.MeshLambertMaterial({ color: 0x607470 }));
 
     this.resourceManager.loadModelGeometries("alien", "static/alien.glb");
     this.resourceManager.loadModelTexture("alien", "static/alienTexture.png");
