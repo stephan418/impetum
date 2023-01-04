@@ -17,9 +17,14 @@ jobs:
       run: |
         npm i
         npx vite build
+    - name: Copy everything to the target dir
+    - run: |
+        mkdir target
+        cp -R dist/ target/
+        cp -R static/ target/
 
     - name: Push to pages
       uses: JamesIves/github-pages-deploy-action@v4.3.3
       with:
         branch: gh-pages
-        folder: dist
+        folder: target
