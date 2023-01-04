@@ -18,7 +18,7 @@ jobs:
         npm i
         npx vite build
     - name: Copy everything to the target dir
-    - run: |
+      run: |
         mkdir target
         cp -R dist/ target/
         cp -R static/ target/
