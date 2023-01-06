@@ -16,6 +16,6 @@ export default class WoodenWallItem extends Item implements Buildable<typeof Woo
   }
 
   get icon() {
-    return "../../../static/items/woodenWallItem.png";
+    return "./static/items/woodenWallItem.png";
   }
 }

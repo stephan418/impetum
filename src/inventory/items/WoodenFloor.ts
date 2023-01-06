@@ -13,6 +13,6 @@ export default class WoodenFloorItem extends Item implements Buildable<typeof Wo
   }
 
   get icon() {
-    return "../../../static/items/woodenFloorItem.png";
+    return "./static/items/woodenFloorItem.png";
   }
 }
